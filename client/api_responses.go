@@ -1,19 +1,19 @@
 package client
 
 import (
-  "fmt"
+	"fmt"
 )
 
 type SpinnakerError struct {
-  StatusCode int    `json:"statuscode"`
-  StatusDesc string `json:"statusdesc"`
-  Message    string `json:"errormessage"`
+	StatusCode int    `json:"statuscode"`
+	StatusDesc string `json:"statusdesc"`
+	Message    string `json:"errormessage"`
 }
 
 func (r *SpinnakerError) Error() string {
-  return fmt.Sprintf("%d %v: %v", r.StatusCode, r.StatusDesc, r.Message)
+	return fmt.Sprintf("%d %v: %v", r.StatusCode, r.StatusDesc, r.Message)
 }
 
 type errorJsonResponse struct {
-  Error *SpinnakerError `json:"error"`
+	Error *SpinnakerError `json:"error"`
 }
