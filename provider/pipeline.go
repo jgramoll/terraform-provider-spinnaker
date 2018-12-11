@@ -36,14 +36,14 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 func resourceServerRead(d *schema.ResourceData, m interface{}) error {
   c := m.(*client.Client)
 
-  pipeline, err := c.GetPipeline(d.Id())
+  pipeline, err := c.GetPipeline("TODO.appName", d.Id())
   if err != nil {
     log.Printf("[WARN] No Server found: %s", d.Id())
     d.SetId("")
     return nil
   }
 
-  log.Printf("[INFO] got pipeline %s", pipeline)
+  log.Printf("[INFO] got pipeline %s", pipeline.Id)
   d.Set("name", pipeline.Name)
   return nil
 }
