@@ -1,4 +1,4 @@
-package spinnaker
+package provider
 
 import (
   "testing"
@@ -6,6 +6,7 @@ import (
   "github.com/hashicorp/terraform/config"
   "github.com/hashicorp/terraform/helper/schema"
   "github.com/hashicorp/terraform/terraform"
+  "github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 var provider *schema.Provider
@@ -28,15 +29,15 @@ func TestProviderConfigure(t *testing.T) {
     t.Fatalf("err: %s", err)
   }
 
-  client := provider.Meta().(*Client)
-  if client.Config.Address != raw["address"] {
-    assertFail(t, "address", client.Config.Address)
+  c := provider.Meta().(*client.Client)
+  if c.Config.Address != raw["address"] {
+    assertFail(t, "address", c.Config.Address)
   }
-  if client.Config.CertPath != raw["certPath"] {
-    assertFail(t, "certPath", client.Config.CertPath)
+  if c.Config.CertPath != raw["certPath"] {
+    assertFail(t, "certPath", c.Config.CertPath)
   }
-  if client.Config.KeyPath != raw["keyPath"] {
-    assertFail(t, "keyPath", client.Config.KeyPath)
+  if c.Config.KeyPath != raw["keyPath"] {
+    assertFail(t, "keyPath", c.Config.KeyPath)
   }
 }
 

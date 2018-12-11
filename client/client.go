@@ -1,4 +1,4 @@
-package spinnaker
+package client
 
 import (
   "bytes"
@@ -20,6 +20,10 @@ type Client struct {
 
 func NewClient(config Config) *Client {
   return &Client{Config: config, client: http.DefaultClient}
+}
+
+func (client *Client) Get(path string) (*http.Request, error) {
+  return client.NewRequest("get", path)
 }
 
 func (client *Client) NewRequest(method string, path string) (*http.Request, error) {
@@ -57,7 +61,7 @@ func (client *Client) Do(req *http.Request, v interface{}) (*http.Response, erro
 
 // func decodeResponse(r *http.Response, v interface{}) error {
 //   if v == nil {
-//     return fmt.Errorf("nil interface provided to decodeResponse")
+//     return log.Errorf("nil interface provided to decodeResponse")
 //   }
 
 //   bodyBytes, _ := ioutil.ReadAll(r.Body)

@@ -1,7 +1,6 @@
-package spinnaker
+package client
 
 import (
-  "fmt"
   "io/ioutil"
   "testing"
 )
@@ -54,14 +53,13 @@ func TestClientDo(t *testing.T) {
   if (err != nil) {
     t.Fatal(err)
   }
-  fmt.Println(req)
+  t.Log(req)
 
   // TODO this actually sends...
   // resp, err := client.Do(req, nil)
   // if (err != nil) {
   //   t.Fatal(err)
   // }
-  // fmt.Println(resp)
   // TODO what can we assert?
 }
 
