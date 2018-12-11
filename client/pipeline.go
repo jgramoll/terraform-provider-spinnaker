@@ -5,13 +5,13 @@ import (
 )
 
 type Pipeline struct {
-  application           string
-  disabled              bool
-  id                    string
-  index                 int
-  keepWaitingPipelines  bool
-  lastModifiedBy        string
-  limitConcurrent       bool
+  Application           string
+  Disabled              bool
+  Id                    string
+  Index                 int
+  KeepWaitingPipelines  bool
+  LastModifiedBy        string
+  LimitConcurrent       bool
   Name                  string
   // notifications    []Notification
   // parameterConfig  []
