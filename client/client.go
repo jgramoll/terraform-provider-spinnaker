@@ -2,7 +2,11 @@ package client
 
 import (
   "bytes"
+  "crypto/tls"
   "encoding/json"
+  "fmt"
+  "io/ioutil"
+  "log"
   "net/http"
   "net/url"
 )
@@ -19,7 +23,20 @@ type Client struct {
 }
 
 func NewClient(config Config) *Client {
-  return &Client{Config: config, client: http.DefaultClient}
+  cert, err := tls.LoadX509KeyPair(config.CertPath, config.KeyPath)
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  tlsConfig := &tls.Config{
+    Certificates: []tls.Certificate{cert},
+    InsecureSkipVerify: true,
+  }
+  tlsConfig.BuildNameToCertificate()
+  transport := &http.Transport{TLSClientConfig: tlsConfig}
+  c := &http.Client{Transport: transport}
+
+  return &Client{Config: config, client: c}
 }
 
 func (client *Client) Get(path string) (*http.Request, error) {
@@ -41,7 +58,12 @@ func (client *Client) NewRequestWithBody(method string, path string, data map[st
     return nil, jsonErr
   }
 
-  return http.NewRequest(method, reqUrl.String(), bytes.NewBuffer(jsonValue))
+  req, err := http.NewRequest(method, reqUrl.String(), bytes.NewBuffer(jsonValue))
+  if (err != nil) {
+    return nil, err
+  }
+  req.Header.Add("Content-Type", "application/json;charset=UTF-8")
+  return req, nil
 }
 
 func (client *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
@@ -51,21 +73,40 @@ func (client *Client) Do(req *http.Request, v interface{}) (*http.Response, erro
   }
   defer resp.Body.Close()
 
-  // if err := validateResponse(resp); err != nil {
-  //   return resp, err
-  // }
+  if err := validateResponse(resp); err != nil {
+    return resp, err
+  }
 
-  // err = decodeResponse(resp, v)
+  err = decodeResponse(resp, v)
   return resp, err
+
 }
 
-// func decodeResponse(r *http.Response, v interface{}) error {
-//   if v == nil {
-//     return log.Errorf("nil interface provided to decodeResponse")
-//   }
+func decodeResponse(r *http.Response, v interface{}) error {
+  if v == nil {
+    return fmt.Errorf("nil interface provided to decodeResponse")
+  }
 
-//   bodyBytes, _ := ioutil.ReadAll(r.Body)
-//   bodyString := string(bodyBytes)
-//   err := json.Unmarshal([]byte(bodyString), &v)
-//   return err
-// }
+  bodyBytes, _ := ioutil.ReadAll(r.Body)
+  bodyString := string(bodyBytes)
+  fmt.Printf("[INFO] Got response body %s\n", bodyString)
+
+  err := json.Unmarshal([]byte(bodyString), &v)
+  return err
+}
+
+func validateResponse(r *http.Response) error {
+  if c := r.StatusCode; 200 <= c && c <= 299 {
+    return nil
+  }
+
+  bodyBytes, _ := ioutil.ReadAll(r.Body)
+  bodyString := string(bodyBytes)
+  m := &errorJsonResponse{}
+  err := json.Unmarshal([]byte(bodyString), &m)
+  if err != nil {
+    return err
+  }
+
+	return m.Error
+}

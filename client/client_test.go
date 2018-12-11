@@ -1,7 +1,9 @@
 package client
 
 import (
+  "log"
   "io/ioutil"
+  "os/user"
   "testing"
 )
 
@@ -9,19 +11,25 @@ var c Config
 var client *Client
 
 func init() {
+  usr, err := user.Current()
+  if err != nil {
+      log.Fatal( err )
+  }
+
   c = Config{
-    Address: "http://example.com",
-    CertPath: "#certPath",
-    KeyPath: "KeyPath"}
+    Address:  "https://localhost:8085",
+    CertPath: usr.HomeDir + "/.spin/certpath",
+    KeyPath:  usr.HomeDir + "/.spin/keypath"}
   client = NewClient(c)
 }
 
 func TestClientNewRequest(t *testing.T) {
+  path := "/test/path"
   req, err := client.NewRequest("get", "/test/path")
   if (err != nil) {
     t.Fatal(err)
   }
-  expectedUrl := "http://example.com/test/path"
+  expectedUrl := c.Address + path
   if (req.URL.String() != expectedUrl) {
     t.Fatalf("request url should be %#v, not %#v", expectedUrl, req.URL.String())
   }

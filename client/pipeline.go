@@ -1,20 +1,44 @@
 package client
 
 import (
-  // "fmt"
+  "fmt"
 )
 
 type Pipeline struct {
-  Id    string
-  Name  string
+  application           string
+  disabled              bool
+  id                    string
+  index                 int
+  keepWaitingPipelines  bool
+  lastModifiedBy        string
+  limitConcurrent       bool
+  Name                  string
+  // notifications    []Notification
+  // parameterConfig  []
+  // Stages   []Stage
+  // Triggers []Trigger
+  UpdateTs              string
 }
 
-// func (pipeline *Pipeline) String() string {
-//   return fmt.Sprintf("pipeline %s", pipeline.id)
-// }
+func (client *Client) GetPipeline(applicationName string, pipelineName string) (*Pipeline, error) {
+  // TODO this is return list of pipeline
+  path := fmt.Sprintf("/applications/%s/pipelineConfigs", applicationName)
+  req, err := client.NewRequest("GET", path)
+  if(err != nil) {
+    return nil, err
+  }
 
-func (client *Client) GetPipeline(path string) (*Pipeline, error) {
-  // client.NewRequest("get", path)
+  var pipelines []Pipeline
+  _, respErr := client.Do(req, &pipelines)
+  if (respErr != nil) {
+    return nil, respErr
+  }
 
-  return &Pipeline{}, nil
+  for _, pipeline := range pipelines {
+    if (pipeline.Name == pipelineName) {
+      return &pipeline, nil
+    }
+  }
+
+  return nil, fmt.Errorf("Pipeline %s not found", pipelineName)
 }
