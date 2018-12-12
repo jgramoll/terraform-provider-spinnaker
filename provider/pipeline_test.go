@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"log"
 	"testing"
 
 	"github.com/hashicorp/terraform/terraform"
@@ -15,8 +16,8 @@ func TestAccKubernetesSecret_basic(t *testing.T) {
 	var pipeline client.Pipeline
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	fmt.Println("testAccProvider", testAccProvider)
 
+	fmt.Println("basic test", conf)
 	resource.Test(t, resource.TestCase{
 		PreCheck:      func() { testAccPreCheck(t) },
 		IDRefreshName: "spinnaker_pipeline.test",
@@ -29,18 +30,6 @@ func TestAccKubernetesSecret_basic(t *testing.T) {
 					testAccCheckPipelineExists("spinnaker_pipeline.test", &pipeline),
 					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", "asdf"),
 					testAccCheckPipeline(&pipeline, map[string]string{"TestAnnotationOne": "one", "TestAnnotationTwo": "two"}),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "metadata.0.labels.%", "3"),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "metadata.0.labels.TestLabelOne", "one"),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "metadata.0.labels.TestLabelTwo", "two"),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "metadata.0.labels.TestLabelThree", "three"),
-					// testAccCheckMetaLabels(&conf.ObjectMeta, map[string]string{"TestLabelOne": "one", "TestLabelTwo": "two", "TestLabelThree": "three"}),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "metadata.0.name", name),
-					// resource.TestCheckResourceAttrSet("kubernetes_secret.test", "metadata.0.generation"),
-					// resource.TestCheckResourceAttrSet("kubernetes_secret.test", "metadata.0.resource_version"),
-					// resource.TestCheckResourceAttrSet("kubernetes_secret.test", "metadata.0.self_link"),
-					// resource.TestCheckResourceAttrSet("kubernetes_secret.test", "metadata.0.uid"),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "data.%", "0"),
-					// resource.TestCheckResourceAttr("kubernetes_secret.test", "type", "Opaque"),
 				),
 			},
 		},
@@ -57,13 +46,21 @@ resource "spinnaker_pipeline" "test" {
 }
 
 func testAccCheckPipelineExists(n string, obj *client.Pipeline) resource.TestCheckFunc {
+	fmt.Println("testAccCheckPipelineExists")
 	return func(s *terraform.State) error {
-		fmt.Println("wtf", "2")
+		fmt.Println("testAccCheckPipelineExistsFrd")
+		// fmt.Println("testAccCheckPipelineExists", s)
+		fmt.Println("s", s)
+		fmt.Println("s", s.RootModule())
+		fmt.Println("s", s.RootModule().Resources)
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
+			fmt.Println("boogy", n)
 			return fmt.Errorf("Not found: %s", n)
 		}
 		fmt.Println(rs)
+
+		log.Println(rs)
 
 		// conn := testAccProvider.Meta().(*kubernetes.Clientset)
 
@@ -83,8 +80,9 @@ func testAccCheckPipelineExists(n string, obj *client.Pipeline) resource.TestChe
 }
 
 func testAccCheckPipeline(p *client.Pipeline, expected map[string]string) resource.TestCheckFunc {
+	fmt.Println("testAccCheckPipeline")
 	return func(s *terraform.State) error {
-		fmt.Println("check2")
+		log.Println("testAccCheckPipelineFrd")
 		// 	if len(expected) == 0 && len(om.Annotations) == 0 {
 		// 		return nil
 		// 	}
@@ -109,7 +107,7 @@ func testAccCheckPipeline(p *client.Pipeline, expected map[string]string) resour
 func testAccCheckPipelineDestroy(s *terraform.State) error {
 	// conn := testAccProvider.Meta().(*client.Client)
 
-	fmt.Println("testAccCheckPipelineDestroy")
+	log.Println("testAccCheckPipelineDestroy")
 
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "kubernetes_namespace" {

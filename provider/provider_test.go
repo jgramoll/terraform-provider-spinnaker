@@ -59,11 +59,13 @@ func TestProviderConfigure(t *testing.T) {
 func testAccPreCheck(t *testing.T) {
 	rawConfig, configErr := config.NewRawConfig(raw)
 	if configErr != nil {
+		fmt.Println("configErr")
 		t.Fatal(configErr)
 	}
 	c := terraform.NewResourceConfig(rawConfig)
 	err := testAccProvider.Configure(c)
 	if err != nil {
+		fmt.Println("checkErr")
 		t.Fatal(err)
 	}
 }
