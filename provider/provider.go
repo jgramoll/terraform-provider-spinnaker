@@ -21,18 +21,21 @@ func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type: schema.TypeString,
+				// Required: true,
+				Optional: true,
 			},
 
 			"cert_path": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type: schema.TypeString,
+				// Required: true,
+				Optional: true,
 			},
 
 			"key_path": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type: schema.TypeString,
+				// Required: true,
+				Optional: true,
 			},
 		},
 
