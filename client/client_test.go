@@ -17,9 +17,9 @@ func init() {
 	}
 
 	c = Config{
-		Address:  "https://localhost:8085",
-		CertPath: usr.HomeDir + "/.spin/certpath",
-		KeyPath:  usr.HomeDir + "/.spin/keypath"}
+		Address:  "https://api.spinnaker.inseng.net",
+		CertPath: usr.HomeDir + "/.spin/client.crt",
+		KeyPath:  usr.HomeDir + "/.spin/client.key"}
 	client = NewClient(c)
 }
 
@@ -36,7 +36,7 @@ func TestClientNewRequest(t *testing.T) {
 }
 
 func TestClientNewRequestWithBody(t *testing.T) {
-	body := map[string]string{
+	body := map[string]interface{}{
 		"field": "#value",
 	}
 	req, err := client.NewRequestWithBody("get", "/test/path", body)

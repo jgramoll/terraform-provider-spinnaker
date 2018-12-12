@@ -47,7 +47,7 @@ func (client *Client) NewRequest(method string, path string) (*http.Request, err
 	return client.NewRequestWithBody(method, path, nil)
 }
 
-func (client *Client) NewRequestWithBody(method string, path string, data map[string]string) (*http.Request, error) {
+func (client *Client) NewRequestWithBody(method string, path string, data map[string]interface{}) (*http.Request, error) {
 	reqUrl, urlErr := url.Parse(client.Config.Address + path)
 	if urlErr != nil {
 		return nil, urlErr
@@ -89,7 +89,7 @@ func decodeResponse(r *http.Response, v interface{}) error {
 
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
-	fmt.Printf("[INFO] Got response body %s\n", bodyString)
+	log.Printf("[INFO] Got response body %s\n", bodyString)
 
 	err := json.Unmarshal([]byte(bodyString), &v)
 	return err
@@ -102,11 +102,12 @@ func validateResponse(r *http.Response) error {
 
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
-	m := &errorJsonResponse{}
-	err := json.Unmarshal([]byte(bodyString), &m)
+	log.Printf("[INFO] Error response body %s\n", bodyString)
+	error := &SpinnakerError{}
+	err := json.Unmarshal([]byte(bodyString), &error)
 	if err != nil {
 		return err
 	}
 
-	return m.Error
+	return error
 }

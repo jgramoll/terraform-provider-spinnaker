@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"os/user"
 	"testing"
 
 	"github.com/hashicorp/terraform/config"
@@ -9,38 +11,59 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-var provider *schema.Provider
-var raw map[string]interface{}
-var rawConfig *config.RawConfig
+var (
+	testAccProviders map[string]terraform.ResourceProvider
+	testAccProvider  *schema.Provider
+	usr              *user.User
+	raw              map[string]interface{}
+)
 
 func init() {
-	provider = Provider()
-	raw = map[string]interface{}{
-		"address":  "#address",
-		"certPath": "#certPath",
-		"keyPath":  "#keyPath",
+	testAccProvider = Provider().(*schema.Provider)
+	testAccProviders = map[string]terraform.ResourceProvider{
+		"spinnaker": testAccProvider,
 	}
-	rawConfig, _ = config.NewRawConfig(raw)
+	usr, _ = user.Current()
+
+	raw = map[string]interface{}{
+		"address":   "#address",
+		"cert_path": usr.HomeDir + "/.spin/client.crt",
+		"key_path":  usr.HomeDir + "/.spin/client.key",
+	}
+}
+
+func TestProvider(t *testing.T) {
+	if err := testAccProvider.InternalValidate(); err != nil {
+		t.Fatalf("err: %s", err)
+	}
+}
+
+func TestProvider_impl(t *testing.T) {
+	var _ terraform.ResourceProvider = Provider()
 }
 
 func TestProviderConfigure(t *testing.T) {
-	err := provider.Configure(terraform.NewResourceConfig(rawConfig))
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	c := provider.Meta().(*client.Client)
+	testAccPreCheck(t)
+	c := testAccProvider.Meta().(*client.Client)
 	if c.Config.Address != raw["address"] {
-		assertFail(t, "address", c.Config.Address)
+		t.Fatalf("address should be %#v, not %#v", raw["address"], c.Config.Address)
 	}
-	if c.Config.CertPath != raw["certPath"] {
-		assertFail(t, "certPath", c.Config.CertPath)
+	if c.Config.CertPath != raw["cert_path"] {
+		t.Fatalf("certPath should be %#v, not %#v", raw["cert_path"], c.Config.CertPath)
 	}
-	if c.Config.KeyPath != raw["keyPath"] {
-		assertFail(t, "keyPath", c.Config.KeyPath)
+	if c.Config.KeyPath != raw["key_path"] {
+		t.Fatalf("keyPath should be %#v, not %#v", raw["key_path"], c.Config.KeyPath)
 	}
 }
 
-func assertFail(t *testing.T, field string, actual string) {
-	t.Fatalf("address should be %#v, not %#v", raw[field], actual)
+func testAccPreCheck(t *testing.T) {
+	rawConfig, configErr := config.NewRawConfig(raw)
+	if configErr != nil {
+		t.Fatal(configErr)
+	}
+	c := terraform.NewResourceConfig(rawConfig)
+	err := testAccProvider.Configure(c)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
