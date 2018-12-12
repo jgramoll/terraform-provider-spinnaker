@@ -21,24 +21,32 @@ type Pipeline struct {
 }
 
 func (client *Client) GetPipeline(applicationName string, pipelineName string) (*Pipeline, error) {
-	// TODO this is return list of pipeline
-	path := fmt.Sprintf("/applications/%s/pipelineConfigs", applicationName)
+	path := fmt.Sprintf("/applications/%s/pipelineConfigs/%s", applicationName, pipelineName)
 	req, err := client.NewRequest("GET", path)
 	if err != nil {
 		return nil, err
 	}
 
-	var pipelines []Pipeline
-	_, respErr := client.Do(req, &pipelines)
+	var pipeline Pipeline
+	_, respErr := client.Do(req, &pipeline)
 	if respErr != nil {
 		return nil, respErr
 	}
 
-	for _, pipeline := range pipelines {
-		if pipeline.Name == pipelineName {
-			return &pipeline, nil
-		}
+	return &pipeline, nil
+}
+
+// {"name":"test","stages":[],"triggers":[],"application":"career","limitConcurrent":true,"keepWaitingPipelines":false,"index":5}
+func (client *Client) PostPipeline(applicationName string, pipelineName string) error {
+	data := map[string]interface{}{
+		"application": applicationName,
+		"name":        pipelineName,
 	}
 
-	return nil, fmt.Errorf("Pipeline %s not found", pipelineName)
+	path := "/pipelines"
+	_, err := client.NewRequestWithBody("POST", path, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }
