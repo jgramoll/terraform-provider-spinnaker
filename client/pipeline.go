@@ -28,7 +28,7 @@ func (client *Client) GetPipeline(applicationName string, pipelineName string) (
 	}
 
 	var pipeline Pipeline
-	_, respErr := client.Do(req, &pipeline)
+	_, respErr := client.DoWithResponse(req, &pipeline)
 	if respErr != nil {
 		return nil, respErr
 	}
@@ -36,17 +36,33 @@ func (client *Client) GetPipeline(applicationName string, pipelineName string) (
 	return &pipeline, nil
 }
 
-// {"name":"test","stages":[],"triggers":[],"application":"career","limitConcurrent":true,"keepWaitingPipelines":false,"index":5}
-func (client *Client) PostPipeline(applicationName string, pipelineName string) error {
+// CreatePipeline in application
+// Example: {"name":"test","stages":[],"triggers":[],"application":"career","limitConcurrent":true,"keepWaitingPipelines":false,"index":5}
+func (client *Client) CreatePipeline(pipeline *Pipeline) error {
+	// TODO is there a way to create map from object
 	data := map[string]interface{}{
-		"application": applicationName,
-		"name":        pipelineName,
+		"application": pipeline.Application,
+		"name":        pipeline.Name,
 	}
 
 	path := "/pipelines"
-	_, err := client.NewRequestWithBody("POST", path, data)
+	req, err := client.NewRequestWithBody("POST", path, data)
 	if err != nil {
 		return err
 	}
-	return nil
+
+	_, respErr := client.Do(req)
+	return respErr
+}
+
+// DeletePipeline in application
+func (client *Client) DeletePipeline(pipeline *Pipeline) error {
+	path := fmt.Sprintf("/pipelines/%s/%s", pipeline.Application, pipeline.Name)
+	req, err := client.NewRequest("DELETE", path)
+	if err != nil {
+		return err
+	}
+
+	_, respErr := client.Do(req)
+	return respErr
 }

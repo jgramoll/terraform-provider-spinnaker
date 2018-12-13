@@ -32,14 +32,11 @@ func pipelineResource() *schema.Resource {
 }
 
 func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
-	var pipeline *client.Pipeline
+	var pipeline client.Pipeline
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
 		return err
 	}
-
-	log.Println(d.Get("name"))
-	log.Println(pipeline)
 
 	if pipeline.Name == "" {
 		return fmt.Errorf("pipeline name must be provided")
@@ -48,30 +45,31 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("pipeline application must be provided")
 	}
 
+	c := m.(*client.Client)
+	err := c.CreatePipeline(&pipeline)
+	if err != nil {
+		return err
+	}
+
 	id := fmt.Sprintf("%s_%s", pipeline.Application, pipeline.Name)
-	log.Printf("[DEBUG] Creating pipeline configuration: %#v", id)
-
-	// c := m.(*client.Client)
-	// ck, err := client.Checks.Create(check)
-	// if err != nil {
-	// 	return err
-	// }
-
+	log.Printf("[DEBUG] Creating pipeline configuration: %s\n", id)
 	d.SetId(id)
 	return nil
 }
 
 func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
-	c := m.(*client.Client)
+	application := d.Get("application").(string)
+	name := d.Get("name").(string)
 
-	pipeline, err := c.GetPipeline("TODO.appName", d.Id())
+	c := m.(*client.Client)
+	pipeline, err := c.GetPipeline(application, name)
 	if err != nil {
 		log.Printf("[WARN] No Server found: %s", d.Id())
 		d.SetId("")
 		return nil
 	}
 
-	log.Printf("[INFO] got pipeline %s", pipeline.Id)
+	log.Printf("[INFO] got pipeline %s\n", pipeline.Id)
 	d.Set("name", pipeline.Name)
 	return nil
 }
@@ -96,6 +94,20 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
+	var pipeline client.Pipeline
+	configRaw := d.Get("").(map[string]interface{})
+	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
+		return err
+	}
+
+	if pipeline.Name == "" {
+		return fmt.Errorf("pipeline name must be provided")
+	}
+	if pipeline.Application == "" {
+		return fmt.Errorf("pipeline application must be provided")
+	}
+
 	d.SetId("")
-	return nil
+	c := m.(*client.Client)
+	return c.DeletePipeline(&pipeline)
 }
