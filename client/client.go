@@ -47,8 +47,9 @@ func (client *Client) NewRequest(method string, path string) (*http.Request, err
 	return client.NewRequestWithBody(method, path, nil)
 }
 
+// NewRequestWithBody sends http request with data as body
 func (client *Client) NewRequestWithBody(method string, path string, data map[string]interface{}) (*http.Request, error) {
-	reqUrl, urlErr := url.Parse(client.Config.Address + path)
+	reqURL, urlErr := url.Parse(client.Config.Address + path)
 	if urlErr != nil {
 		return nil, urlErr
 	}
@@ -58,7 +59,8 @@ func (client *Client) NewRequestWithBody(method string, path string, data map[st
 		return nil, jsonErr
 	}
 
-	req, err := http.NewRequest(method, reqUrl.String(), bytes.NewBuffer(jsonValue))
+	log.Printf("[INFO] Sending %s to %s\n", method, reqURL)
+	req, err := http.NewRequest(method, reqURL.String(), bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return nil, err
 	}
@@ -66,20 +68,38 @@ func (client *Client) NewRequestWithBody(method string, path string, data map[st
 	return req, nil
 }
 
-func (client *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
-	resp, err := client.client.Do(req)
+func (client *Client) DoWithResponse(req *http.Request, v interface{}) (*http.Response, error) {
+	resp, err := client.do(req)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 	defer resp.Body.Close()
 
-	if err := validateResponse(resp); err != nil {
+	err = decodeResponse(resp, v)
+	return resp, err
+}
+
+func (client *Client) Do(req *http.Request) (*http.Response, error) {
+	resp, err := client.do(req)
+	if err != nil {
+		return resp, err
+	}
+	defer resp.Body.Close()
+	return resp, err
+}
+
+func (client *Client) do(req *http.Request) (*http.Response, error) {
+	resp, err := client.client.Do(req)
+	if err != nil {
 		return resp, err
 	}
 
-	err = decodeResponse(resp, v)
-	return resp, err
+	err = validateResponse(resp)
+	if err != nil {
+		return resp, err
+	}
 
+	return resp, nil
 }
 
 func decodeResponse(r *http.Response, v interface{}) error {
@@ -89,7 +109,7 @@ func decodeResponse(r *http.Response, v interface{}) error {
 
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
-	log.Printf("[INFO] Got response body %s\n", bodyString)
+	log.Printf("[DEBUG] Got response body %s\n", bodyString)
 
 	err := json.Unmarshal([]byte(bodyString), &v)
 	return err

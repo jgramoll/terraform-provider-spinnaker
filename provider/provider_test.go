@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"fmt"
 	"os/user"
 	"testing"
 
@@ -26,7 +25,7 @@ func init() {
 	usr, _ = user.Current()
 
 	raw = map[string]interface{}{
-		"address":   "#address",
+		"address":   "https://api.spinnaker.inseng.net",
 		"cert_path": usr.HomeDir + "/.spin/client.crt",
 		"key_path":  usr.HomeDir + "/.spin/client.key",
 	}
@@ -59,13 +58,11 @@ func TestProviderConfigure(t *testing.T) {
 func testAccPreCheck(t *testing.T) {
 	rawConfig, configErr := config.NewRawConfig(raw)
 	if configErr != nil {
-		fmt.Println("configErr")
 		t.Fatal(configErr)
 	}
 	c := terraform.NewResourceConfig(rawConfig)
 	err := testAccProvider.Configure(c)
 	if err != nil {
-		fmt.Println("checkErr")
 		t.Fatal(err)
 	}
 }

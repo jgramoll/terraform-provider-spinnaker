@@ -4,7 +4,12 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
 
 func TestGetPipeline(t *testing.T) {
 	pipeline, err := client.GetPipeline("career", "Bridge Nav Edge")
@@ -17,9 +22,17 @@ func TestGetPipeline(t *testing.T) {
 	}
 }
 
-func TestPostPipeline(t *testing.T) {
-	name := fmt.Sprintf("My Test Pipe %d", rand.Int())
-	err := client.PostPipeline("career", name)
+func TestCreatePipeline(t *testing.T) {
+	pipeline := Pipeline{
+		Name:        fmt.Sprintf("My Test Pipe %d", rand.Int()),
+		Application: "app",
+	}
+	err := client.CreatePipeline(&pipeline)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = client.DeletePipeline(&pipeline)
 	if err != nil {
 		t.Fatal(err)
 	}

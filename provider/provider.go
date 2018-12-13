@@ -54,6 +54,15 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		return nil, err
 	}
 
+	// debug.PrintStack()
+	// fmt.Println("config", config)
+	// fmt.Println("config", client.Config(config))
 	log.Println("[INFO] Initializing Spinnaker client")
+
+	// Why do we need this....
+	config.Address = "https://api.spinnaker.inseng.net"
+	config.CertPath = "/Users/jgramoll/.spin/client.crt"
+	config.KeyPath = "/Users/jgramoll/.spin/client.key"
+
 	return client.NewClient(client.Config(config)), nil
 }
