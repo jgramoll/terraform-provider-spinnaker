@@ -2,7 +2,6 @@ package provider
 
 import (
 	"fmt"
-	"log"
 	"testing"
 
 	"github.com/hashicorp/terraform/terraform"
@@ -45,13 +44,12 @@ resource "spinnaker_pipeline" "test" {
 `, name)
 }
 
-func testAccCheckPipelineExists(n string, obj *client.Pipeline) resource.TestCheckFunc {
+func testAccCheckPipelineExists(resourceName string, outPipeline *client.Pipeline) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[n]
+		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
-			return fmt.Errorf("Not found: %s", n)
+			return fmt.Errorf("Not found: %s", resourceName)
 		}
-		log.Println(rs)
 
 		c := testAccProvider.Meta().(*client.Client)
 		pipeline, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
@@ -59,12 +57,12 @@ func testAccCheckPipelineExists(n string, obj *client.Pipeline) resource.TestChe
 			return err
 		}
 
-		*obj = *pipeline
+		*outPipeline = *pipeline
 		return nil
 	}
 }
 
-func testAccCheckPipeline(p *client.Pipeline, expected map[string]string) resource.TestCheckFunc {
+func testAccCheckPipeline(pipeline *client.Pipeline, expected map[string]string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		// 	if len(expected) == 0 && len(om.Annotations) == 0 {
 		// 		return nil
@@ -91,12 +89,11 @@ func testAccCheckPipelineDestroy(s *terraform.State) error {
 	c := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline" {
-			_, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
+			pipe, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
 			if err == nil {
 				return fmt.Errorf("Pipeline still exists: %s", rs.Primary.ID)
 			}
 		}
-
 	}
 
 	return nil

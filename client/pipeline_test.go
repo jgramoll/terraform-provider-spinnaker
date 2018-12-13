@@ -11,6 +11,13 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
+func TestGetApplicationPipelines(t *testing.T) {
+	_, err := client.GetApplicationPipelines("career")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestGetPipeline(t *testing.T) {
 	pipeline, err := client.GetPipeline("career", "Bridge Nav Edge")
 	if err != nil {
@@ -22,12 +29,11 @@ func TestGetPipeline(t *testing.T) {
 	}
 }
 
-func TestCreatePipeline(t *testing.T) {
-	pipeline := Pipeline{
-		Name:        fmt.Sprintf("My Test Pipe %d", rand.Int()),
-		Application: "app",
-	}
-	err := client.CreatePipeline(&pipeline)
+func TestCreateDeletePipeline(t *testing.T) {
+	pipeline := NewPipeline()
+	pipeline.Name = fmt.Sprintf("My Test Pipe %d", rand.Int())
+	pipeline.Application = "app"
+	err := client.CreatePipeline(pipeline)
 	if err != nil {
 		t.Fatal(err)
 	}

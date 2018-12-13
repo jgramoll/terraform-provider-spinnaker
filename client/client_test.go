@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os/user"
@@ -17,9 +18,11 @@ func init() {
 	}
 
 	c = Config{
-		Address:  "https://api.spinnaker.inseng.net",
-		CertPath: usr.HomeDir + "/.spin/client.crt",
-		KeyPath:  usr.HomeDir + "/.spin/client.key"}
+		Address:   "https://api.spinnaker.inseng.net",
+		CertPath:  usr.HomeDir + "/.spin/client.crt",
+		KeyPath:   usr.HomeDir + "/.spin/client.key",
+		UserEmail: fmt.Sprintf("%s@instructure.com", usr.Username),
+	}
 	client = NewClient(c)
 }
 
@@ -29,9 +32,9 @@ func TestClientNewRequest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedUrl := c.Address + path
-	if req.URL.String() != expectedUrl {
-		t.Fatalf("request url should be %#v, not %#v", expectedUrl, req.URL.String())
+	expectedURL := c.Address + path
+	if req.URL.String() != expectedURL {
+		t.Fatalf("request url should be %#v, not %#v", expectedURL, req.URL.String())
 	}
 }
 
@@ -62,10 +65,10 @@ func TestClientDo(t *testing.T) {
 	}
 	t.Log(req)
 
-	// TODO this actually sends...
+	// TODO this actually sends... what can we assert?
+	// https://golang.org/pkg/net/http/httptest/#example_ResponseRecorder
 	// resp, err := client.Do(req, nil)
 	// if (err != nil) {
 	//   t.Fatal(err)
 	// }
-	// TODO what can we assert?
 }

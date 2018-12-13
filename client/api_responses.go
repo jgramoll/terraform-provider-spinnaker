@@ -4,13 +4,14 @@ import (
 	"fmt"
 )
 
+// SpinnakerError Error response from spinnaker
 type SpinnakerError struct {
 	ErrorMsg  string `json:"error"`
-	Exception string
-	Message   string
-	Status    int
-	Timestamp int64
-	Body      string
+	Exception string `json:"exception"`
+	Message   string `json:"message"`
+	Status    int    `json:"status"`
+	Timestamp int64  `json:"timestamp"`
+	Body      string `json:"body"`
 }
 
 func (r *SpinnakerError) Error() string {
