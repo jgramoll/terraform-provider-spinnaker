@@ -4,13 +4,19 @@ import (
 	"fmt"
 )
 
+// UpdatePipelineRequest used to create pipeline
+type CreatePipelineRequest struct {
+	Application string `json:"application"`
+	Name        string `json:"name"`
+}
+
 // Pipeline deploy pipeline in application
 type Pipeline struct {
-	Application string `json:"application"`
-	Disabled    bool   `json:"disabled"`
-	// ID                   string `json:"id"` // Post does not like us sending an ID
-	Index                int  `json:"index"`
-	KeepWaitingPipelines bool `json:"keepWaitingPipelines"`
+	Application          string `json:"application"`
+	Disabled             bool   `json:"disabled"`
+	ID                   string `json:"id"`
+	Index                int    `json:"index"`
+	KeepWaitingPipelines bool   `json:"keepWaitingPipelines"`
 	// LastModifiedBy       string `json:"lastModifiedBy"`
 	LimitConcurrent bool   `json:"limitConcurrent"`
 	Name            string `json:"name"`
@@ -65,7 +71,19 @@ func (client *Client) GetPipeline(applicationName string, pipelineName string) (
 }
 
 // CreatePipeline in application
-func (client *Client) CreatePipeline(pipeline *Pipeline) error {
+func (client *Client) CreatePipeline(pipeline *CreatePipelineRequest) error {
+	path := "/pipelines"
+	req, err := client.NewRequestWithBody("POST", path, pipeline)
+	if err != nil {
+		return err
+	}
+
+	_, respErr := client.Do(req)
+	return respErr
+}
+
+// UpdatePipeline in application
+func (client *Client) UpdatePipeline(pipeline *Pipeline) error {
 	path := "/pipelines"
 	req, err := client.NewRequestWithBody("POST", path, pipeline)
 	if err != nil {

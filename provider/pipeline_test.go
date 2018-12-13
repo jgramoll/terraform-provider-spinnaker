@@ -13,6 +13,7 @@ import (
 
 func TestAccKubernetesSecret_basic(t *testing.T) {
 	var pipeline client.Pipeline
+	app := "app"
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 
@@ -23,11 +24,20 @@ func TestAccKubernetesSecret_basic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineConfigBasic(name),
+				Config: testAccPipelineConfigBasic(app, name),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists("spinnaker_pipeline.test", &pipeline),
 					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "name", name),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", "app"),
+					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", app),
+					testAccCheckPipeline(&pipeline, map[string]string{"TestAnnotationOne": "one", "TestAnnotationTwo": "two"}),
+				),
+			},
+			{
+				Config: testAccPipelineConfigBasic(app, name+"-changed"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccCheckPipelineExists("spinnaker_pipeline.test", &pipeline),
+					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "name", name+"-changed"),
+					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", app),
 					testAccCheckPipeline(&pipeline, map[string]string{"TestAnnotationOne": "one", "TestAnnotationTwo": "two"}),
 				),
 			},
@@ -35,13 +45,13 @@ func TestAccKubernetesSecret_basic(t *testing.T) {
 	})
 }
 
-func testAccPipelineConfigBasic(name string) string {
+func testAccPipelineConfigBasic(app string, name string) string {
 	return fmt.Sprintf(`
 resource "spinnaker_pipeline" "test" {
-	application = "app"
+	application = "%s"
 	name        = "%s"
 }
-`, name)
+`, app, name)
 }
 
 func testAccCheckPipelineExists(resourceName string, outPipeline *client.Pipeline) resource.TestCheckFunc {
@@ -89,7 +99,7 @@ func testAccCheckPipelineDestroy(s *terraform.State) error {
 	c := testAccProvider.Meta().(*client.Client)
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline" {
-			pipe, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
+			_, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
 			if err == nil {
 				return fmt.Errorf("Pipeline still exists: %s", rs.Primary.ID)
 			}
