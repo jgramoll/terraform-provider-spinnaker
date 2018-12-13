@@ -11,9 +11,10 @@ import (
 
 // Config for provider
 type Config struct {
-	Address  string
-	CertPath string `mapstructure:"cert_path"`
-	KeyPath  string `mapstructure:"key_path"`
+	Address   string
+	CertPath  string `mapstructure:"cert_path"`
+	KeyPath   string `mapstructure:"key_path"`
+	UserEmail string `mapstructure:"user_email"`
 }
 
 // Provider for terraform
@@ -33,6 +34,12 @@ func Provider() terraform.ResourceProvider {
 			},
 
 			"key_path": &schema.Schema{
+				Type: schema.TypeString,
+				// Required: true,
+				Optional: true,
+			},
+
+			"user_email": &schema.Schema{
 				Type: schema.TypeString,
 				// Required: true,
 				Optional: true,
@@ -63,6 +70,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	config.Address = "https://api.spinnaker.inseng.net"
 	config.CertPath = "/Users/jgramoll/.spin/client.crt"
 	config.KeyPath = "/Users/jgramoll/.spin/client.key"
+	config.UserEmail = "jgramoll@instructure.com"
 
 	return client.NewClient(client.Config(config)), nil
 }

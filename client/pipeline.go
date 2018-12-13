@@ -4,22 +4,50 @@ import (
 	"fmt"
 )
 
+// Pipeline deploy pipeline in application
 type Pipeline struct {
-	Application          string
-	Disabled             bool
-	Id                   string
-	Index                int
-	KeepWaitingPipelines bool
-	LastModifiedBy       string
-	LimitConcurrent      bool
-	Name                 string
+	Application string `json:"application"`
+	Disabled    bool   `json:"disabled"`
+	// ID                   string `json:"id"` // Post does not like us sending an ID
+	Index                int  `json:"index"`
+	KeepWaitingPipelines bool `json:"keepWaitingPipelines"`
+	// LastModifiedBy       string `json:"lastModifiedBy"`
+	LimitConcurrent bool   `json:"limitConcurrent"`
+	Name            string `json:"name"`
 	// notifications    []Notification
 	// parameterConfig  []
 	// Stages   []Stage
 	// Triggers []Trigger
-	UpdateTs string
+	// UpdateTs string `json:"updateTs"`
 }
 
+// NewPipeline Pipeline with default values
+func NewPipeline() *Pipeline {
+	return &Pipeline{
+		Disabled:             false,
+		KeepWaitingPipelines: false,
+		LimitConcurrent:      true,
+	}
+}
+
+// GetApplicationPipelines get all pipelines for an application
+func (client *Client) GetApplicationPipelines(applicationName string) (*[]*Pipeline, error) {
+	path := fmt.Sprintf("/applications/%s/pipelineConfigs", applicationName)
+	req, err := client.NewRequest("GET", path)
+	if err != nil {
+		return nil, err
+	}
+
+	var pipelines []*Pipeline
+	_, respErr := client.DoWithResponse(req, &pipelines)
+	if respErr != nil {
+		return nil, respErr
+	}
+
+	return &pipelines, nil
+}
+
+// GetPipeline get pipeline by name and application
 func (client *Client) GetPipeline(applicationName string, pipelineName string) (*Pipeline, error) {
 	path := fmt.Sprintf("/applications/%s/pipelineConfigs/%s", applicationName, pipelineName)
 	req, err := client.NewRequest("GET", path)
@@ -37,16 +65,9 @@ func (client *Client) GetPipeline(applicationName string, pipelineName string) (
 }
 
 // CreatePipeline in application
-// Example: {"name":"test","stages":[],"triggers":[],"application":"career","limitConcurrent":true,"keepWaitingPipelines":false,"index":5}
 func (client *Client) CreatePipeline(pipeline *Pipeline) error {
-	// TODO is there a way to create map from object
-	data := map[string]interface{}{
-		"application": pipeline.Application,
-		"name":        pipeline.Name,
-	}
-
 	path := "/pipelines"
-	req, err := client.NewRequestWithBody("POST", path, data)
+	req, err := client.NewRequestWithBody("POST", path, pipeline)
 	if err != nil {
 		return err
 	}

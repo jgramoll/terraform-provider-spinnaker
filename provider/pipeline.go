@@ -52,7 +52,7 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	id := fmt.Sprintf("%s_%s", pipeline.Application, pipeline.Name)
-	log.Printf("[DEBUG] Creating pipeline configuration: %s\n", id)
+	log.Println("[DEBUG] Creating pipeline:", id)
 	d.SetId(id)
 	return nil
 }
@@ -60,23 +60,27 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	application := d.Get("application").(string)
 	name := d.Get("name").(string)
+	if name == "" {
+		log.Println("[WARN] No Pipeline name", d.Id())
+	}
 
 	c := m.(*client.Client)
 	pipeline, err := c.GetPipeline(application, name)
 	if err != nil {
-		log.Printf("[WARN] No Server found: %s", d.Id())
+		log.Println("[WARN] No Pipeline found:", d.Id())
 		d.SetId("")
 		return nil
 	}
 
-	log.Printf("[INFO] got pipeline %s\n", pipeline.Id)
+	log.Printf("[INFO] Got Pipeline %s_%s\n", pipeline.Application, pipeline.Name)
 	d.Set("name", pipeline.Name)
 	return nil
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
+	// log.Println("[DEBUG] Updating pipeline:", id)
 	// Enable partial state mode
-	d.Partial(true)
+	// d.Partial(true)
 
 	// if d.HasChange("address") {
 	//   // Try updating the address
@@ -87,7 +91,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	//   d.SetPartial("address")
 	// }
 
-	d.Partial(false)
+	// d.Partial(false)
 
 	return nil
 	// return resourceServerRead(d, m)
@@ -107,6 +111,7 @@ func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("pipeline application must be provided")
 	}
 
+	log.Println("[DEBUG] Deleting pipeline:", d.Id())
 	d.SetId("")
 	c := m.(*client.Client)
 	return c.DeletePipeline(&pipeline)
