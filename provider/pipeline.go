@@ -32,7 +32,7 @@ func pipelineResource() *schema.Resource {
 }
 
 func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
-	var pipeline client.Pipeline
+	var pipeline client.CreatePipelineRequest
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
 		return err
@@ -45,8 +45,7 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 		return fmt.Errorf("pipeline application must be provided")
 	}
 
-	c := m.(*client.Client)
-	err := c.CreatePipeline(&pipeline)
+	err := m.(*client.Client).CreatePipeline(&pipeline)
 	if err != nil {
 		return err
 	}
@@ -64,8 +63,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 		log.Println("[WARN] No Pipeline name", d.Id())
 	}
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipeline(application, name)
+	pipeline, err := m.(*client.Client).GetPipeline(application, name)
 	if err != nil {
 		log.Println("[WARN] No Pipeline found:", d.Id())
 		d.SetId("")
@@ -73,32 +71,24 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[INFO] Got Pipeline %s_%s\n", pipeline.Application, pipeline.Name)
-	d.Set("name", pipeline.Name)
+	d.SetId(pipeline.ID)
 	return nil
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
-	// log.Println("[DEBUG] Updating pipeline:", id)
-	// Enable partial state mode
-	// d.Partial(true)
+	// TODO refactor
+	var pipeline *client.Pipeline
+	configRaw := d.Get("").(map[string]interface{})
+	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
+		return err
+	}
+	pipeline.ID = d.Id()
 
-	// if d.HasChange("address") {
-	//   // Try updating the address
-	//   if err := updateAddress(d, m); err != nil {
-	//           return err
-	//   }
-
-	//   d.SetPartial("address")
-	// }
-
-	// d.Partial(false)
-
-	return nil
-	// return resourceServerRead(d, m)
+	return m.(*client.Client).UpdatePipeline(pipeline)
 }
 
 func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
-	var pipeline client.Pipeline
+	var pipeline *client.Pipeline
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
 		return err
@@ -113,6 +103,5 @@ func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
 
 	log.Println("[DEBUG] Deleting pipeline:", d.Id())
 	d.SetId("")
-	c := m.(*client.Client)
-	return c.DeletePipeline(&pipeline)
+	return m.(*client.Client).DeletePipeline(pipeline)
 }
