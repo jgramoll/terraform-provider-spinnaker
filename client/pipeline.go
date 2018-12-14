@@ -12,18 +12,18 @@ type CreatePipelineRequest struct {
 
 // Pipeline deploy pipeline in application
 type Pipeline struct {
-	Application          string `json:"application"`
-	Disabled             bool   `json:"disabled"`
-	ID                   string `json:"id"`
-	Index                int    `json:"index"`
-	KeepWaitingPipelines bool   `json:"keepWaitingPipelines"`
-	// LastModifiedBy       string `json:"lastModifiedBy"`
-	LimitConcurrent bool   `json:"limitConcurrent"`
-	Name            string `json:"name"`
-	// notifications    []Notification
+	Application          string         `json:"application"`
+	Disabled             bool           `json:"disabled"`
+	ID                   string         `json:"id"`
+	Index                int            `json:"index"`
+	KeepWaitingPipelines bool           `json:"keepWaitingPipelines"`
+	LimitConcurrent      bool           `json:"limitConcurrent"`
+	Name                 string         `json:"name"`
+	Notifications        []Notification `json:"notifications"`
 	// parameterConfig  []
 	// Stages   []Stage
 	Triggers []Trigger `json:"triggers"`
+	// LastModifiedBy  string `json:"lastModifiedBy"`
 	// UpdateTs string `json:"updateTs"`
 }
 
