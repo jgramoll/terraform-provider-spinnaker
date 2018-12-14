@@ -20,17 +20,42 @@ ln -s ~/go/bin/terraform-provider-spinnaker ~/.terraform.d/plugins/$(uname | tr 
 ## Usage ##
 
 ```terraform
-resource "spinnaker_pipeline" "test" {
+resource "spinnaker_pipeline" "edge" {
 	application = "career"
 	name        = "My New Pipeline"
   index       = 4
 }
 
 resource "spinnaker_pipeline_trigger" "jenkins" {
-	pipeline = "${spinnaker_pipeline.test.id}"
+	pipeline = "${spinnaker_pipeline.edge.id}"
 	job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
 	master = "inst-ci"
 	property_file = "build.properties.test"
 	type = "jenkins"
 }
+
+resource "spinnaker_pipeline_notification" "edge" {
+	pipeline = "${spinnaker_pipeline.edge.id}"
+	address = "bridge-career-deploys"
+	level = "pipeline"
+	message = {
+		complete = "edge is done"
+		failed = "edge is failed"
+		starting = "edge is starting"
+	}
+	type = "slack"
+	when = [
+		"pipeline.starting",
+		"pipeline.complete",
+		"pipeline.failed"
+	]
+}
 ```
+
+## TODO
+
+1. Notifications
+1. Parameters
+1. Stages
+1. Import
+1. Cleanup
