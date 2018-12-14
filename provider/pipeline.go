@@ -3,11 +3,14 @@ package provider
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
+
+var pipelineLock sync.Mutex
 
 func pipelineResource() *schema.Resource {
 	return &schema.Resource{
@@ -27,6 +30,12 @@ func pipelineResource() *schema.Resource {
 				Description: "Name of the pipeline",
 				Required:    true,
 			},
+			"index": &schema.Schema{
+				Type:        schema.TypeInt,
+				Description: "Index of the pipeline",
+				Optional:    true,
+				Default:     0,
+			},
 		},
 	}
 }
@@ -38,45 +47,41 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	if pipeline.Name == "" {
-		return fmt.Errorf("pipeline name must be provided")
-	}
-	if pipeline.Application == "" {
-		return fmt.Errorf("pipeline application must be provided")
-	}
-
+	log.Println("[DEBUG] Creating pipeline:", pipeline.Application, pipeline.Name)
 	err := m.(*client.Client).CreatePipeline(&pipeline)
 	if err != nil {
 		return err
 	}
 
-	id := fmt.Sprintf("%s_%s", pipeline.Application, pipeline.Name)
-	log.Println("[DEBUG] Creating pipeline:", id)
-	d.SetId(id)
-	return nil
+	pipelineWithID, err := m.(*client.Client).GetPipeline(pipeline.Application, pipeline.Name)
+	if err != nil {
+		log.Println("[WARN] No Pipeline found:", err)
+		return err
+	}
+
+	log.Println("[DEBUG] New pipeline ID", pipelineWithID.ID)
+	d.SetId(pipelineWithID.ID)
+	// create can't update index...
+	return resourcePipelineUpdate(d, m)
 }
 
 func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
-	application := d.Get("application").(string)
-	name := d.Get("name").(string)
-	if name == "" {
-		log.Println("[WARN] No Pipeline name", d.Id())
-	}
-
-	pipeline, err := m.(*client.Client).GetPipeline(application, name)
+	pipeline, err := m.(*client.Client).GetPipelineByID(d.Id())
 	if err != nil {
 		log.Println("[WARN] No Pipeline found:", d.Id())
 		d.SetId("")
 		return nil
 	}
 
-	log.Printf("[INFO] Got Pipeline %s_%s\n", pipeline.Application, pipeline.Name)
+	log.Printf("[INFO] Got Pipeline %s", pipeline.ID)
 	d.SetId(pipeline.ID)
+	d.Set("application", pipeline.Application)
+	d.Set("name", pipeline.Name)
+	d.Set("index", pipeline.Index)
 	return nil
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
-	// TODO refactor
 	var pipeline *client.Pipeline
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
@@ -84,7 +89,12 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	}
 	pipeline.ID = d.Id()
 
-	return m.(*client.Client).UpdatePipeline(pipeline)
+	err := m.(*client.Client).UpdatePipeline(pipeline)
+	if err != nil {
+		return err
+	}
+
+	return resourcePipelineRead(d, m)
 }
 
 func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {

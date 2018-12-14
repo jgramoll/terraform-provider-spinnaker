@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// UpdatePipelineRequest used to create pipeline
+// CreatePipelineRequest used to create pipeline
 type CreatePipelineRequest struct {
 	Application string `json:"application"`
 	Name        string `json:"name"`
@@ -23,7 +23,7 @@ type Pipeline struct {
 	// notifications    []Notification
 	// parameterConfig  []
 	// Stages   []Stage
-	// Triggers []Trigger
+	Triggers []Trigger `json:"triggers"`
 	// UpdateTs string `json:"updateTs"`
 }
 
@@ -51,6 +51,27 @@ func (client *Client) GetApplicationPipelines(applicationName string) (*[]*Pipel
 	}
 
 	return &pipelines, nil
+}
+
+// GetPipelineByID get pipeline by id
+func (client *Client) GetPipelineByID(id string) (*Pipeline, error) {
+	path := fmt.Sprintf("/pipelineConfigs/%s/history?limit=1", id)
+	req, err := client.NewRequest("GET", path)
+	if err != nil {
+		return nil, err
+	}
+
+	var pipeline []*Pipeline
+	_, respErr := client.DoWithResponse(req, &pipeline)
+	if respErr != nil {
+		return nil, respErr
+	}
+
+	if len(pipeline) == 0 {
+		return nil, fmt.Errorf("Could not find pipeline %s", id)
+	}
+
+	return pipeline[0], nil
 }
 
 // GetPipeline get pipeline by name and application

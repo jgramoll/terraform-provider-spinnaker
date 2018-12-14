@@ -1,5 +1,5 @@
-hash: 1b60766574bfa1bbe7eb5d3709aa8fab27018ef7077d39fcee3430c9ed27257b
-updated: 2018-12-10T15:09:17.253437-07:00
+hash: 835578ae05c2c18b548a84e2cab50cabd179b6bbafc65d31b7e2d857e6b01d05
+updated: 2018-12-13T17:13:47.537438-07:00
 imports:
 - name: github.com/agext/levenshtein
   version: 5f10fee965225ac1eecdc234c09daf5cd9e7f7b6
@@ -58,6 +58,10 @@ imports:
   version: 4aabc24848ce5fd31929f7d1e4ea74d3709c14cd
 - name: github.com/blang/semver
   version: 3c1074078d32d767e08ab2c8564867292da86926
+- name: github.com/davecgh/go-spew
+  version: 782f4967f2dc4564575ca782fe2d04090b5faca8
+  subpackages:
+  - spew
 - name: github.com/fatih/color
   version: 3f9d52f7176a6927daacff70a3e8d1dc2025c53e
 - name: github.com/golang/protobuf
@@ -75,6 +79,8 @@ imports:
   - cmp/internal/diff
   - cmp/internal/function
   - cmp/internal/value
+- name: github.com/google/uuid
+  version: 9b3b1e0f5f99ae461456d768e7d301a7acdaa2d8
 - name: github.com/hashicorp/errwrap
   version: 8a6fb523712970c966eefc6b39ed2c5e74880354
 - name: github.com/hashicorp/go-cleanhttp
@@ -122,8 +128,10 @@ imports:
   - ast
   - parser
   - scanner
+- name: github.com/hashicorp/logutils
+  version: a335183dfd075f638afcc820c90591ca3c97eba6
 - name: github.com/hashicorp/terraform
-  version: 07da549a1d20bf1db1a5f841835aa28b1576b4d3
+  version: dbce85d85ff0beebc660b3d1805b4ef15361af00
   subpackages:
   - config
   - config/configschema
@@ -131,8 +139,12 @@ imports:
   - config/module
   - dag
   - flatmap
+  - helper/acctest
+  - helper/config
   - helper/hashcode
   - helper/hilmapstructure
+  - helper/logging
+  - helper/resource
   - helper/schema
   - httpclient
   - moduledeps
@@ -201,12 +213,16 @@ imports:
   - bcrypt
   - blowfish
   - cast5
+  - curve25519
+  - ed25519
+  - ed25519/internal/edwards25519
   - openpgp
   - openpgp/armor
   - openpgp/elgamal
   - openpgp/errors
   - openpgp/packet
   - openpgp/s2k
+  - ssh
 - name: golang.org/x/net
   version: 1c05540f6879653db88113bc4a2b70aec4bd491f
   subpackages:

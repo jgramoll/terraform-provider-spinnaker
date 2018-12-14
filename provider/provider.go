@@ -47,7 +47,8 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"spinnaker_pipeline": pipelineResource(),
+			"spinnaker_pipeline":         pipelineResource(),
+			"spinnaker_pipeline_trigger": pipelineTriggerResource(),
 		},
 
 		ConfigureFunc: providerConfigure,
