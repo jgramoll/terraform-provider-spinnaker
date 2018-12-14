@@ -30,6 +30,17 @@ func TestGetPipeline(t *testing.T) {
 	}
 }
 
+func TestGetPipelineByID(t *testing.T) {
+	pipeline, err := client.GetPipelineByID("13caa723-114a-4d05-94f0-7f786f981c10")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if pipeline.Name != "test" {
+		t.Fatal("should be pipeline test")
+	}
+}
+
 func TestCreateUpdateDeletePipeline(t *testing.T) {
 	name := fmt.Sprintf("My Test Pipe %d", rand.Int())
 	app := "app"
@@ -81,6 +92,9 @@ func TestCleanup(t *testing.T) {
 
 	for _, pipe := range *pipelines {
 		if strings.Contains(pipe.Name, "tf-acc") {
+			client.DeletePipeline(pipe)
+		}
+		if strings.Contains(pipe.Name, "My Test") {
 			client.DeletePipeline(pipe)
 		}
 	}
