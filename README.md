@@ -44,11 +44,11 @@ resource "spinnaker_pipeline_notification" "edge" {
 		starting = "edge is starting"
 	}
 	type = "slack"
-	when = [
-		"pipeline.starting",
-		"pipeline.complete",
-		"pipeline.failed"
-	]
+	when = {
+		complete = true
+		starting = false
+		failed = true
+	}
 }
 ```
 

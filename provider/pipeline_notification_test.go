@@ -75,11 +75,11 @@ resource "spinnaker_pipeline_notification" "%v" {
 		starting = "%v is starting"
 	}
 	type = "slack"
-	when = [
-		"pipeline.starting",
-		"pipeline.complete",
-		"pipeline.failed"
-	]
+	when = {
+		complete = true
+		starting = false
+		failed = true
+	}
 }`, i, address, i, i, i)
 	}
 
@@ -128,10 +128,64 @@ func ensureNotification(notifications []client.Notification, expected *terraform
 	expectedID := expected.Primary.Attributes["id"]
 	for _, notification := range notifications {
 		if notification.ID == expectedID {
-			return nil
+			err := ensureMessage(&notification, expected)
+			if err != nil {
+				return err
+			}
+			return ensureWhen(&notification, expected)
 		}
 	}
 	return fmt.Errorf("Notification not found %s", expectedID)
+}
+
+func ensureMessage(notification *client.Notification, expected *terraform.ResourceState) error {
+	if notification.Message.Complete.Text != expected.Primary.Attributes["message.complete"] {
+		return fmt.Errorf("Expected complete mesage %s, not %s",
+			expected.Primary.Attributes["message.complete"], notification.Message.Complete.Text)
+	}
+	if notification.Message.Starting.Text != expected.Primary.Attributes["message.starting"] {
+		return fmt.Errorf("Expected starting mesage %s, not %s",
+			expected.Primary.Attributes["message.starting"], notification.Message.Complete.Text)
+	}
+	if notification.Message.Failed.Text != expected.Primary.Attributes["message.failed"] {
+		return fmt.Errorf("Expected failed mesage %s, not %s",
+			expected.Primary.Attributes["message.failed"], notification.Message.Complete.Text)
+	}
+	return nil
+}
+
+func ensureWhen(notification *client.Notification, expected *terraform.ResourceState) error {
+	modes := []string{
+		"complete",
+		"failed",
+		"starting",
+	}
+
+	for _, mode := range modes {
+		expectedWhen := expected.Primary.Attributes[fmt.Sprintf("when.%s", mode)]
+		expectedPipeWhen := fmt.Sprintf("pipeline.%s", mode)
+		err := whenContainsState(notification.When, expectedPipeWhen)
+
+		if expectedWhen == "1" {
+			if err != nil {
+				return err
+			}
+		} else {
+			if err == nil {
+				return fmt.Errorf("When contained %s, when it should not have", mode)
+			}
+		}
+	}
+	return nil
+}
+
+func whenContainsState(when []string, expected string) error {
+	for _, w := range when {
+		if w == expected {
+			return nil
+		}
+	}
+	return fmt.Errorf("When not found %s", expected)
 }
 
 func testAccCheckPipelineNotificationDestroy(s *terraform.State) error {

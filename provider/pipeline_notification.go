@@ -20,13 +20,19 @@ type message struct {
 	Starting string
 }
 
+type when struct {
+	Complete string
+	Starting string
+	Failed   string
+}
+
 type notification struct {
 	ID      string
 	Address string
 	Level   string
 	Message message
 	Type    string
-	When    []string
+	When    when
 }
 
 func pipelineNotificationResource() *schema.Resource {
@@ -56,22 +62,6 @@ func pipelineNotificationResource() *schema.Resource {
 				Type:        schema.TypeMap,
 				Description: "Custom messages",
 				Optional:    true,
-				// 	Elem: &schema.Resource{
-				// 		Schema: map[string]*schema.Schema{
-				// 			"pipeline_complete": {
-				// 				Type:     schema.TypeMap,
-				// 				Required: true,
-				// 			},
-				// 			"pipeline_failed": {
-				// 				Type:     schema.TypeMap,
-				// 				Required: true,
-				// 			},
-				// 			"pipeline_starting": {
-				// 				Type:     schema.TypeMap,
-				// 				Required: true,
-				// 			},
-				// 		},
-				// 	},
 			},
 			"type": &schema.Schema{
 				Type:        schema.TypeString,
@@ -79,10 +69,7 @@ func pipelineNotificationResource() *schema.Resource {
 				Required:    true,
 			},
 			"when": &schema.Schema{
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+				Type:        schema.TypeMap,
 				Description: "When to send notification (started, completed, failed)",
 				Required:    true,
 			},
@@ -130,7 +117,7 @@ func (n notification) toClientNotification() client.Notification {
 		Level:   n.Level,
 		Message: n.Message.toClientMessage(),
 		Type:    n.Type,
-		When:    n.When,
+		When:    n.When.toClientWhen(),
 	}
 }
 
@@ -140,6 +127,20 @@ func (m message) toClientMessage() client.Message {
 		Failed:   client.MessageText{Text: m.Failed},
 		Starting: client.MessageText{Text: m.Starting},
 	}
+}
+
+func (w when) toClientWhen() []string {
+	clientWhen := []string{}
+	if w.Complete == "1" {
+		clientWhen = append(clientWhen, "pipeline.complete")
+	}
+	if w.Failed == "1" {
+		clientWhen = append(clientWhen, "pipeline.failed")
+	}
+	if w.Starting == "1" {
+		clientWhen = append(clientWhen, "pipeline.starting")
+	}
+	return clientWhen
 }
 
 func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) error {
