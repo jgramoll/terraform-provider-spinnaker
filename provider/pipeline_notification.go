@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/google/uuid"
@@ -10,9 +10,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// complete = "%v is done"
-// failed = "%v is failed"
-// starting = "%v is starting"
+// ErrNotificationNotFound notification not found
+var ErrNotificationNotFound = errors.New("Could not find notification")
 
 type message struct {
 	Complete string
@@ -47,6 +46,7 @@ func pipelineNotificationResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Id of the pipeline to send notification",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"address": &schema.Schema{
 				Type:        schema.TypeString,
@@ -93,14 +93,14 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 	}
 	notification.ID = id.String()
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipelineByID(d.Get("pipeline").(string))
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
 	if err != nil {
 		return err
 	}
 
 	pipeline.Notifications = append(pipeline.Notifications, notification.toClientNotification())
-	err = c.UpdatePipeline(pipeline)
+	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,8 @@ func (w when) toClientWhen() []string {
 
 func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) error {
 	pipelineID := d.Get("pipeline").(string)
-	pipeline, err := m.(*client.Client).GetPipelineByID(pipelineID)
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
 		log.Println("[WARN] No Pipeline found:", err)
 		d.SetId("")
@@ -179,7 +180,7 @@ func getNotification(notifications []client.Notification, notificationID string)
 			return &notification, nil
 		}
 	}
-	return nil, fmt.Errorf("Could not find notification %v", notificationID)
+	return nil, ErrNotificationNotFound
 }
 
 func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) error {
@@ -193,8 +194,8 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 	}
 	notification.ID = d.Id()
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipelineByID(d.Get("pipeline").(string))
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
 	if err != nil {
 		return err
 	}
@@ -204,7 +205,7 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = c.UpdatePipeline(pipeline)
+	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -220,7 +221,7 @@ func updateNotifications(pipeline *client.Pipeline, notification client.Notifica
 			return nil
 		}
 	}
-	return fmt.Errorf("Could not find notification %v", notification.ID)
+	return ErrNotificationNotFound
 }
 
 func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) error {
@@ -234,8 +235,8 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 	}
 	notification.ID = d.Id()
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipelineByID(d.Get("pipeline").(string))
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
 	if err != nil {
 		return err
 	}
@@ -245,7 +246,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = c.UpdatePipeline(pipeline)
+	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -261,5 +262,5 @@ func deleteNotification(pipeline *client.Pipeline, notification client.Notificat
 			return nil
 		}
 	}
-	return fmt.Errorf("Could not find notification %v", notification.ID)
+	return ErrNotificationNotFound
 }

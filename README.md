@@ -50,6 +50,11 @@ resource "spinnaker_pipeline_notification" "edge" {
 		failed = true
 	}
 }
+
+resource "spinnaker_pipeline_stage" "bake" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Stage Bake"
+}
 ```
 
 ## TODO
@@ -58,4 +63,3 @@ resource "spinnaker_pipeline_notification" "edge" {
 1. Parameters
 1. Stages
 1. Import
-1. Cleanup

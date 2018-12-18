@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SONAR_TOKEN=$(cat .sonar_token)
+
+docker-compose run sonar sonar-scanner \
+  -Dsonar.host.url="https://sonarqube.core.inseng.net" \
+  -Dsonar.login=$SONAR_TOKEN \
+  -Dsonar.projectKey="terraform-provider-spinnaker" \
+  -Dsonar.projectName="terraform-provider-spinnaker" \
+  -Dsonar.projectVersion=0.0.1 \
+  -Dsonar.projectBaseDir=/root/src \
+  -Dsonar.sources=client,provider \

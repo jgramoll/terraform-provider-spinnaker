@@ -91,8 +91,8 @@ func testAccCheckPipelineTriggers(resourceName string, expected []string) resour
 			return fmt.Errorf("Pipeline not found: %s", resourceName)
 		}
 
-		c := testAccProvider.Meta().(*client.Client)
-		pipeline, err := c.GetPipelineByID(rs.Primary.Attributes["id"])
+		pipelineService := testAccProvider.Meta().(*Services).PipelineService
+		pipeline, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["id"])
 		if err != nil {
 			return err
 		}
@@ -129,10 +129,10 @@ func ensureTrigger(triggers []client.Trigger, expected *terraform.ResourceState)
 }
 
 func testAccCheckPipelineTriggerDestroy(s *terraform.State) error {
-	c := testAccProvider.Meta().(*client.Client)
+	pipelineService := testAccProvider.Meta().(*Services).PipelineService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline_trigger" {
-			_, err := c.GetPipelineByID(rs.Primary.Attributes["pipeline"])
+			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["pipeline"])
 			if err == nil {
 				return fmt.Errorf("Pipeline trigger still exists: %s", rs.Primary.ID)
 			}

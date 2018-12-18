@@ -1,34 +1,25 @@
 package client
 
 import (
-	"fmt"
-	"math/rand"
 	"testing"
-	"time"
 )
 
+var application *Application
+
 func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
+	application = NewApplication()
 }
 
-func TestGetApplications(t *testing.T) {
-	_, err := client.GetApplications()
-	if err != nil {
-		t.Fatal(err)
+func TestNewApplication(t *testing.T) {
+	expectedPort := 80
+	if application.InstancePort != expectedPort {
+		t.Fatalf("InstancePort should be %v, not \"%v\"", expectedPort, application.InstancePort)
 	}
 }
 
-func TestCreateDeleteApplication(t *testing.T) {
-	app := NewApplication()
-	app.Name = fmt.Sprintf("MyTestApp%d", rand.Int())
-	app.Email = client.Config.UserEmail
-	err := client.CreateApplication(app)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = client.DeleteApplication(app)
-	if err != nil {
-		t.Fatal(err)
+func TestNewProviderSettings(t *testing.T) {
+	expectedUseAmiBlockDeviceMappings := false
+	if application.ProviderSettings.AWS.UseAmiBlockDeviceMappings != expectedUseAmiBlockDeviceMappings {
+		t.Fatalf("UseAmiBlockDeviceMappings should be %v, not \"%v\"", expectedUseAmiBlockDeviceMappings, application.ProviderSettings.AWS.UseAmiBlockDeviceMappings)
 	}
 }

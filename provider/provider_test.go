@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform/config"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 var (
@@ -43,15 +42,15 @@ func TestProvider_impl(t *testing.T) {
 
 func TestProviderConfigure(t *testing.T) {
 	testAccPreCheck(t)
-	c := testAccProvider.Meta().(*client.Client)
-	if c.Config.Address != raw["address"] {
-		t.Fatalf("address should be %#v, not %#v", raw["address"], c.Config.Address)
+	config := testAccProvider.Meta().(*Services).config
+	if config.Address != raw["address"] {
+		t.Fatalf("address should be %#v, not %#v", raw["address"], config.Address)
 	}
-	if c.Config.CertPath != raw["cert_path"] {
-		t.Fatalf("certPath should be %#v, not %#v", raw["cert_path"], c.Config.CertPath)
+	if config.CertPath != raw["cert_path"] {
+		t.Fatalf("certPath should be %#v, not %#v", raw["cert_path"], config.CertPath)
 	}
-	if c.Config.KeyPath != raw["key_path"] {
-		t.Fatalf("keyPath should be %#v, not %#v", raw["key_path"], c.Config.KeyPath)
+	if config.KeyPath != raw["key_path"] {
+		t.Fatalf("keyPath should be %#v, not %#v", raw["key_path"], config.KeyPath)
 	}
 }
 

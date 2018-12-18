@@ -14,6 +14,7 @@ type SpinnakerError struct {
 	Body      string `json:"body"`
 }
 
+// For error interface
 func (r *SpinnakerError) Error() string {
 	return fmt.Sprintf("%d %v: %v%v\n%v", r.Status, r.ErrorMsg, r.Message,
 		r.Body, r.Exception)

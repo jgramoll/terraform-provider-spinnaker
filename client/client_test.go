@@ -8,31 +8,20 @@ import (
 	"testing"
 )
 
-var c Config
 var client *Client
+var testPath string
 
 func init() {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	c = Config{
-		Address:   "https://api.spinnaker.inseng.net",
-		CertPath:  usr.HomeDir + "/.spin/client.crt",
-		KeyPath:   usr.HomeDir + "/.spin/client.key",
-		UserEmail: fmt.Sprintf("%s@instructure.com", usr.Username),
-	}
-	client = NewClient(c)
+	testPath = "/test/path"
+	client = newTestClient()
 }
 
 func TestClientNewRequest(t *testing.T) {
-	path := "/test/path"
-	req, err := client.NewRequest("get", "/test/path")
+	req, err := client.NewRequest("get", testPath)
 	if err != nil {
 		t.Fatal(err)
 	}
-	expectedURL := c.Address + path
+	expectedURL := client.Config.Address + testPath
 	if req.URL.String() != expectedURL {
 		t.Fatalf("request url should be %#v, not %#v", expectedURL, req.URL.String())
 	}
@@ -42,7 +31,7 @@ func TestClientNewRequestWithBody(t *testing.T) {
 	body := map[string]interface{}{
 		"field": "#value",
 	}
-	req, err := client.NewRequestWithBody("get", "/test/path", body)
+	req, err := client.NewRequestWithBody("get", testPath, body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +48,7 @@ func TestClientNewRequestWithBody(t *testing.T) {
 }
 
 func TestClientDo(t *testing.T) {
-	req, err := client.NewRequest("get", "/test/path")
+	req, err := client.NewRequest("get", testPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,4 +60,19 @@ func TestClientDo(t *testing.T) {
 	// if (err != nil) {
 	//   t.Fatal(err)
 	// }
+}
+
+func newTestClient() *Client {
+	usr, err := user.Current()
+	if err != nil {
+		log.Println("[Error] unable to get current user: ", err)
+	}
+
+	c := Config{
+		Address:   "https://api.spinnaker.inseng.net",
+		CertPath:  usr.HomeDir + "/.spin/client.crt",
+		KeyPath:   usr.HomeDir + "/.spin/client.key",
+		UserEmail: fmt.Sprintf("%s@instructure.com", usr.Username),
+	}
+	return NewClient(c)
 }
