@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  sonar:
+    build:
+      context: ..
+      dockerfile: sonar/Dockerfile.sonar

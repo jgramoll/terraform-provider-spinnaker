@@ -97,8 +97,8 @@ func testAccCheckPipelineNotifications(resourceName string, expected []string) r
 			return fmt.Errorf("Pipeline not found: %s", resourceName)
 		}
 
-		c := testAccProvider.Meta().(*client.Client)
-		pipeline, err := c.GetPipelineByID(rs.Primary.Attributes["id"])
+		pipelineService := testAccProvider.Meta().(*Services).PipelineService
+		pipeline, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["id"])
 		if err != nil {
 			return err
 		}
@@ -189,10 +189,10 @@ func whenContainsState(when []string, expected string) error {
 }
 
 func testAccCheckPipelineNotificationDestroy(s *terraform.State) error {
-	c := testAccProvider.Meta().(*client.Client)
+	pipelineService := testAccProvider.Meta().(*Services).PipelineService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline_notification" {
-			_, err := c.GetPipelineByID(rs.Primary.Attributes["pipeline"])
+			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["pipeline"])
 			if err == nil {
 				return fmt.Errorf("Pipeline notification still exists: %s", rs.Primary.ID)
 			}

@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/google/uuid"
@@ -9,6 +9,9 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
+
+// ErrTriggerNotFound trigger not found
+var ErrTriggerNotFound = errors.New("could not find trigger")
 
 // Trigger for Pipeline
 type Trigger struct {
@@ -32,6 +35,7 @@ func pipelineTriggerResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Id of the pipeline to trigger",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"enabled": &schema.Schema{
 				Type:        schema.TypeBool,
@@ -79,14 +83,14 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 	}
 	trigger.ID = id.String()
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipelineByID(d.Get("pipeline").(string))
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
 	if err != nil {
 		return err
 	}
 
 	pipeline.Triggers = append(pipeline.Triggers, client.Trigger(trigger))
-	err = c.UpdatePipeline(pipeline)
+	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -98,7 +102,8 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 
 func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
 	pipelineID := d.Get("pipeline").(string)
-	pipeline, err := m.(*client.Client).GetPipelineByID(pipelineID)
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
 		log.Println("[WARN] No Pipeline found:", err)
 		d.SetId("")
@@ -128,7 +133,7 @@ func getTrigger(triggers []client.Trigger, triggerID string) (*client.Trigger, e
 			return &trigger, nil
 		}
 	}
-	return nil, fmt.Errorf("Could not find trigger %v", triggerID)
+	return nil, ErrTriggerNotFound
 }
 
 func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error {
@@ -142,8 +147,8 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 	trigger.ID = d.Id()
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipelineByID(d.Get("pipeline").(string))
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
 	if err != nil {
 		return err
 	}
@@ -153,7 +158,7 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	err = c.UpdatePipeline(pipeline)
+	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -169,7 +174,7 @@ func updateTriggers(pipeline *client.Pipeline, trigger client.Trigger) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Could not find trigger %v", trigger.ID)
+	return ErrTriggerNotFound
 }
 
 func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error {
@@ -183,8 +188,8 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 	}
 	trigger.ID = d.Id()
 
-	c := m.(*client.Client)
-	pipeline, err := c.GetPipelineByID(d.Get("pipeline").(string))
+	pipelineService := m.(*Services).PipelineService
+	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
 	if err != nil {
 		return err
 	}
@@ -194,7 +199,7 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	err = c.UpdatePipeline(pipeline)
+	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -210,5 +215,5 @@ func deleteTrigger(pipeline *client.Pipeline, trigger *Trigger) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Could not find trigger %v", trigger.ID)
+	return ErrTriggerNotFound
 }

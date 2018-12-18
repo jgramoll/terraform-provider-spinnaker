@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform/terraform"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
-
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func TestAccPipeline_basic(t *testing.T) {
@@ -58,8 +56,8 @@ func testAccCheckPipelineExists(resourceName string) resource.TestCheckFunc {
 			return fmt.Errorf("Not found: %s", resourceName)
 		}
 
-		c := testAccProvider.Meta().(*client.Client)
-		_, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
+		pipelineService := testAccProvider.Meta().(*Services).PipelineService
+		_, err := pipelineService.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
 		if err != nil {
 			return err
 		}
@@ -69,10 +67,10 @@ func testAccCheckPipelineExists(resourceName string) resource.TestCheckFunc {
 }
 
 func testAccCheckPipelineDestroy(s *terraform.State) error {
-	c := testAccProvider.Meta().(*client.Client)
+	pipelineService := testAccProvider.Meta().(*Services).PipelineService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline" {
-			_, err := c.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
+			_, err := pipelineService.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
 			if err == nil {
 				return fmt.Errorf("Pipeline still exists: %s", rs.Primary.ID)
 			}

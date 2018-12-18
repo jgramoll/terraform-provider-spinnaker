@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 )
+
+// ErrInvalidDecodeResponseParameter invalid parameter for decodeResponse
+var ErrInvalidDecodeResponseParameter = errors.New("nil interface provided to decodeResponse")
 
 // Config for Client
 type Config struct {
@@ -38,9 +41,12 @@ func NewClient(config Config) *Client {
 	}
 	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	c := &http.Client{Transport: transport}
+	httpClient := &http.Client{Transport: transport}
 
-	return &Client{Config: config, client: c}
+	return &Client{
+		Config: config,
+		client: httpClient,
+	}
 }
 
 // NewRequest create http request
@@ -76,7 +82,7 @@ func (client *Client) Do(req *http.Request) (*http.Response, error) {
 		return resp, err
 	}
 	defer resp.Body.Close()
-	return resp, err
+	return resp, nil
 }
 
 // DoWithResponse send http request and parse response body
@@ -88,7 +94,10 @@ func (client *Client) DoWithResponse(req *http.Request, v interface{}) (*http.Re
 	defer resp.Body.Close()
 
 	err = decodeResponse(resp, v)
-	return resp, err
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // do internal function used by Do and DoWithResponse to validate response
@@ -108,15 +117,14 @@ func (client *Client) do(req *http.Request) (*http.Response, error) {
 
 func decodeResponse(r *http.Response, v interface{}) error {
 	if v == nil {
-		return fmt.Errorf("nil interface provided to decodeResponse")
+		return ErrInvalidDecodeResponseParameter
 	}
 
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
 	log.Println("[DEBUG] Got response body", bodyString)
 
-	err := json.Unmarshal([]byte(bodyString), &v)
-	return err
+	return json.Unmarshal([]byte(bodyString), &v)
 }
 
 func validateResponse(r *http.Response) error {
@@ -127,11 +135,12 @@ func validateResponse(r *http.Response) error {
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
 	log.Println("[INFO] Error response body", bodyString)
-	error := &SpinnakerError{}
-	err := json.Unmarshal([]byte(bodyString), &error)
+
+	spinnakerError := SpinnakerError{}
+	err := json.Unmarshal([]byte(bodyString), &spinnakerError)
 	if err != nil {
 		return err
 	}
 
-	return error
+	return &spinnakerError
 }
