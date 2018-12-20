@@ -25,9 +25,8 @@ type notification struct {
 	When    when
 }
 
-// TODO do we need this?
-func (n notification) toClientNotification() client.Notification {
-	return client.Notification{
+func (n notification) toClientNotification() *client.Notification {
+	return &client.Notification{
 		ID:      n.ID,
 		Address: n.Address,
 		Level:   n.Level,
@@ -37,7 +36,6 @@ func (n notification) toClientNotification() client.Notification {
 	}
 }
 
-// TODO do we need this?
 func (m message) toClientMessage() client.Message {
 	return client.Message{
 		Complete: client.MessageText{Text: m.Complete},
@@ -46,7 +44,6 @@ func (m message) toClientMessage() client.Message {
 	}
 }
 
-// TODO do we need this?
 func (w when) toClientWhen() []string {
 	clientWhen := []string{}
 	if w.Complete == "1" {
@@ -59,36 +56,4 @@ func (w when) toClientWhen() []string {
 		clientWhen = append(clientWhen, client.PipelineStartingKey)
 	}
 	return clientWhen
-}
-
-// TODO update to (pipeline *Pipeline)
-func getNotification(notifications []client.Notification, notificationID string) (*client.Notification, error) {
-	for _, notification := range notifications {
-		if notification.ID == notificationID {
-			return &notification, nil
-		}
-	}
-	return nil, ErrNotificationNotFound
-}
-
-// TODO update to (pipeline *Pipeline)
-func updateNotifications(pipeline *client.Pipeline, notification client.Notification) error {
-	for i, t := range pipeline.Notifications {
-		if t.ID == notification.ID {
-			pipeline.Notifications[i] = notification
-			return nil
-		}
-	}
-	return ErrNotificationNotFound
-}
-
-// TODO update to (pipeline *Pipeline)
-func deleteNotification(pipeline *client.Pipeline, notification client.Notification) error {
-	for i, t := range pipeline.Notifications {
-		if t.ID == notification.ID {
-			pipeline.Notifications = append(pipeline.Notifications[:i], pipeline.Notifications[i+1:]...)
-			return nil
-		}
-	}
-	return ErrNotificationNotFound
 }

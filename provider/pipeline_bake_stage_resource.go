@@ -5,18 +5,21 @@ import (
 )
 
 func pipelineBakeStageResource() *schema.Resource {
+	newBakeStageInterface := func() interface{} {
+		return newBakeStage()
+	}
 	return &schema.Resource{
 		Create: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageCreate(d, m, newBakeStage)
+			return resourcePipelineStageCreate(d, m, newBakeStageInterface)
 		},
 		Read: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageRead(d, m, newBakeStage)
+			return resourcePipelineStageRead(d, m, newBakeStageInterface)
 		},
 		Update: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageUpdate(d, m, newBakeStage)
+			return resourcePipelineStageUpdate(d, m, newBakeStageInterface)
 		},
 		Delete: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageDelete(d, m, newBakeStage)
+			return resourcePipelineStageDelete(d, m, newBakeStageInterface)
 		},
 
 		Schema: map[string]*schema.Schema{
