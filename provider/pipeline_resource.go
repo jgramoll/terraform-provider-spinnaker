@@ -90,20 +90,26 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
-	var pipeline *Pipeline
-	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
-		return err
-	}
-	pipeline.ID = d.Id()
+	pipelineLock.Lock()
+	defer pipelineLock.Unlock()
 
 	pipelineService := m.(*Services).PipelineService
-	// TODO test that this doesn't clear stages/notifications/triggers
-	err := pipelineService.UpdatePipeline(pipeline.ToClientPipeline())
+	pipeline, err := pipelineService.GetPipelineByID(d.Id())
 	if err != nil {
 		return err
 	}
 
+	// TODO can we use mapstructure
+	pipeline.Index = d.Get("index").(int)
+	pipeline.Application = d.Get("application").(string)
+	pipeline.Name = d.Get("name").(string)
+
+	err = pipelineService.UpdatePipeline(pipeline)
+	if err != nil {
+		return err
+	}
+
+	log.Println("[DEBUG] Updated pipeline:", d.Id())
 	return resourcePipelineRead(d, m)
 }
 

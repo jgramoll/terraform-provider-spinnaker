@@ -1,14 +1,10 @@
 package client
 
 import (
-	"errors"
 	"log"
 
 	"github.com/mitchellh/mapstructure"
 )
-
-// ErrStageTypeNotFound Stage must have type
-var ErrStageTypeNotFound = errors.New("stage must have a type")
 
 // PipelineWithoutStages deploy pipeline in application
 type PipelineWithoutStages struct {

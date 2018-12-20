@@ -28,7 +28,7 @@ type bakeStage struct {
 	VMType             string            `mapstructure:"vm_type"`
 }
 
-func newBakeStage() interface{} {
+func newBakeStage() *bakeStage {
 	return &bakeStage{Type: client.BakeStageType}
 }
 

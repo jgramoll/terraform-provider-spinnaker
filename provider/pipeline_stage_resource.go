@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"errors"
 	"log"
 
 	"github.com/google/uuid"
@@ -9,9 +8,6 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
-
-// ErrStageNotFound stage not found
-var ErrStageNotFound = errors.New("Could not find stage")
 
 func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createStage func() interface{}) error {
 	pipelineLock.Lock()
@@ -58,7 +54,7 @@ func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStag
 	}
 
 	var cStage client.Stage
-	cStage, err = getStage(pipeline.Stages, d.Id())
+	cStage, err = pipeline.GetStage(d.Id())
 	if err != nil {
 		log.Println("[WARN] No Pipeline Stage found:", err)
 		d.SetId("")
@@ -90,7 +86,7 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	err = updateStages(pipeline, stage.toClientStage())
+	err = pipeline.UpdateStages(stage.toClientStage())
 	if err != nil {
 		return err
 	}
@@ -122,7 +118,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	err = deleteStage(pipeline, stage.toClientStage())
+	err = pipeline.DeleteStage(stage.toClientStage())
 	if err != nil {
 		return err
 	}

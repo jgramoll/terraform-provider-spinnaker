@@ -51,7 +51,7 @@ resource "spinnaker_pipeline_notification" "edge" {
 	}
 }
 
-resource "spinnaker_pipeline_stage" "bake" {
+resource "spinnaker_pipeline_bake_stage" "bake" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage Bake"
 }

@@ -78,7 +78,7 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	pipeline.Notifications = append(pipeline.Notifications, notification.toClientNotification())
+	pipeline.Notifications = append(pipeline.Notifications, *notification.toClientNotification())
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 	}
 
 	var notification *client.Notification
-	notification, err = getNotification(pipeline.Notifications, d.Id())
+	notification, err = pipeline.GetNotification(d.Id())
 	if err != nil {
 		log.Println("[WARN] No Pipeline Notification found:", err)
 		d.SetId("")
@@ -137,7 +137,7 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = updateNotifications(pipeline, notification.toClientNotification())
+	err = pipeline.UpdateNotification(notification.toClientNotification())
 	if err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = deleteNotification(pipeline, notification.toClientNotification())
+	err = pipeline.DeleteNotification(notification.toClientNotification())
 	if err != nil {
 		return err
 	}
