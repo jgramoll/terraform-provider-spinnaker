@@ -1,12 +1,21 @@
 #!/bin/bash
 
-SONAR_TOKEN=$(cat .sonar_token)
+sonar_dir=`dirname "$0"`
+cd $sonar_dir
 
-docker-compose run sonar sonar-scanner \
+# run all tests
+TF_ACC=1 go test ../... -v -coverprofile=../coverage.out -json > ../report.json
+
+docker-compose build sonar
+
+docker-compose run --rm sonar sonar-scanner \
   -Dsonar.host.url="https://sonarqube.core.inseng.net" \
-  -Dsonar.login=$SONAR_TOKEN \
+  -Dsonar.login=$(cat .sonar_token) \
   -Dsonar.projectKey="terraform-provider-spinnaker" \
   -Dsonar.projectName="terraform-provider-spinnaker" \
   -Dsonar.projectVersion=0.0.1 \
   -Dsonar.projectBaseDir=/root/src \
   -Dsonar.sources=client,provider \
+  -Dsonar.coverage.exclusions=**/*_test.go \
+  -Dsonar.go.coverage.reportPaths=/root/src/coverage.out \
+  -Dsonar.go.tests.reportPaths=/root/src/report.json \

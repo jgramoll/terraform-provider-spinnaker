@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os/user"
 	"testing"
 )
@@ -47,19 +48,24 @@ func TestClientNewRequestWithBody(t *testing.T) {
 	}
 }
 
-func TestClientDo(t *testing.T) {
+func TestClientErrorResponse(t *testing.T) {
 	req, err := client.NewRequest("get", testPath)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(req)
 
-	// TODO this actually sends... what can we assert?
-	// https://golang.org/pkg/net/http/httptest/#example_ResponseRecorder
-	// resp, err := client.Do(req, nil)
-	// if (err != nil) {
-	//   t.Fatal(err)
-	// }
+	var resp *http.Response
+	resp, err = client.Do(req)
+	if err == nil {
+		t.Fatal("should fail")
+	}
+	if resp.StatusCode != 404 {
+		t.Fatalf("should return 404, not %v", resp.StatusCode)
+	}
+	spinnakerError := err.(*SpinnakerError)
+	if spinnakerError.Status != 404 {
+		t.Fatalf("should return 404, not %v", spinnakerError.Status)
+	}
 }
 
 func newTestClient() *Client {

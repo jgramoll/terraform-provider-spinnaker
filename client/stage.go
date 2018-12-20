@@ -3,6 +3,7 @@ package client
 // Stage interface for Pipeline stages
 type Stage interface {
 	GetName() string
+	GetRefID() string
 	GetType() StageType
 }
 

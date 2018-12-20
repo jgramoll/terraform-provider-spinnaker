@@ -116,22 +116,22 @@ func testAccCheckPipelineStages(resourceName string, expected []string) resource
 	}
 }
 
-var stageTypes = map[string]string{
-	"spinnaker_pipeline_bake_stage": "bake",
+var stageTypes = map[string]client.StageType{
+	"spinnaker_pipeline_bake_stage": client.BakeStageType,
 }
 
 func ensureStage(stages []client.Stage, expected *terraform.ResourceState) error {
 	expectedID := expected.Primary.Attributes["id"]
-	// for _, stage := range stages {
-	// if stage.RefID == expectedID {
-	// 	var expectedType = stageTypes[expected.Type]
-	// 	if expectedType != stage.Type {
-	// 		return fmt.Errorf("Stage %s has expected type %s, got type \"%s\"",
-	// 			stage.RefID, expectedType, stage.Type)
-	// 	}
-	// 	return nil
-	// }
-	// }
+	for _, s := range stages {
+		if s.GetRefID() == expectedID {
+			var expectedType = stageTypes[expected.Type]
+			if expectedType != s.GetType() {
+				return fmt.Errorf("Stage %s has expected type %s, got type \"%s\"",
+					s.GetRefID(), expectedType, s.GetType())
+			}
+			return nil
+		}
+	}
 	return fmt.Errorf("Stage not found %s", expectedID)
 }
 

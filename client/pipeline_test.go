@@ -25,15 +25,48 @@ func TestParseEmptyPipeline(t *testing.T) {
 
 func TestParsePipeline(t *testing.T) {
 	expectedName := "test-expected"
-	expectedStageName := "test-stage"
-	expectedStageAmiName := "ami-test"
+
+	expectedStage := NewBakeStage()
+	expectedStage.Name = "test-stage"
+	expectedStage.AmiName = "ami-test"
+
+	expectedNotification := Notification{
+		Address: "test-address",
+		Level:   "pipeline",
+		Type:    "slack",
+		Message: Message{
+			Complete: MessageText{Text: "pipe is complete"},
+			Failed:   MessageText{Text: "pipe is failed"},
+		},
+		When: []string{
+			PipelineStartingKey,
+			PipelineCompleteKey,
+		},
+	}
+
 	pipeline, err := parsePipeline(map[string]interface{}{
 		"name": expectedName,
 		"stages": []interface{}{
 			map[string]interface{}{
 				"type":    BakeStageType.String(),
-				"name":    expectedStageName,
-				"amiName": expectedStageAmiName,
+				"name":    expectedStage.Name,
+				"amiName": expectedStage.AmiName,
+			},
+		},
+		"notifications": []interface{}{
+			map[string]interface{}{
+				"address": expectedNotification.Address,
+				"level":   expectedNotification.Level,
+				"message": map[string]interface{}{
+					PipelineCompleteKey: map[string]string{
+						"text": expectedNotification.Message.Complete.Text,
+					},
+					PipelineFailedKey: map[string]string{
+						"text": expectedNotification.Message.Failed.Text,
+					},
+				},
+				"type": expectedNotification.Type,
+				"when": expectedNotification.When,
 			},
 		},
 	})
@@ -42,12 +75,8 @@ func TestParsePipeline(t *testing.T) {
 	}
 	expected := NewPipeline()
 	expected.Name = expectedName
-	expected.Stages = []Stage{
-		NewBakeStage(),
-	}
-	stage := expected.Stages[0].(*BakeStage)
-	stage.Name = expectedStageName
-	stage.AmiName = expectedStageAmiName
+	expected.Stages = []Stage{expectedStage}
+	expected.Notifications = []Notification{expectedNotification}
 	err = pipeline.equals(expected)
 	if err != nil {
 		t.Fatal(err)

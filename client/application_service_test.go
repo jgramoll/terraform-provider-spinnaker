@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -51,6 +52,19 @@ func TestApplicationNameWithSpace(t *testing.T) {
 	}
 	if err != ErrInvalidApplicationName {
 		t.Fatal(err)
+	}
+}
+
+func TestApplicationCleanup(t *testing.T) {
+	apps, err := applicationService.GetApplications()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, app := range *apps {
+		if strings.Contains(app.Name, "mytestapp") {
+			applicationService.DeleteApplication(app)
+		}
 	}
 }
 
