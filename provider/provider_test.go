@@ -36,10 +36,6 @@ func TestProvider(t *testing.T) {
 	}
 }
 
-func TestProvider_impl(t *testing.T) {
-	var _ terraform.ResourceProvider = Provider()
-}
-
 func TestProviderConfigure(t *testing.T) {
 	testAccPreCheck(t)
 	config := testAccProvider.Meta().(*Services).config

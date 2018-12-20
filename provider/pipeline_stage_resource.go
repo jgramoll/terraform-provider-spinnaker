@@ -27,7 +27,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 	stage.SetRefID(id.String())
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 }
 
 func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStage func() interface{}) error {
-	pipelineID := d.Get("pipeline").(string)
+	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
@@ -81,12 +81,12 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 	stage.SetRefID(d.Id())
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
 
-	err = pipeline.UpdateStages(stage.toClientStage())
+	err = pipeline.UpdateStage(stage.toClientStage())
 	if err != nil {
 		return err
 	}
@@ -104,6 +104,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createSt
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
+	// TODO duplicated code from resourcePipelineStageUpdate
 	s := createStage()
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &s); err != nil {
@@ -113,7 +114,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createSt
 	stage.SetRefID(d.Id())
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}

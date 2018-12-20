@@ -23,7 +23,7 @@ func pipelineBakeStageResource() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"pipeline": &schema.Schema{
+			PipelineKey: &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Id of the pipeline to send notification",
 				Required:    true,

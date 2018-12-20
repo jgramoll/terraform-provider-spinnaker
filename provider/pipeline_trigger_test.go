@@ -9,52 +9,58 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func TestAccPipelineTrigger_basic(t *testing.T) {
+func TestAccPipelineTriggerBasic(t *testing.T) {
+	jenkinsMaster := "inst-ci"
+	newJenkinsMaster := jenkinsMaster + "-new"
+	trigger1 := "spinnaker_pipeline_trigger.1"
+	trigger2 := "spinnaker_pipeline_trigger.2"
+	pipeline := "spinnaker_pipeline.test"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPipelineTriggerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineTriggerConfigBasic("inst-ci", 2),
+				Config: testAccPipelineTriggerConfigBasic(jenkinsMaster, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.1", "master", "inst-ci"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.1", "property_file", "build.properties.1"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.2", "master", "inst-ci"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.2", "property_file", "build.properties.2"),
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_trigger.1",
-						"spinnaker_pipeline_trigger.2",
+					resource.TestCheckResourceAttr(trigger1, "master", jenkinsMaster),
+					resource.TestCheckResourceAttr(trigger1, "property_file", "build.properties.1"),
+					resource.TestCheckResourceAttr(trigger2, "master", jenkinsMaster),
+					resource.TestCheckResourceAttr(trigger2, "property_file", "build.properties.2"),
+					testAccCheckPipelineTriggers(pipeline, []string{
+						trigger1,
+						trigger2,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineTriggerConfigBasic("inst-ci-new", 2),
+				Config: testAccPipelineTriggerConfigBasic(newJenkinsMaster, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.1", "master", "inst-ci-new"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.1", "property_file", "build.properties.1"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.2", "master", "inst-ci-new"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.2", "property_file", "build.properties.2"),
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_trigger.1",
-						"spinnaker_pipeline_trigger.2",
+					resource.TestCheckResourceAttr(trigger1, "master", newJenkinsMaster),
+					resource.TestCheckResourceAttr(trigger1, "property_file", "build.properties.1"),
+					resource.TestCheckResourceAttr(trigger2, "master", newJenkinsMaster),
+					resource.TestCheckResourceAttr(trigger2, "property_file", "build.properties.2"),
+					testAccCheckPipelineTriggers(pipeline, []string{
+						trigger1,
+						trigger2,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineTriggerConfigBasic("inst-ci", 1),
+				Config: testAccPipelineTriggerConfigBasic(jenkinsMaster, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.1", "master", "inst-ci"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_trigger.1", "property_file", "build.properties.1"),
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_trigger.1",
+					resource.TestCheckResourceAttr(trigger1, "master", jenkinsMaster),
+					resource.TestCheckResourceAttr(trigger1, "property_file", "build.properties.1"),
+					testAccCheckPipelineTriggers(pipeline, []string{
+						trigger1,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineTriggerConfigBasic("inst-ci", 0),
+				Config: testAccPipelineTriggerConfigBasic(jenkinsMaster, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{}),
+					testAccCheckPipelineTriggers(pipeline, []string{}),
 				),
 			},
 		},
@@ -132,7 +138,7 @@ func testAccCheckPipelineTriggerDestroy(s *terraform.State) error {
 	pipelineService := testAccProvider.Meta().(*Services).PipelineService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline_trigger" {
-			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["pipeline"])
+			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes[PipelineKey])
 			if err == nil {
 				return fmt.Errorf("Pipeline trigger still exists: %s", rs.Primary.ID)
 			}

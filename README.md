@@ -59,7 +59,7 @@ resource "spinnaker_pipeline_bake_stage" "bake" {
 
 ## TODO
 
-1. Notifications
 1. Parameters
-1. Stages
+1. More Stages
+1. More Triggers (refactor to make polymorphic)
 1. Import
