@@ -4,7 +4,6 @@ package client
 var BakeStageType StageType = "bake"
 
 func init() {
-	// TODO remove wrapeper?
 	stageFactories[BakeStageType] = func() interface{} {
 		return NewBakeStage()
 	}
@@ -43,19 +42,17 @@ func NewBakeStage() *BakeStage {
 	}
 }
 
-// todo (s *BakeStage)
-
 // GetName for Stage interface
-func (s BakeStage) GetName() string {
+func (s *BakeStage) GetName() string {
 	return s.Name
 }
 
 // GetType for Stage interface
-func (s BakeStage) GetType() StageType {
+func (s *BakeStage) GetType() StageType {
 	return s.Type
 }
 
 // GetRefID for Stage interface
-func (s BakeStage) GetRefID() string {
+func (s *BakeStage) GetRefID() string {
 	return s.RefID
 }

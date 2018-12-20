@@ -21,6 +21,7 @@ type BaseStage struct {
 	Type  StageType `json:"type"`
 }
 
+// GetStage get stage
 func (pipeline *Pipeline) GetStage(stageID string) (Stage, error) {
 	for _, s := range pipeline.Stages {
 		if s.GetRefID() == stageID {
@@ -30,7 +31,8 @@ func (pipeline *Pipeline) GetStage(stageID string) (Stage, error) {
 	return nil, ErrStageNotFound
 }
 
-func (pipeline *Pipeline) UpdateStages(stage Stage) error {
+// UpdateStage update stage
+func (pipeline *Pipeline) UpdateStage(stage Stage) error {
 	for i, pStage := range pipeline.Stages {
 		if pStage.GetRefID() == stage.GetRefID() {
 			pipeline.Stages[i] = stage
@@ -40,6 +42,7 @@ func (pipeline *Pipeline) UpdateStages(stage Stage) error {
 	return ErrStageNotFound
 }
 
+// DeleteStage delete stage
 func (pipeline *Pipeline) DeleteStage(stage Stage) error {
 	for i, pStage := range pipeline.Stages {
 		if pStage.GetRefID() == stage.GetRefID() {
