@@ -55,6 +55,13 @@ resource "spinnaker_pipeline_bake_stage" "bake" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage Bake"
 }
+
+resource "spinnaker_pipeline_jenkins_stage" "bake" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Stage Jenkins"
+
+	requisite_stage_ref_ids = ["${spinnaker_pipeline_bake_stage.id}"]
+}
 ```
 
 ## TODO

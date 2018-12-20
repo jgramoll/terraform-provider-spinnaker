@@ -22,16 +22,13 @@ func TestBakeStageGetName(t *testing.T) {
 	if bakeStage.GetName() != name {
 		t.Fatalf("Bake stage GetName() should be %s, not \"%s\"", name, bakeStage.GetName())
 	}
-	if bakeStage.GetName() != bakeStage.Name {
-		t.Fatalf("Bake stage GetName() should be %s, not \"%s\"", bakeStage.Name, bakeStage.GetName())
-	}
 }
 
 func TestBakeStageGetType(t *testing.T) {
 	if bakeStage.GetType() != BakeStageType {
 		t.Fatalf("Bake stage GetType() should be %s, not \"%s\"", BakeStageType, bakeStage.GetType())
 	}
-	if bakeStage.GetType() != bakeStage.Type {
-		t.Fatalf("Bake stage GetType() should be %s, not \"%s\"", bakeStage.Type, bakeStage.GetType())
+	if bakeStage.Type != BakeStageType {
+		t.Fatalf("Bake stage Type should be %s, not \"%s\"", BakeStageType, bakeStage.Type)
 	}
 }

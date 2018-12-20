@@ -13,9 +13,10 @@ func init() {
 type BakeStage struct {
 	// TODO why does BaseStage not like mapstructure
 	// BaseStage
-	Name  string    `json:"name"`
-	RefID string    `json:"refId"`
-	Type  StageType `json:"type"`
+	Name                 string    `json:"name"`
+	RefID                string    `json:"refId"`
+	Type                 StageType `json:"type"`
+	RequisiteStageRefIds []string  `json:"requisiteStageRefIds"`
 
 	AmiName            string            `json:"amiName"`
 	AmiSuffix          string            `json:"amiSuffix"`
