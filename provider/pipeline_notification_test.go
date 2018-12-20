@@ -140,15 +140,15 @@ func ensureNotification(notifications []client.Notification, expected *terraform
 
 func ensureMessage(notification *client.Notification, expected *terraform.ResourceState) error {
 	if notification.Message.Complete.Text != expected.Primary.Attributes["message.complete"] {
-		return fmt.Errorf("Expected complete mesage %s, not %s",
+		return fmt.Errorf("Expected complete mesage \"%s\", not \"%s\"",
 			expected.Primary.Attributes["message.complete"], notification.Message.Complete.Text)
 	}
 	if notification.Message.Starting.Text != expected.Primary.Attributes["message.starting"] {
-		return fmt.Errorf("Expected starting mesage %s, not %s",
+		return fmt.Errorf("Expected starting mesage \"%s\", not \"%s\"",
 			expected.Primary.Attributes["message.starting"], notification.Message.Complete.Text)
 	}
 	if notification.Message.Failed.Text != expected.Primary.Attributes["message.failed"] {
-		return fmt.Errorf("Expected failed mesage %s, not %s",
+		return fmt.Errorf("Expected failed mesage \"%s\", not \"%s\"",
 			expected.Primary.Attributes["message.failed"], notification.Message.Complete.Text)
 	}
 	return nil

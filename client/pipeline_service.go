@@ -41,6 +41,9 @@ func (service *PipelineService) GetPipelineByID(id string) (*Pipeline, error) {
 
 	var pipelines *[]*Pipeline
 	pipelines, err = service.parsePipelinesRequest(req)
+	if err != nil {
+		return nil, err
+	}
 
 	if len(*pipelines) == 0 {
 		return nil, ErrPipelineNotFound

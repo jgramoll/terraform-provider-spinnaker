@@ -9,14 +9,16 @@ import (
 )
 
 var pipelineService *PipelineService
+var applicationName string
 
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	pipelineService = &PipelineService{newTestClient()}
+	applicationName = "career"
 }
 
 func TestGetApplicationPipelines(t *testing.T) {
-	pipelines, err := pipelineService.GetApplicationPipelines("career")
+	pipelines, err := pipelineService.GetApplicationPipelines(applicationName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -26,45 +28,49 @@ func TestGetApplicationPipelines(t *testing.T) {
 }
 
 func TestGetPipeline(t *testing.T) {
-	pipeline, err := pipelineService.GetPipeline("career", "Bridge Nav Edge")
+	pipelineName := "Bridge Nav Edge"
+	pipeline, err := pipelineService.GetPipeline(applicationName, pipelineName)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if pipeline.Name != "Bridge Nav Edge" {
-		t.Fatal("should be pipeline Bridge Nav Edge")
+	if pipeline.Name != pipelineName {
+		t.Fatalf("should be pipeline %s, not %s", pipelineName, pipeline.Name)
 	}
 }
 
 func TestGetPipelineByID(t *testing.T) {
-	pipeline, err := pipelineService.GetPipelineByID("13caa723-114a-4d05-94f0-7f786f981c10")
+	pipelineID := "13caa723-114a-4d05-94f0-7f786f981c10"
+	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
+	if pipeline.ID != pipelineID {
+		t.Fatalf("should be pipeline id %s, not %s", pipelineID, pipeline.ID)
+	}
 	if pipeline.Name != "test" {
-		t.Fatal("should be pipeline test")
+		t.Fatalf("should be pipeline test, not %s", pipeline.Name)
 	}
 }
 
 func TestCreateUpdateDeletePipeline(t *testing.T) {
 	name := fmt.Sprintf("My Test Pipe %d", rand.Int())
-	app := "app"
 	err := pipelineService.CreatePipeline(&CreatePipelineRequest{
 		Name:        name,
-		Application: app,
+		Application: applicationName,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	var pipeline *Pipeline
-	pipeline, err = pipelineService.GetPipeline(app, name)
+	pipeline, err = pipelineService.GetPipeline(applicationName, name)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	newApp := "career"
+	newApp := "app"
 	newName := fmt.Sprintf("My New Name Pipe %d", rand.Int())
 	pipeline.Name = newName
 	pipeline.Application = newApp
@@ -96,7 +102,7 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 }
 
 func TestCleanup(t *testing.T) {
-	pipelines, err := pipelineService.GetApplicationPipelines("career")
+	pipelines, err := pipelineService.GetApplicationPipelines(applicationName)
 	if err != nil {
 		t.Fatal(err)
 	}

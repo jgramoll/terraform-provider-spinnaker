@@ -98,6 +98,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	pipeline.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
+	// TODO test that this doesn't clear stages/notifications/triggers
 	err := pipelineService.UpdatePipeline(pipeline.ToClientPipeline())
 	if err != nil {
 		return err

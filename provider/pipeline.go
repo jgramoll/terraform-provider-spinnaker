@@ -13,6 +13,7 @@ type Pipeline struct {
 }
 
 // ToClientPipeline convert to client pipeline
+// TODO better way?
 func (pipeline *Pipeline) ToClientPipeline() *client.Pipeline {
 	return &client.Pipeline{
 		PipelineWithoutStages: client.PipelineWithoutStages{
