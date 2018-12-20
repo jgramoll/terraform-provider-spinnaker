@@ -31,7 +31,7 @@ func pipelineTriggerResource() *schema.Resource {
 		Delete: resourcePipelineTriggerDelete,
 
 		Schema: map[string]*schema.Schema{
-			"pipeline": &schema.Schema{
+			PipelineKey: &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Id of the pipeline to trigger",
 				Required:    true,
@@ -84,7 +84,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 	trigger.ID = id.String()
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 }
 
 func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
-	pipelineID := d.Get("pipeline").(string)
+	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
@@ -148,7 +148,7 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 	trigger.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
@@ -189,7 +189,7 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 	trigger.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}

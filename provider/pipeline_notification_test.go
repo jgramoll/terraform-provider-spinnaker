@@ -9,52 +9,58 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func TestAccPipelineNotification_basic(t *testing.T) {
+func TestAccPipelineNotificationBasic(t *testing.T) {
+	address := "bridge-career-deploys"
+	addressChanged := address + "-new"
+	pipeline := "spinnaker_pipeline.test"
+	notification1 := "spinnaker_pipeline_notification.1"
+	notification2 := "spinnaker_pipeline_notification.2"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPipelineNotificationDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineNotificationConfigBasic("bridge-career-deploys", 2),
+				Config: testAccPipelineNotificationConfigBasic(address, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.1", "address", "bridge-career-deploys"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.1", "message.complete", "1 is done"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.2", "address", "bridge-career-deploys"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.2", "message.complete", "2 is done"),
-					testAccCheckPipelineNotifications("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_notification.1",
-						"spinnaker_pipeline_notification.2",
+					resource.TestCheckResourceAttr(notification1, "address", address),
+					resource.TestCheckResourceAttr(notification1, "message.complete", "1 is done"),
+					resource.TestCheckResourceAttr(notification2, "address", address),
+					resource.TestCheckResourceAttr(notification2, "message.complete", "2 is done"),
+					testAccCheckPipelineNotifications(pipeline, []string{
+						notification1,
+						notification2,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineNotificationConfigBasic("bridge-career-deploys-new", 2),
+				Config: testAccPipelineNotificationConfigBasic(addressChanged, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.1", "address", "bridge-career-deploys-new"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.1", "message.complete", "1 is done"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.2", "address", "bridge-career-deploys-new"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.2", "message.complete", "2 is done"),
-					testAccCheckPipelineNotifications("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_notification.1",
-						"spinnaker_pipeline_notification.2",
+					resource.TestCheckResourceAttr(notification1, "address", addressChanged),
+					resource.TestCheckResourceAttr(notification1, "message.complete", "1 is done"),
+					resource.TestCheckResourceAttr(notification2, "address", addressChanged),
+					resource.TestCheckResourceAttr(notification2, "message.complete", "2 is done"),
+					testAccCheckPipelineNotifications(pipeline, []string{
+						notification1,
+						notification2,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineNotificationConfigBasic("bridge-career-deploys", 1),
+				Config: testAccPipelineNotificationConfigBasic(address, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.1", "address", "bridge-career-deploys"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_notification.1", "message.complete", "1 is done"),
-					testAccCheckPipelineNotifications("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_notification.1",
+					resource.TestCheckResourceAttr(notification1, "address", address),
+					resource.TestCheckResourceAttr(notification1, "message.complete", "1 is done"),
+					testAccCheckPipelineNotifications(pipeline, []string{
+						notification1,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineNotificationConfigBasic("bridge-career-deploys", 0),
+				Config: testAccPipelineNotificationConfigBasic(address, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{}),
+					testAccCheckPipelineTriggers(pipeline, []string{}),
 				),
 			},
 		},
@@ -192,7 +198,7 @@ func testAccCheckPipelineNotificationDestroy(s *terraform.State) error {
 	pipelineService := testAccProvider.Meta().(*Services).PipelineService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline_notification" {
-			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["pipeline"])
+			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes[PipelineKey])
 			if err == nil {
 				return fmt.Errorf("Pipeline notification still exists: %s", rs.Primary.ID)
 			}

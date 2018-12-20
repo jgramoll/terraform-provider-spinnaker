@@ -13,6 +13,8 @@ import (
 // ErrNotificationNotFound notification not found
 var ErrNotificationNotFound = errors.New("Could not find notification")
 
+const PipelineKey = "pipeline"
+
 func pipelineNotificationResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineNotificationCreate,
@@ -21,7 +23,7 @@ func pipelineNotificationResource() *schema.Resource {
 		Delete: resourcePipelineNotificationDelete,
 
 		Schema: map[string]*schema.Schema{
-			"pipeline": &schema.Schema{
+			PipelineKey: &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Id of the pipeline to send notification",
 				Required:    true,
@@ -73,7 +75,7 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 	notification.ID = id.String()
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
@@ -90,7 +92,7 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 }
 
 func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) error {
-	pipelineID := d.Get("pipeline").(string)
+	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
@@ -132,7 +134,7 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 	notification.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
@@ -163,7 +165,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 	notification.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Get("pipeline").(string))
+	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}

@@ -10,6 +10,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+const ApplicationKey = "application"
+
 var pipelineLock sync.Mutex
 
 // ErrMissingPipelineName missing pipeline name
@@ -26,7 +28,7 @@ func pipelineResource() *schema.Resource {
 		Delete: resourcePipelineDelete,
 
 		Schema: map[string]*schema.Schema{
-			"application": &schema.Schema{
+			ApplicationKey: &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of the application where the pipeline lives",
 				Required:    true,
@@ -83,7 +85,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 
 	log.Printf("[INFO] Got Pipeline %s", pipeline.ID)
 	d.SetId(pipeline.ID)
-	d.Set("application", pipeline.Application)
+	d.Set(ApplicationKey, pipeline.Application)
 	d.Set("name", pipeline.Name)
 	d.Set("index", pipeline.Index)
 	return nil
@@ -101,7 +103,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 
 	// TODO can we use mapstructure
 	pipeline.Index = d.Get("index").(int)
-	pipeline.Application = d.Get("application").(string)
+	pipeline.Application = d.Get(ApplicationKey).(string)
 	pipeline.Name = d.Get("name").(string)
 
 	err = pipelineService.UpdatePipeline(pipeline)

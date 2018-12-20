@@ -9,11 +9,12 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestAccPipeline_basic(t *testing.T) {
+func TestAccPipelineBasic(t *testing.T) {
 	app := "app"
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	newName := name + "-changed"
+	pipeline := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -23,28 +24,30 @@ func TestAccPipeline_basic(t *testing.T) {
 			{
 				Config: testAccPipelineConfigBasic(app, name),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists("spinnaker_pipeline.test"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "name", name),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", app),
+					testAccCheckPipelineExists(pipeline),
+					resource.TestCheckResourceAttr(pipeline, "name", name),
+					resource.TestCheckResourceAttr(pipeline, "application", app),
 				),
 			},
 			{
 				Config: testAccPipelineConfigBasic(app, newName),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists("spinnaker_pipeline.test"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "name", newName),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", app),
+					testAccCheckPipelineExists(pipeline),
+					resource.TestCheckResourceAttr(pipeline, "name", newName),
+					resource.TestCheckResourceAttr(pipeline, "application", app),
 				),
 			},
 		},
 	})
 }
 
-func TestAccPipeline_trigger(t *testing.T) {
+func TestAccPipelineTrigger(t *testing.T) {
 	app := "app"
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	newName := name + "-changed"
+	pipeline := "spinnaker_pipeline.test"
+	trigger := "spinnaker_pipeline_trigger.jenkins"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -54,22 +57,22 @@ func TestAccPipeline_trigger(t *testing.T) {
 			{
 				Config: testAccPipelineConfigTrigger(app, name),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists("spinnaker_pipeline.test"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "name", name),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", app),
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_trigger.jenkins",
+					testAccCheckPipelineExists(pipeline),
+					resource.TestCheckResourceAttr(pipeline, "name", name),
+					resource.TestCheckResourceAttr(pipeline, "application", app),
+					testAccCheckPipelineTriggers(pipeline, []string{
+						trigger,
 					}),
 				),
 			},
 			{
 				Config: testAccPipelineConfigTrigger(app, newName),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists("spinnaker_pipeline.test"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "name", newName),
-					resource.TestCheckResourceAttr("spinnaker_pipeline.test", "application", app),
-					testAccCheckPipelineTriggers("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_trigger.jenkins",
+					testAccCheckPipelineExists(pipeline),
+					resource.TestCheckResourceAttr(pipeline, "name", newName),
+					resource.TestCheckResourceAttr(pipeline, "application", app),
+					testAccCheckPipelineTriggers(pipeline, []string{
+						trigger,
 					}),
 				),
 			},

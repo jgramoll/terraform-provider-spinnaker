@@ -10,8 +10,13 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func TestAccPipelineStage_basic(t *testing.T) {
+func TestAccPipelineStageBasic(t *testing.T) {
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
+	vmType := "hvm"
+	newVMType := "pv"
+	pipeline := "spinnaker_pipeline.test"
+	stage1 := "spinnaker_pipeline_bake_stage.1"
+	stage2 := "spinnaker_pipeline_bake_stage.2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -19,45 +24,45 @@ func TestAccPipelineStage_basic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineStageDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineStageConfigBasic(pipeName, "hvm", 2),
+				Config: testAccPipelineStageConfigBasic(pipeName, vmType, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.1", "name", "Stage 1"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.1", "vm_type", "hvm"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.2", "name", "Stage 2"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.2", "vm_type", "hvm"),
-					testAccCheckPipelineStages("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_bake_stage.1",
-						"spinnaker_pipeline_bake_stage.2",
+					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
+					resource.TestCheckResourceAttr(stage1, "vm_type", vmType),
+					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
+					resource.TestCheckResourceAttr(stage2, "vm_type", vmType),
+					testAccCheckPipelineStages(pipeline, []string{
+						stage1,
+						stage2,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineStageConfigBasic(pipeName, "pv", 2),
+				Config: testAccPipelineStageConfigBasic(pipeName, newVMType, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.1", "name", "Stage 1"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.1", "vm_type", "pv"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.2", "name", "Stage 2"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.2", "vm_type", "pv"),
-					testAccCheckPipelineStages("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_bake_stage.1",
-						"spinnaker_pipeline_bake_stage.2",
+					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
+					resource.TestCheckResourceAttr(stage1, "vm_type", newVMType),
+					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
+					resource.TestCheckResourceAttr(stage2, "vm_type", newVMType),
+					testAccCheckPipelineStages(pipeline, []string{
+						stage1,
+						stage2,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineStageConfigBasic(pipeName, "hvm", 1),
+				Config: testAccPipelineStageConfigBasic(pipeName, vmType, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.1", "name", "Stage 1"),
-					resource.TestCheckResourceAttr("spinnaker_pipeline_bake_stage.1", "vm_type", "hvm"),
-					testAccCheckPipelineStages("spinnaker_pipeline.test", []string{
-						"spinnaker_pipeline_bake_stage.1",
+					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
+					resource.TestCheckResourceAttr(stage1, "vm_type", vmType),
+					testAccCheckPipelineStages(pipeline, []string{
+						stage1,
 					}),
 				),
 			},
 			{
-				Config: testAccPipelineStageConfigBasic(pipeName, "hvm", 0),
+				Config: testAccPipelineStageConfigBasic(pipeName, vmType, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineStages("spinnaker_pipeline.test", []string{}),
+					testAccCheckPipelineStages(pipeline, []string{}),
 				),
 			},
 		},
@@ -139,7 +144,7 @@ func testAccCheckPipelineStageDestroy(s *terraform.State) error {
 	pipelineService := testAccProvider.Meta().(*Services).PipelineService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_pipeline_bake_stage" {
-			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes["pipeline"])
+			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes[PipelineKey])
 			if err == nil {
 				return fmt.Errorf("Pipeline stage still exists: %s", rs.Primary.ID)
 			}
