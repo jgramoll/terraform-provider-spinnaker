@@ -1,81 +1,51 @@
 package provider
 
-// import (
-// 	"github.com/hashicorp/terraform/helper/schema"
-// )
+import (
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/jgramoll/terraform-provider-spinnaker/client"
+)
 
-// func pipelineJenkinsStageResource() *schema.Resource {
-// 	stageType := "jenkins"
-// 	return &schema.Resource{
-// 		Create: func(d *schema.ResourceData, m interface{}) error {
-// 			return resourcePipelineStageCreate(d, m, stageType)
-// 		},
-// 		Read: func(d *schema.ResourceData, m interface{}) error {
-// 			return resourcePipelineStageRead(d, m, stageType)
-// 		},
-// 		Update: func(d *schema.ResourceData, m interface{}) error {
-// 			return resourcePipelineStageUpdate(d, m, stageType)
-// 		},
-// 		Delete: func(d *schema.ResourceData, m interface{}) error {
-// 			return resourcePipelineStageDelete(d, m, stageType)
-// 		},
+type jenkinsStage struct {
+	Name                 string           `mapstructure:"name"`
+	RefID                string           `mapstructure:"ref_id"`
+	Type                 client.StageType `mapstructure:"type"`
+	RequisiteStageRefIds []string         `mapstructure:"requisite_stage_ref_ids"`
 
-// 		Schema: map[string]*schema.Schema{
-// 			PipelineKey: &schema.Schema{
-// 				Type:        schema.TypeString,
-// 				Description: "Id of the pipeline to send notification",
-// 				Required:    true,
-// 				ForceNew:    true,
-// 			},
-// 			"completeOtherBranchesThenFail": &schema.Schema{
-// 				Type:        schema.TypeBool,
-// 				Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",
-// 				Optional:    true,
-// 				Default:     false,
-// 			},
-// 			"continuePipeline": &schema.Schema{
-// 				Type:        schema.TypeBool,
-// 				Description: "If false, marks the stage as successful right away without waiting for the jenkins job to complete",
-// 				Optional:    true,
-// 				Default:     false,
-// 			},
-// 			"failPipeline": &schema.Schema{
-// 				Type:        schema.TypeBool,
-// 				Description: "If the stage fails, immediately halt execution of all running stages and fails the entire execution",
-// 				Optional:    true,
-// 				Default:     true,
-// 			},
-// 			"job": &schema.Schema{
-// 				Type:        schema.TypeString,
-// 				Description: "Name of the Jenkins job to execute",
-// 				Required:    true,
-// 			},
-// 			"markUnstableAsSuccessful": &schema.Schema{
-// 				Type:        schema.TypeString,
-// 				Description: "If Jenkins reports the build status as UNSTABLE, Spinnaker will mark the stage as SUCCEEDED and continue execution of the pipeline",
-// 				Optional:    true,
-// 				Default:     false,
-// 			},
-// 			"master": &schema.Schema{
-// 				Type:        schema.TypeString,
-// 				Description: "Name of the Jenkins master where the job will be executed",
-// 				Required:    true,
-// 			},
-// 			"name": &schema.Schema{
-// 				Type:        schema.TypeString,
-// 				Description: "Name of the stage",
-// 				Required:    true,
-// 			},
-// 			"parameters": &schema.Schema{
-// 				Type:        schema.TypeMap,
-// 				Description: "Parameters to pass to the Jenkins job",
-// 				Optional:    true,
-// 			},
-// 			"propertyFile": &schema.Schema{
-// 				Type:        schema.TypeString,
-// 				Description: "Name of the property file to use for results",
-// 				Optional:    true,
-// 			},
-// 		},
-// 	}
-// }
+	CompleteOtherBranchesThenFail bool              `mapstructure:"complete_other_branches_then_fail"`
+	ContinuePipeline              bool              `mapstructure:"continue_pipeline"`
+	FailPipeline                  bool              `mapstructure:"fail_pipeline"`
+	Job                           string            `mapstructure:"job"`
+	MarkUnstableAsSuccessful      bool              `mapstructure:"mark_unstable_as_successful"`
+	Master                        string            `mapstructure:"master"`
+	Parameters                    map[string]string `mapstructure:"parameters"`
+	PropertyFile                  string            `mapstructure:"property_file"`
+}
+
+func newJenkinsStage() *jenkinsStage {
+	return &jenkinsStage{Type: client.JenkinsStageType}
+}
+
+func (s *jenkinsStage) toClientStage() client.Stage {
+	cs := client.JenkinsStage(*s)
+	return &cs
+}
+
+// TODO can we just update the ptr?
+func (s *jenkinsStage) fromClientStage(cs client.Stage) stage {
+	newStage := jenkinsStage(*(cs.(*client.JenkinsStage)))
+	// s = &newStage
+	return stage(&newStage)
+}
+
+func (s *jenkinsStage) SetResourceData(d *schema.ResourceData) {
+	// TODO
+	d.Set("name", s.Name)
+}
+
+func (s *jenkinsStage) SetRefID(id string) {
+	s.RefID = id
+}
+
+func (s *jenkinsStage) GetRefID() string {
+	return s.RefID
+}

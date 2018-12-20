@@ -8,9 +8,10 @@ import (
 type bakeStage struct {
 	// TODO does this baseStage work?
 	// baseStage
-	Name  string           `mapstructure:"name"`
-	RefID string           `mapstructure:"ref_id"`
-	Type  client.StageType `mapstructure:"type"`
+	Name                 string           `mapstructure:"name"`
+	RefID                string           `mapstructure:"ref_id"`
+	Type                 client.StageType `mapstructure:"type"`
+	RequisiteStageRefIds []string         `mapstructure:"requisite_stage_ref_ids"`
 
 	AmiName            string            `mapstructure:"ami_name"`
 	AmiSuffix          string            `mapstructure:"ami_suffix"`
