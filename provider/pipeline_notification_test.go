@@ -25,9 +25,9 @@ func TestAccPipelineNotificationBasic(t *testing.T) {
 				Config: testAccPipelineNotificationConfigBasic(address, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", address),
-					resource.TestCheckResourceAttr(notification1, "message.complete", "1 is done"),
+					resource.TestCheckResourceAttr(notification1, "message.0.complete", "1 is done"),
 					resource.TestCheckResourceAttr(notification2, "address", address),
-					resource.TestCheckResourceAttr(notification2, "message.complete", "2 is done"),
+					resource.TestCheckResourceAttr(notification2, "message.0.complete", "2 is done"),
 					testAccCheckPipelineNotifications(pipeline, []string{
 						notification1,
 						notification2,
@@ -38,9 +38,9 @@ func TestAccPipelineNotificationBasic(t *testing.T) {
 				Config: testAccPipelineNotificationConfigBasic(addressChanged, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", addressChanged),
-					resource.TestCheckResourceAttr(notification1, "message.complete", "1 is done"),
+					resource.TestCheckResourceAttr(notification1, "message.0.complete", "1 is done"),
 					resource.TestCheckResourceAttr(notification2, "address", addressChanged),
-					resource.TestCheckResourceAttr(notification2, "message.complete", "2 is done"),
+					resource.TestCheckResourceAttr(notification2, "message.0.complete", "2 is done"),
 					testAccCheckPipelineNotifications(pipeline, []string{
 						notification1,
 						notification2,
@@ -51,7 +51,7 @@ func TestAccPipelineNotificationBasic(t *testing.T) {
 				Config: testAccPipelineNotificationConfigBasic(address, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", address),
-					resource.TestCheckResourceAttr(notification1, "message.complete", "1 is done"),
+					resource.TestCheckResourceAttr(notification1, "message.0.complete", "1 is done"),
 					testAccCheckPipelineNotifications(pipeline, []string{
 						notification1,
 					}),
@@ -145,17 +145,17 @@ func ensureNotification(notifications []client.Notification, expected *terraform
 }
 
 func ensureMessage(notification *client.Notification, expected *terraform.ResourceState) error {
-	if notification.Message.Complete.Text != expected.Primary.Attributes["message.complete"] {
+	if notification.Message.Complete.Text != expected.Primary.Attributes["message.0.complete"] {
 		return fmt.Errorf("Expected complete mesage \"%s\", not \"%s\"",
-			expected.Primary.Attributes["message.complete"], notification.Message.Complete.Text)
+			expected.Primary.Attributes["message.0.complete"], notification.Message.Complete.Text)
 	}
-	if notification.Message.Starting.Text != expected.Primary.Attributes["message.starting"] {
+	if notification.Message.Starting.Text != expected.Primary.Attributes["message.0.starting"] {
 		return fmt.Errorf("Expected starting mesage \"%s\", not \"%s\"",
-			expected.Primary.Attributes["message.starting"], notification.Message.Complete.Text)
+			expected.Primary.Attributes["message.0.starting"], notification.Message.Complete.Text)
 	}
-	if notification.Message.Failed.Text != expected.Primary.Attributes["message.failed"] {
+	if notification.Message.Failed.Text != expected.Primary.Attributes["message.0.failed"] {
 		return fmt.Errorf("Expected failed mesage \"%s\", not \"%s\"",
-			expected.Primary.Attributes["message.failed"], notification.Message.Complete.Text)
+			expected.Primary.Attributes["message.0.failed"], notification.Message.Complete.Text)
 	}
 	return nil
 }
@@ -168,7 +168,7 @@ func ensureWhen(notification *client.Notification, expected *terraform.ResourceS
 	}
 
 	for _, mode := range modes {
-		expectedWhen := expected.Primary.Attributes[fmt.Sprintf("when.%s", mode)]
+		expectedWhen := expected.Primary.Attributes[fmt.Sprintf("when.0.%s", mode)]
 		expectedPipeWhen := fmt.Sprintf("pipeline.%s", mode)
 		err := whenContainsState(notification.When, expectedPipeWhen)
 

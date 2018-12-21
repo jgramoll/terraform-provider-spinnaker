@@ -20,9 +20,9 @@ type notification struct {
 	ID      string
 	Address string
 	Level   string
-	Message message
+	Message []message
 	Type    string
-	When    when
+	When    []when
 }
 
 func (n notification) toClientNotification() *client.Notification {
@@ -30,9 +30,9 @@ func (n notification) toClientNotification() *client.Notification {
 		ID:      n.ID,
 		Address: n.Address,
 		Level:   n.Level,
-		Message: n.Message.toClientMessage(),
+		Message: n.Message[0].toClientMessage(),
 		Type:    n.Type,
-		When:    n.When.toClientWhen(),
+		When:    n.When[0].toClientWhen(),
 	}
 }
 
