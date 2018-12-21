@@ -60,9 +60,9 @@ func (pipeline *Pipeline) UpdateNotification(notification *Notification) error {
 }
 
 //DeleteNotification delete notification
-func (pipeline *Pipeline) DeleteNotification(notification *Notification) error {
+func (pipeline *Pipeline) DeleteNotification(notificationID string) error {
 	for i, t := range pipeline.Notifications {
-		if t.ID == notification.ID {
+		if t.ID == notificationID {
 			pipeline.Notifications = append(pipeline.Notifications[:i], pipeline.Notifications[i+1:]...)
 			return nil
 		}

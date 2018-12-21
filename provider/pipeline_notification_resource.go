@@ -172,7 +172,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = pipeline.DeleteNotification(notification.toClientNotification())
+	err = pipeline.DeleteNotification(notification.ID)
 	if err != nil {
 		return err
 	}

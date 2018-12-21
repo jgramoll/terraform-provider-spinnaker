@@ -119,7 +119,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	err = pipeline.DeleteStage(stage.toClientStage())
+	err = pipeline.DeleteStage(stage.GetRefID())
 	if err != nil {
 		return err
 	}
