@@ -62,11 +62,72 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
 
 	requisite_stage_ref_ids = ["${spinnaker_pipeline_bake_stage.id}"]
 }
+
+resource "spinnaker_pipeline_deploy_stage" "deploy" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Stage Deploy"
+	restricted_execution_window {
+		days = [1,3]
+		jitter {
+			enabled = true
+			max_delay = 5
+		}
+		whitelist {
+			end_hour = 1
+			end_min = 2
+		}
+		whitelist {
+			end_hour = 3
+			end_min = 4
+		}
+	}
+	cluster {
+		account = "my-account"
+		application = "app"
+		availability_zones {
+			us_east_1 = [
+				"us-east-1a",
+				"us-east-1b",
+				"us-east-1c"
+			]
+		}
+		capacity {
+			desired = 2
+		}
+		cloud_provider = "aws"
+		health_check_type = "ELB"
+		instance_type = "t2.micro"
+		key_pair = "my_key_pair"
+		provider = "aws"
+		strategy = "redblack"
+		subnet_type = "my_subnet"
+	}
+	cluster {
+		account = "my-account"
+		application = "app"
+		availability_zones {
+			us_east_2 = [
+				"us-east-2a",
+				"us-east-2b",
+				"us-east-2c"
+			]
+		}
+		cloud_provider = "aws"
+		health_check_type = "ELB"
+		instance_type = "t2.micro"
+		key_pair = "my_key_pair"
+		provider = "aws"
+		strategy = "redblack"
+		subnet_type = "my_subnet"
+	}
+}
+
 ```
 
 ## TODO
 
 1. Parameters
 1. More Stages
+1. Stage Notifications
 1. More Triggers (refactor to make polymorphic)
 1. Import

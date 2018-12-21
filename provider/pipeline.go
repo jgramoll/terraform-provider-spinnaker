@@ -7,6 +7,7 @@ import (
 // Pipeline deploy pipeline in application
 type Pipeline struct {
 	Application string
+	Disabled    bool
 	ID          string
 	Name        string
 	Index       int

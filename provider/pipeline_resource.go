@@ -33,6 +33,12 @@ func pipelineResource() *schema.Resource {
 				Description: "Name of the application where the pipeline lives",
 				Required:    true,
 			},
+			"disabled": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "If the pipeline is disabled",
+				Optional:    true,
+				Default:     false,
+			},
 			"name": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of the pipeline",
@@ -88,6 +94,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	d.Set(ApplicationKey, pipeline.Application)
 	d.Set("name", pipeline.Name)
 	d.Set("index", pipeline.Index)
+	d.Set("disabled", pipeline.Disabled)
 	return nil
 }
 
@@ -105,6 +112,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	pipeline.Index = d.Get("index").(int)
 	pipeline.Application = d.Get(ApplicationKey).(string)
 	pipeline.Name = d.Get("name").(string)
+	pipeline.Disabled = d.Get("disabled").(bool)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {

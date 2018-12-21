@@ -6,7 +6,12 @@ import (
 
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
+
+func init() {
+	stageTypes["spinnaker_pipeline_jenkins_stage"] = client.JenkinsStageType
+}
 
 func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
