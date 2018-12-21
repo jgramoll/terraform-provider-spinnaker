@@ -42,7 +42,7 @@ func TestUpdateNotification(t *testing.T) {
 
 func TestDeleteNotification(t *testing.T) {
 	pipeline, expected := newNotificationTestPipeline()
-	err := pipeline.DeleteNotification(expected)
+	err := pipeline.DeleteNotification(expected.ID)
 	if err != nil {
 		t.Fatal(err)
 	}

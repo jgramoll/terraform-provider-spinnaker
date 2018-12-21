@@ -43,9 +43,9 @@ func (pipeline *Pipeline) UpdateStage(stage Stage) error {
 }
 
 // DeleteStage delete stage
-func (pipeline *Pipeline) DeleteStage(stage Stage) error {
+func (pipeline *Pipeline) DeleteStage(stageID string) error {
 	for i, pStage := range pipeline.Stages {
-		if pStage.GetRefID() == stage.GetRefID() {
+		if pStage.GetRefID() == stageID {
 			pipeline.Stages = append(pipeline.Stages[:i], pipeline.Stages[i+1:]...)
 			return nil
 		}

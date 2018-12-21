@@ -39,7 +39,7 @@ func TestUpdateStage(t *testing.T) {
 
 func TestDeleteStage(t *testing.T) {
 	pipeline, expected := newStageTestPipeline()
-	err := pipeline.DeleteStage(expected)
+	err := pipeline.DeleteStage(expected.RefID)
 	if err != nil {
 		t.Fatal(err)
 	}
