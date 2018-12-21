@@ -40,10 +40,26 @@ func pipelineNotificationResource() *schema.Resource {
 				Required:    true,
 			},
 			"message": {
-				// TODO validate more
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Custom messages",
 				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"complete": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"failed": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"starting": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"type": &schema.Schema{
 				Type:        schema.TypeString,
@@ -52,9 +68,26 @@ func pipelineNotificationResource() *schema.Resource {
 			},
 			"when": &schema.Schema{
 				// TODO validate more
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "When to send notification (started, completed, failed)",
 				Required:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"complete": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"failed": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"starting": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 		},
 	}
