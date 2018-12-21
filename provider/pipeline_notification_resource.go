@@ -40,6 +40,7 @@ func pipelineNotificationResource() *schema.Resource {
 				Required:    true,
 			},
 			"message": {
+				// TODO validate more
 				Type:        schema.TypeMap,
 				Description: "Custom messages",
 				Optional:    true,
@@ -50,6 +51,7 @@ func pipelineNotificationResource() *schema.Resource {
 				Required:    true,
 			},
 			"when": &schema.Schema{
+				// TODO validate more
 				Type:        schema.TypeMap,
 				Description: "When to send notification (started, completed, failed)",
 				Required:    true,

@@ -57,6 +57,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline":               pipelineResource(),
 			"spinnaker_pipeline_notification":  pipelineNotificationResource(),
 			"spinnaker_pipeline_bake_stage":    pipelineBakeStageResource(),
+			"spinnaker_pipeline_deploy_stage":  pipelineDeployStageResource(),
 			"spinnaker_pipeline_jenkins_stage": pipelineJenkinsStageResource(),
 			"spinnaker_pipeline_trigger":       pipelineTriggerResource(),
 		},

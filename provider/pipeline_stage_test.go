@@ -8,6 +8,8 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
+var stageTypes = map[string]client.StageType{}
+
 func testAccCheckPipelineStages(resourceName string, expected []string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
@@ -40,11 +42,6 @@ func testAccCheckPipelineStages(resourceName string, expected []string) resource
 
 		return nil
 	}
-}
-
-var stageTypes = map[string]client.StageType{
-	"spinnaker_pipeline_bake_stage":    client.BakeStageType,
-	"spinnaker_pipeline_jenkins_stage": client.JenkinsStageType,
 }
 
 func ensureStage(stages []client.Stage, expected *terraform.ResourceState) error {
