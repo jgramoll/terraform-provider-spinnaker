@@ -31,7 +31,7 @@ type DeployStage struct {
 	OverrideTimeout                   bool                 `json:"overrideTimeout"`
 	RestrictExecutionDuringTimeWindow bool                 `json:"restrictExecutionDuringTimeWindow"`
 	RestrictedExecutionWindow         StageExecutionWindow `json:"restrictedExecutionWindow"`
-	StageEnabled                      StageEnabled         `json:"stageEnabled"`
+	StageEnabled                      *StageEnabled        `json:"stageEnabled"`
 }
 
 // NewDeployStage for pipeline

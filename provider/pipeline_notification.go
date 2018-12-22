@@ -37,11 +37,18 @@ func (n notification) toClientNotification() *client.Notification {
 }
 
 func (m message) toClientMessage() client.Message {
-	return client.Message{
-		Complete: client.MessageText{Text: m.Complete},
-		Failed:   client.MessageText{Text: m.Failed},
-		Starting: client.MessageText{Text: m.Starting},
+	newMessage := client.Message{}
+
+	if m.Complete != "" {
+		newMessage.Complete = &client.MessageText{Text: m.Complete}
 	}
+	if m.Failed != "" {
+		newMessage.Failed = &client.MessageText{Text: m.Failed}
+	}
+	if m.Starting != "" {
+		newMessage.Starting = &client.MessageText{Text: m.Starting}
+	}
+	return newMessage
 }
 
 func (w when) toClientWhen() []string {

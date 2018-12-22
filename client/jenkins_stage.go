@@ -22,8 +22,8 @@ type JenkinsStage struct {
 	Job                           string            `json:"job"`
 	MarkUnstableAsSuccessful      bool              `json:"markUnstableAsSuccessful"`
 	Master                        string            `json:"master"`
-	Parameters                    map[string]string `json:"parameters"`
-	PropertyFile                  string            `json:"propertyFile"`
+	Parameters                    map[string]string `json:"parameters,omitempty"`
+	PropertyFile                  string            `json:"propertyFile,omitempty"`
 }
 
 // NewJenkinsStage for pipeline

@@ -26,7 +26,7 @@ type DeployStageCluster struct {
 	EBSOptimized                        bool                       `json:"ebsOptimized"`
 	EnabledMetrics                      []string                   `json:"enabledMetrics"`
 	FreeFormDetails                     string                     `json:"freeFormDetails"`
-	HealthCheckGracePeriod              int                        `json:"healthCheckGracePeriod"`
+	HealthCheckGracePeriod              string                     `json:"healthCheckGracePeriod"`
 	HealthCheckType                     string                     `json:"healthCheckType"`
 	IAMRole                             string                     `json:"iamRole"`
 	InstanceMonitoring                  bool                       `json:"instanceMonitoring"`

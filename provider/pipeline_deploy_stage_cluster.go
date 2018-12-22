@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"strings"
+
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
@@ -27,7 +29,7 @@ type deployStageCluster struct {
 	EBSOptimized                        bool                         `mapstructure:"ebs_optimized"`
 	EnabledMetrics                      []string                     `mapstructure:"enabled_metrics"`
 	FreeFormDetails                     string                       `mapstructure:"free_form_details"`
-	HealthCheckGracePeriod              int                          `mapstructure:"health_check_grace_period"`
+	HealthCheckGracePeriod              string                       `mapstructure:"health_check_grace_period"`
 	HealthCheckType                     string                       `mapstructure:"health_check_type"`
 	IAMRole                             string                       `mapstructure:"iam_role"`
 	InstanceMonitoring                  bool                         `mapstructure:"instance_monitoring"`
@@ -66,12 +68,36 @@ func (c *deployStageCluster) clientMoniker() client.DeployStageClusterMoniker {
 	return client.DeployStageClusterMoniker{}
 }
 
+func (c *deployStageCluster) clientAvailabilityZones() *map[string][]string {
+	newAZ := map[string][]string{}
+	for _, regions := range c.AvailabilityZones {
+		for region, zones := range regions {
+			if len(zones) == 0 {
+				continue
+			}
+			// TODO unit test
+			newAZ[strings.Replace(region, "_", "-", -1)] = zones
+		}
+	}
+	return &newAZ
+}
+
+func (c *deployStageCluster) importAvailabilityZones(clientCluster *client.DeployStageCluster) {
+	for region, zones := range clientCluster.AvailabilityZones {
+		newZone := map[string][]string{
+			strings.Replace(region, "-", "_", -1): zones,
+		}
+		// TODO unit test
+		c.AvailabilityZones = append(c.AvailabilityZones, newZone)
+	}
+}
+
 func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	// TODO better way?
 	return &client.DeployStageCluster{
 		Account:           c.Account,
 		Application:       c.Application,
-		AvailabilityZones: c.AvailabilityZones[0],
+		AvailabilityZones: *c.clientAvailabilityZones(),
 		Capacity:          c.clientCapacity(),
 		CloudProvider:     c.CloudProvider,
 		Cooldown:          c.Cooldown,
@@ -96,6 +122,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 		SpotPrice:              c.SpotPrice,
 		Stack:                  c.Stack,
 		Strategy:               c.Strategy,
+		SubnetType:             c.SubnetType,
 		SuspendedProcesses:     c.SuspendedProcesses,
 		Tags:                   c.Tags,
 		TargetGroups:           c.TargetGroups,
@@ -105,4 +132,46 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 		UseAmiBlockDeviceMappings:     c.UseAmiBlockDeviceMappings,
 		UseSourceCapacity:             c.UseSourceCapacity,
 	}
+}
+
+func newClusterFromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
+	newCluster := deployStageCluster{
+		Account:       c.Account,
+		Application:   c.Application,
+		CloudProvider: c.CloudProvider,
+		Cooldown:      c.Cooldown,
+
+		CopySourceCustomBlockDeviceMappings: c.CopySourceCustomBlockDeviceMappings,
+
+		EBSOptimized:           c.EBSOptimized,
+		EnabledMetrics:         c.EnabledMetrics,
+		FreeFormDetails:        c.FreeFormDetails,
+		HealthCheckGracePeriod: c.HealthCheckGracePeriod,
+		HealthCheckType:        c.HealthCheckType,
+		IAMRole:                c.IAMRole,
+		InstanceMonitoring:     c.InstanceMonitoring,
+		InstanceType:           c.InstanceType,
+		KeyPair:                c.KeyPair,
+		LoadBalancers:          c.LoadBalancers,
+		Provider:               c.Provider,
+		SecurityGroups:         c.SecurityGroups,
+		SpelLoadBalancers:      c.SpelLoadBalancers,
+		SpelTargetGroups:       c.SpelTargetGroups,
+		SpotPrice:              c.SpotPrice,
+		Stack:                  c.Stack,
+		Strategy:               c.Strategy,
+		SubnetType:             c.SubnetType,
+		SuspendedProcesses:     c.SuspendedProcesses,
+		Tags:                   c.Tags,
+		TargetGroups:           c.TargetGroups,
+
+		TargetHealthyDeployPercentage: c.TargetHealthyDeployPercentage,
+		TerminationPolicies:           c.TerminationPolicies,
+		UseAmiBlockDeviceMappings:     c.UseAmiBlockDeviceMappings,
+		UseSourceCapacity:             c.UseSourceCapacity,
+	}
+	newCluster.importAvailabilityZones(c)
+	newCluster.Capacity = append(newCluster.Capacity, deployStageClusterCapacity(c.Capacity))
+	newCluster.Moniker = append(newCluster.Moniker, deployStageClusterMoniker(c.Moniker))
+	return &newCluster
 }

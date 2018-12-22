@@ -100,10 +100,10 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Optional:    true,
 			},
 			"health_check_grace_period": &schema.Schema{
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Description: "Health check grace period for cluster",
 				Optional:    true,
-				Default:     300,
+				Default:     "300",
 			},
 			"health_check_type": &schema.Schema{
 				Type:        schema.TypeString,
@@ -241,9 +241,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Termination policy names for cluster",
 				Optional:    true,
-				DefaultFunc: func() (interface{}, error) {
-					return []string{"Default"}, nil
-				},
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

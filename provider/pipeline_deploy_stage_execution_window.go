@@ -36,17 +36,23 @@ func (w *stageExecutionWindow) toClientWindowWhitelist() *[]client.StageExecutio
 func (w *stageExecutionWindow) toClientExecutionWindow() *client.StageExecutionWindow {
 	newWindow := client.StageExecutionWindow{
 		Days:      w.Days,
-		Jitter:    client.StageExecutionWindowJitter(w.Jitter[0]),
 		Whitelist: *w.toClientWindowWhitelist(),
 	}
+	if len(w.Jitter) > 0 {
+		newJitter := client.StageExecutionWindowJitter(w.Jitter[0])
+		newWindow.Jitter = &newJitter
+	}
+
 	return &newWindow
 }
 
 func (w *stageExecutionWindow) fromClientWindow(clientWindow *client.StageExecutionWindow) *stageExecutionWindow {
 	newWindow := stageExecutionWindow{
 		Days:      clientWindow.Days,
-		Jitter:    []stageExecutionWindowJitter{stageExecutionWindowJitter(clientWindow.Jitter)},
 		Whitelist: []stageExecutionWindowWhitelist(w.Whitelist),
+	}
+	if clientWindow.Jitter != nil {
+		newWindow.Jitter = []stageExecutionWindowJitter{stageExecutionWindowJitter(*clientWindow.Jitter)}
 	}
 	return &newWindow
 }

@@ -35,8 +35,8 @@ func TestParsePipeline(t *testing.T) {
 		Level:   "pipeline",
 		Type:    "slack",
 		Message: Message{
-			Complete: MessageText{Text: "pipe is complete"},
-			Failed:   MessageText{Text: "pipe is failed"},
+			Complete: &MessageText{Text: "pipe is complete"},
+			Failed:   &MessageText{Text: "pipe is failed"},
 		},
 		When: []string{
 			PipelineStartingKey,
