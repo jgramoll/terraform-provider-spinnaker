@@ -48,8 +48,13 @@ func (s *deployStage) toClientStage() client.Stage {
 
 	cs.OverrideTimeout = s.OverrideTimeout
 	cs.RestrictExecutionDuringTimeWindow = s.RestrictExecutionDuringTimeWindow
-	cs.RestrictedExecutionWindow = *s.RestrictedExecutionWindow[0].toClientExecutionWindow()
-	cs.StageEnabled = client.StageEnabled(s.StageEnabled[0])
+	if len(s.RestrictedExecutionWindow) > 0 {
+		cs.RestrictedExecutionWindow = *s.RestrictedExecutionWindow[0].toClientExecutionWindow()
+	}
+	if len(s.StageEnabled) > 0 {
+		newStageEnabled := client.StageEnabled(s.StageEnabled[0])
+		cs.StageEnabled = &newStageEnabled
+	}
 
 	return cs
 }
@@ -67,9 +72,7 @@ func (s *deployStage) fromClientStage(cs client.Stage) stage {
 	newStage.FailPipeline = clientStage.FailPipeline
 
 	for _, c := range clientStage.Clusters {
-		newStage.Clusters = append(newStage.Clusters, deployStageCluster{
-			Account: c.Account,
-		})
+		newStage.Clusters = append(newStage.Clusters, *newClusterFromClientCluster(&c))
 	}
 
 	newStage.OverrideTimeout = clientStage.OverrideTimeout
@@ -78,7 +81,9 @@ func (s *deployStage) fromClientStage(cs client.Stage) stage {
 	newStageExecutionWindow := stageExecutionWindow{}
 	newStageExecutionWindow = *newStageExecutionWindow.fromClientWindow(&clientStage.RestrictedExecutionWindow)
 	newStage.RestrictedExecutionWindow = append(newStage.RestrictedExecutionWindow, newStageExecutionWindow)
-	newStage.StageEnabled = append(newStage.StageEnabled, stageEnabled(clientStage.StageEnabled))
+	if clientStage.StageEnabled != nil {
+		newStage.StageEnabled = append(newStage.StageEnabled, stageEnabled(*clientStage.StageEnabled))
+	}
 
 	return newStage
 }

@@ -39,6 +39,18 @@ func pipelineResource() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"keep_waiting_pipelines": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Do not automatically cancel pipelines waiting in queue",
+				Optional:    true,
+				Default:     false,
+			},
+			"limit_concurrent": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Disable concurrent pipeline executions (only run one at a time)",
+				Optional:    true,
+				Default:     true,
+			},
 			"name": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of the pipeline",
@@ -95,6 +107,8 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("name", pipeline.Name)
 	d.Set("index", pipeline.Index)
 	d.Set("disabled", pipeline.Disabled)
+	d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
+	d.Set("limit_concurrent", pipeline.LimitConcurrent)
 	return nil
 }
 
@@ -113,6 +127,8 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	pipeline.Application = d.Get(ApplicationKey).(string)
 	pipeline.Name = d.Get("name").(string)
 	pipeline.Disabled = d.Get("disabled").(bool)
+	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
+	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {

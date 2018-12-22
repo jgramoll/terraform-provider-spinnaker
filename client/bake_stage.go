@@ -19,18 +19,19 @@ type BakeStage struct {
 	RequisiteStageRefIds []string  `json:"requisiteStageRefIds"`
 
 	AmiName            string            `json:"amiName"`
-	AmiSuffix          string            `json:"amiSuffix"`
-	BaseAMI            string            `json:"baseAmi"`
+	AmiSuffix          string            `json:"amiSuffix,omitempty"`
+	BaseAMI            string            `json:"baseAmi,omitempty"`
 	BaseLabel          string            `json:"baseLabel"`
-	BaseName           string            `json:"baseName"`
+	BaseName           string            `json:"baseName,omitempty"`
 	BaseOS             string            `json:"baseOs"`
 	CloudProviderType  string            `json:"cloudProviderType"`
 	ExtendedAttributes map[string]string `json:"extendedAttributes"`
+	Rebake             bool              `json:"rebake"`
 	Regions            []string          `json:"regions"`
 	RequisiteStages    []string          `json:"requisiteStages"`
 	StoreType          string            `json:"storeType"`
 	TemplateFileName   string            `json:"templateFileName"`
-	VarFileName        string            `json:"varFileName"`
+	VarFileName        string            `json:"varFileName,omitempty"`
 	VMType             string            `json:"vmType"`
 }
 

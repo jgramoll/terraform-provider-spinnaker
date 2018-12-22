@@ -23,9 +23,9 @@ type MessageText struct {
 
 // Message for Pipeline Notification
 type Message struct {
-	Complete MessageText `json:"pipeline.complete" mapstructure:"pipeline.complete"`
-	Failed   MessageText `json:"pipeline.failed" mapstructure:"pipeline.failed"`
-	Starting MessageText `json:"pipeline.starting" mapstructure:"pipeline.starting"`
+	Complete *MessageText `json:"pipeline.complete" mapstructure:"pipeline.complete"`
+	Failed   *MessageText `json:"pipeline.failed" mapstructure:"pipeline.failed"`
+	Starting *MessageText `json:"pipeline.starting" mapstructure:"pipeline.starting"`
 }
 
 // Notification for Pipeline

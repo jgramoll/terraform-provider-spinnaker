@@ -145,11 +145,17 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 		d.SetId(notification.ID)
 		d.Set("address", notification.Address)
 		d.Set("level", notification.Level)
-		d.Set("message", message{
-			Complete: notification.Message.Complete.Text,
-			Starting: notification.Message.Starting.Text,
-			Failed:   notification.Message.Failed.Text,
-		})
+		newMessage := message{}
+		if notification.Message.Complete != nil {
+			newMessage.Complete = notification.Message.Complete.Text
+		}
+		if notification.Message.Starting != nil {
+			newMessage.Starting = notification.Message.Starting.Text
+		}
+		if notification.Message.Failed != nil {
+			newMessage.Failed = notification.Message.Failed.Text
+		}
+		d.Set("message", newMessage)
 		d.Set("type", notification.Type)
 		d.Set("when", notification.When)
 	}

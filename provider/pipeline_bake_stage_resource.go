@@ -48,6 +48,7 @@ func pipelineBakeStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Label for the base ami (release)",
 				Optional:    true,
+				Default:     "release",
 			},
 			"base_name": &schema.Schema{
 				Type:        schema.TypeString,
@@ -58,6 +59,7 @@ func pipelineBakeStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Base OS to use (trusty)",
 				Optional:    true,
+				Default:     "trusty",
 			},
 			"cloud_provider_type": &schema.Schema{
 				Type:        schema.TypeString,
@@ -73,6 +75,12 @@ func pipelineBakeStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the stage",
 				Required:    true,
+			},
+			"rebake": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Rebake image without regard to the status of any existing bake",
+				Optional:    true,
+				Default:     false,
 			},
 			"regions": &schema.Schema{
 				Type:        schema.TypeList,
@@ -94,6 +102,7 @@ func pipelineBakeStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Data store type to use when creating instances (ebs)",
 				Optional:    true,
+				Default:     "ebs",
 			},
 			"template_file_name": &schema.Schema{
 				Type:        schema.TypeString,
@@ -109,6 +118,7 @@ func pipelineBakeStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Type of VM to use (hvm, pv)",
 				Optional:    true,
+				Default:     "hvm",
 			},
 		},
 	}

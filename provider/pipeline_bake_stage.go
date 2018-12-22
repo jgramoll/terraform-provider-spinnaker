@@ -21,6 +21,7 @@ type bakeStage struct {
 	BaseOS             string            `mapstructure:"base_os"`
 	CloudProviderType  string            `mapstructure:"cloud_provider_type"`
 	ExtendedAttributes map[string]string `mapstructure:"extended_attributes"`
+	Rebake             bool              `mapstructure:"rebake"`
 	Regions            []string          `mapstructure:"regions"`
 	RequisiteStages    []string          `mapstructure:"requisite_stages"`
 	StoreType          string            `mapstructure:"store_type"`
