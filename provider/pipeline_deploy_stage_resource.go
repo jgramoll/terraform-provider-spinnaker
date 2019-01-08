@@ -155,18 +155,7 @@ func pipelineDeployStageResource() *schema.Resource {
 				Description: "Stage will only execute when the supplied expression evaluates true.\nThe expression does not need to be wrapped in ${ and }.\nIf this expression evaluates to false, the stages following this stage will still execute.",
 				Optional:    true,
 				MaxItems:    1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"expression": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"type": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
+				Elem:        stageEnabledResource(),
 			},
 		},
 	}

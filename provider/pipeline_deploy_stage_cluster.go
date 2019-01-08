@@ -12,12 +12,6 @@ type deployStageClusterCapacity struct {
 	Min     int `mapstructure:"min"`
 }
 
-type deployStageClusterMoniker struct {
-	App    string `mapstructure:"app"`
-	Detail string `mapstructure:"detail"`
-	Stack  string `mapstructure:"stack"`
-}
-
 type deployStageCluster struct {
 	Account                             string                       `mapstructure:"account"`
 	Application                         string                       `mapstructure:"application"`
@@ -36,7 +30,7 @@ type deployStageCluster struct {
 	InstanceType                        string                       `mapstructure:"instance_type"`
 	KeyPair                             string                       `mapstructure:"key_pair"`
 	LoadBalancers                       []string                     `mapstructure:"load_balancers"`
-	Moniker                             []deployStageClusterMoniker  `mapstructure:"moniker"`
+	Moniker                             []moniker                    `mapstructure:"moniker"`
 	Provider                            string                       `mapstructure:"provider"`
 	SecurityGroups                      []string                     `mapstructure:"security_groups"`
 	SpelLoadBalancers                   []string                     `mapstructure:"spel_load_balancers"`
@@ -61,11 +55,11 @@ func (c *deployStageCluster) clientCapacity() client.DeployStageClusterCapacity 
 	return client.DeployStageClusterCapacity{}
 }
 
-func (c *deployStageCluster) clientMoniker() client.DeployStageClusterMoniker {
+func (c *deployStageCluster) clientMoniker() client.Moniker {
 	if len(c.Moniker) > 0 {
-		return client.DeployStageClusterMoniker(c.Moniker[0])
+		return client.Moniker(c.Moniker[0])
 	}
-	return client.DeployStageClusterMoniker{}
+	return client.Moniker{}
 }
 
 func (c *deployStageCluster) clientAvailabilityZones() *map[string][]string {
@@ -172,6 +166,6 @@ func newClusterFromClientCluster(c *client.DeployStageCluster) *deployStageClust
 	}
 	newCluster.importAvailabilityZones(c)
 	newCluster.Capacity = append(newCluster.Capacity, deployStageClusterCapacity(c.Capacity))
-	newCluster.Moniker = append(newCluster.Moniker, deployStageClusterMoniker(c.Moniker))
+	newCluster.Moniker = append(newCluster.Moniker, moniker(c.Moniker))
 	return &newCluster
 }

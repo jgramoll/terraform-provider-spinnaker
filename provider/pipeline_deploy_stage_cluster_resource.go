@@ -144,22 +144,7 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Name to attach to cluster",
 				Optional:    true,
 				MaxItems:    1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"app": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"detail": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"stack": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
+				Elem:        monikerResource(),
 			},
 			"provider": &schema.Schema{
 				Type:        schema.TypeString,

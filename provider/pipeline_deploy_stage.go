@@ -5,11 +5,6 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type stageEnabled struct {
-	Expression string `json:"expression"`
-	Type       string `json:"type"`
-}
-
 type deployStage struct {
 	Name                 string           `mapstructure:"name"`
 	RefID                string           `mapstructure:"ref_id"`

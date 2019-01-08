@@ -122,6 +122,25 @@ resource "spinnaker_pipeline_deploy_stage" "deploy" {
 	}
 }
 
+resource "spinnaker_pipeline_rollback_cluster_stage" "deploy" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Rollback Cluster"
+
+	cloud_provider      = "aws"
+	cloud_provider_type = "aws"
+	cluster             = "my-cluster"
+	credentials         = "my-creds"
+	moniker {
+		app     = "my-app"
+		cluster = "my-cluster"
+		detail  = "api"
+		stack   = "edge"
+	}
+	regions = [
+		"us-east-2"
+	]
+}
+
 ```
 
 ## TODO

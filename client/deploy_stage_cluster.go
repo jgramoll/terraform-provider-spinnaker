@@ -7,13 +7,6 @@ type DeployStageClusterCapacity struct {
 	Min     int `json:"min"`
 }
 
-// DeployStageClusterMoniker moniker for cluster
-type DeployStageClusterMoniker struct {
-	App    string `json:"app"`
-	Detail string `json:"detail"`
-	Stack  string `json:"stack"`
-}
-
 // DeployStageCluster cluster to deploy
 type DeployStageCluster struct {
 	Account                             string                     `json:"account"`
@@ -33,7 +26,7 @@ type DeployStageCluster struct {
 	InstanceType                        string                     `json:"instanceType"`
 	KeyPair                             string                     `json:"keyPair"`
 	LoadBalancers                       []string                   `json:"loadBalancers"`
-	Moniker                             DeployStageClusterMoniker  `json:"moniker"`
+	Moniker                             Moniker                    `json:"moniker"`
 	Provider                            string                     `json:"provider"`
 	SecurityGroups                      []string                   `json:"securityGroups"`
 	SpelLoadBalancers                   []string                   `json:"spelLoadBalancers"`

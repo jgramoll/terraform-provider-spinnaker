@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// ParameterConfig config for pipeline parameters
 type ParameterConfig struct{}
 
 // PipelineWithoutStages deploy pipeline in application
