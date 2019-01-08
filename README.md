@@ -141,6 +141,26 @@ resource "spinnaker_pipeline_rollback_cluster_stage" "deploy" {
 	]
 }
 
+resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Destroy Server Group"
+
+	cloud_provider      = "aws"
+	cloud_provider_type = "aws"
+	cluster             = "my-cluster"
+	credentials         = "my-creds"
+	moniker {
+		app     = "my-app"
+		cluster = "my-cluster"
+		detail  = "api"
+		stack   = "edge"
+	}
+	regions = [
+		"us-east-2"
+	]
+	target = "oldest_asg_dynamic"
+}
+
 ```
 
 ## TODO

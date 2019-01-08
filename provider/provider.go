@@ -54,13 +54,16 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"spinnaker_pipeline":                        pipelineResource(),
-			"spinnaker_pipeline_bake_stage":             pipelineBakeStageResource(),
-			"spinnaker_pipeline_deploy_stage":           pipelineDeployStageResource(),
-			"spinnaker_pipeline_jenkins_stage":          pipelineJenkinsStageResource(),
-			"spinnaker_pipeline_notification":           pipelineNotificationResource(),
-			"spinnaker_pipeline_rollback_cluster_stage": pipelineRollbackClusterStageResource(),
-			"spinnaker_pipeline_trigger":                pipelineTriggerResource(),
+			"spinnaker_pipeline":              pipelineResource(),
+			"spinnaker_pipeline_bake_stage":   pipelineBakeStageResource(),
+			"spinnaker_pipeline_deploy_stage": pipelineDeployStageResource(),
+
+			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),
+			"spinnaker_pipeline_jenkins_stage":              pipelineJenkinsStageResource(),
+			"spinnaker_pipeline_notification":               pipelineNotificationResource(),
+			"spinnaker_pipeline_rollback_cluster_stage":     pipelineRollbackClusterStageResource(),
+
+			"spinnaker_pipeline_trigger": pipelineTriggerResource(),
 		},
 
 		ConfigureFunc: providerConfigure,
