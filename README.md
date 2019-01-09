@@ -141,6 +141,40 @@ resource "spinnaker_pipeline_rollback_cluster_stage" "deploy" {
 	]
 }
 
+<<<<<<< Updated upstream
+=======
+resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Destroy Server Group"
+
+	cloud_provider      = "aws"
+	cloud_provider_type = "aws"
+	cluster             = "my-cluster"
+	credentials         = "my-creds"
+	moniker {
+		app     = "my-app"
+		cluster = "my-cluster"
+		detail  = "api"
+		stack   = "edge"
+	}
+	regions = [
+		"us-east-2"
+	]
+	target = "oldest_asg_dynamic"
+}
+
+resource "spinnaker_pipeline_pipeline_stage" "main" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Start prod deploy"
+
+	application      = "my-other-app"
+	target_pipeline  = "${spinnaker_pipeline.prod.id}"
+  pipelineParameters {
+    "version": "my-message"
+  }
+}
+
+>>>>>>> Stashed changes
 ```
 
 ## TODO
