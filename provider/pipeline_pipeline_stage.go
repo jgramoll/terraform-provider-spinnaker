@@ -76,6 +76,7 @@ func (s *pipelineStage) fromClientStage(cs client.Stage) stage {
 func (s *pipelineStage) SetResourceData(d *schema.ResourceData) {
 	// TODO
 	d.Set("name", s.Name)
+	d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
 }
 
 func (s *pipelineStage) SetRefID(id string) {

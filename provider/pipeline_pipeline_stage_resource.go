@@ -55,14 +55,14 @@ func pipelinePipelineResource() *schema.Resource {
 				Required:    true,
 			},
 			"complete_other_branches_then_fail": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",
+				Type:        schema.TypeBool,
+				Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",
 				Optional:    true,
 				Default:     false,
 			},
 			"continue_pipeline": &schema.Schema{
 				Type:        schema.TypeBool,
-				Description: "If false, marks the stage as successful right away without waiting for the jenkins job to complete",
+				Description: "If false, marks the stage as successful right away without waiting for the pipeline to complete",
 				Optional:    true,
 				Default:     false,
 			},
@@ -79,7 +79,7 @@ func pipelinePipelineResource() *schema.Resource {
 				Default:     false,
 			},
 			"target_pipeline": &schema.Schema{
-				Type:        schema.TypeBool,
+				Type:        schema.TypeString,
 				Description: "Target pipeline",
 				Required:    true,
 			},
@@ -89,7 +89,7 @@ func pipelinePipelineResource() *schema.Resource {
 				Optional:    true,
 			},
 			"wait_for_completion": &schema.Schema{
-				Type:        schema.TypeMap,
+				Type:        schema.TypeBool,
 				Description: "if false, marks the stage as successful right away without waiting for the pipeline to complete",
 				Optional:    true,
 				Default:     true,
