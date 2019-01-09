@@ -161,6 +161,17 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
 	target = "oldest_asg_dynamic"
 }
 
+resource "spinnaker_pipeline_pipeline_stage" "main" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Start prod deploy"
+
+	application      = "my-other-app"
+	target_pipeline  = "${spinnaker_pipeline.prod.id}"
+  pipelineParameters {
+    "version": "my-message"
+  }
+}
+
 ```
 
 ## TODO
