@@ -167,9 +167,9 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
 
 	application      = "my-other-app"
 	target_pipeline  = "${spinnaker_pipeline.prod.id}"
-  pipelineParameters {
-    "version": "my-message"
-  }
+	pipelineParameters {
+		version = "my-message"
+	}
 }
 
 ```
