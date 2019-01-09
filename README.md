@@ -141,8 +141,6 @@ resource "spinnaker_pipeline_rollback_cluster_stage" "deploy" {
 	]
 }
 
-<<<<<<< Updated upstream
-=======
 resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Destroy Server Group"
@@ -174,7 +172,6 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
   }
 }
 
->>>>>>> Stashed changes
 ```
 
 ## TODO
