@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineDestroyServerGroupStageResource() *schema.Resource {
-	stageInterface := func() interface{} {
+	stageInterface := func() stage {
 		return newDestroyServerGroupStage()
 	}
 	return &schema.Resource{

@@ -27,7 +27,7 @@ func newDestroyServerGroupStage() *destroyServerGroupStage {
 	return &destroyServerGroupStage{Type: client.DestroyServerGroupType}
 }
 
-func (s *destroyServerGroupStage) toClientStage() client.Stage {
+func (s *destroyServerGroupStage) toClientStage() (client.Stage, error) {
 	cs := client.NewDestroyServerGroupStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
@@ -50,7 +50,7 @@ func (s *destroyServerGroupStage) toClientStage() client.Stage {
 		cs.Moniker = &newMoniker
 	}
 
-	return cs
+	return cs, nil
 }
 
 // TODO can we just update the ptr?

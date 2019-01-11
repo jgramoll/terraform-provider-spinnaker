@@ -1,11 +1,19 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // BakeStageType bake stage
 var BakeStageType StageType = "bake"
 
 func init() {
-	stageFactories[BakeStageType] = func() interface{} {
-		return NewBakeStage()
+	stageFactories[BakeStageType] = func(stageMap map[string]interface{}) (Stage, error) {
+		stage := NewBakeStage()
+		if err := mapstructure.Decode(stageMap, stage); err != nil {
+			return nil, err
+		}
+		return stage, nil
 	}
 }
 

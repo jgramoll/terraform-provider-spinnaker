@@ -1,22 +1,36 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // JenkinsStageType jenkins stage
 var JenkinsStageType StageType = "jenkins"
 
 func init() {
-	stageFactories[JenkinsStageType] = func() interface{} {
-		return NewJenkinsStage()
+	stageFactories[JenkinsStageType] = func(stageMap map[string]interface{}) (Stage, error) {
+		stage := newSerializableJenkinsStage()
+		if err := mapstructure.Decode(stageMap, stage); err != nil {
+			return nil, err
+		}
+
+		notifications, err := parseNotifications(stageMap["notifications"])
+		if err != nil {
+			return nil, err
+		}
+		return &JenkinsStage{
+			serializableJenkinsStage: stage,
+			Notifications:            notifications,
+		}, nil
 	}
 }
 
-// JenkinsStage for pipeline
-type JenkinsStage struct {
-	Name                 string          `json:"name"`
-	RefID                string          `json:"refId"`
-	Type                 StageType       `json:"type"`
-	RequisiteStageRefIds []string        `json:"requisiteStageRefIds"`
-	Notifications        []*Notification `json:"notifications"`
-	SendNotifications    bool            `json:"sendNotifications"`
+type serializableJenkinsStage struct {
+	Name                 string    `json:"name"`
+	RefID                string    `json:"refId"`
+	Type                 StageType `json:"type"`
+	RequisiteStageRefIds []string  `json:"requisiteStageRefIds"`
+	SendNotifications    bool      `json:"sendNotifications"`
 
 	CompleteOtherBranchesThenFail bool              `json:"completeOtherBranchesThenFail"`
 	ContinuePipeline              bool              `json:"continuePipeline"`
@@ -28,10 +42,23 @@ type JenkinsStage struct {
 	PropertyFile                  string            `json:"propertyFile,omitempty"`
 }
 
+// JenkinsStage for pipeline
+type JenkinsStage struct {
+	*serializableJenkinsStage
+	Notifications *[]*Notification `json:"notifications"`
+}
+
+// NewJenkinsStage for pipeline
+func newSerializableJenkinsStage() *serializableJenkinsStage {
+	return &serializableJenkinsStage{
+		Type: JenkinsStageType,
+	}
+}
+
 // NewJenkinsStage for pipeline
 func NewJenkinsStage() *JenkinsStage {
 	return &JenkinsStage{
-		Type: JenkinsStageType,
+		serializableJenkinsStage: newSerializableJenkinsStage(),
 	}
 }
 

@@ -28,7 +28,7 @@ func newRollbackClusterStage() *rollbackClusterStage {
 	return &rollbackClusterStage{Type: client.RollbackClusterType}
 }
 
-func (s *rollbackClusterStage) toClientStage() client.Stage {
+func (s *rollbackClusterStage) toClientStage() (client.Stage, error) {
 	cs := client.NewRollbackClusterStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
@@ -51,7 +51,7 @@ func (s *rollbackClusterStage) toClientStage() client.Stage {
 		cs.Moniker = &newMoniker
 	}
 
-	return cs
+	return cs, nil
 }
 
 // TODO can we just update the ptr?

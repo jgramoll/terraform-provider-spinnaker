@@ -78,7 +78,7 @@ func TestParsePipeline(t *testing.T) {
 	expected := NewPipeline()
 	expected.Name = expectedName
 	expected.Stages = &[]Stage{expectedStage}
-	expected.Notifications = &[]Notification{expectedNotification}
+	expected.Notifications = &[]*Notification{&expectedNotification}
 	err = pipeline.equals(expected)
 	if err != nil {
 		t.Fatal(err)

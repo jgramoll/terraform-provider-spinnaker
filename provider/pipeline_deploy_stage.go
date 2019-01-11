@@ -27,7 +27,7 @@ func newDeployStage() *deployStage {
 	return &deployStage{Type: client.DeployStageType}
 }
 
-func (s *deployStage) toClientStage() client.Stage {
+func (s *deployStage) toClientStage() (client.Stage, error) {
 	cs := client.NewDeployStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
@@ -51,7 +51,7 @@ func (s *deployStage) toClientStage() client.Stage {
 		cs.StageEnabled = &newStageEnabled
 	}
 
-	return cs
+	return cs, nil
 }
 
 // TODO can we just update the ptr?

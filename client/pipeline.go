@@ -25,8 +25,8 @@ type SerializablePipeline struct {
 type Pipeline struct {
 	SerializablePipeline
 
-	Notifications *[]Notification `json:"notifications"`
-	Stages        *[]Stage        `json:"stages"`
+	Notifications *[]*Notification `json:"notifications"`
+	Stages        *[]Stage         `json:"stages"`
 }
 
 // NewSerializablePipeline Pipeline with default values

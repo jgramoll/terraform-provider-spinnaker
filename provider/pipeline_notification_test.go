@@ -129,15 +129,15 @@ func testAccCheckPipelineNotifications(resourceName string, expected []string) r
 	}
 }
 
-func ensureNotification(notifications *[]client.Notification, expected *terraform.ResourceState) error {
+func ensureNotification(notifications *[]*client.Notification, expected *terraform.ResourceState) error {
 	expectedID := expected.Primary.Attributes["id"]
 	for _, notification := range *notifications {
 		if *notification.ID == expectedID {
-			err := ensureMessage(&notification, expected)
+			err := ensureMessage(notification, expected)
 			if err != nil {
 				return err
 			}
-			return ensureWhen(&notification, expected)
+			return ensureWhen(notification, expected)
 		}
 	}
 	return fmt.Errorf("Notification not found %s", expectedID)

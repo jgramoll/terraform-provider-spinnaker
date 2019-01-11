@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineBakeStageResource() *schema.Resource {
-	newBakeStageInterface := func() interface{} {
+	newBakeStageInterface := func() stage {
 		return newBakeStage()
 	}
 	return &schema.Resource{

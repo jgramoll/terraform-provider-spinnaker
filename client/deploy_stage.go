@@ -1,11 +1,19 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // DeployStageType deploy stage
 var DeployStageType StageType = "deploy"
 
 func init() {
-	stageFactories[DeployStageType] = func() interface{} {
-		return NewDeployStage()
+	stageFactories[DeployStageType] = func(stageMap map[string]interface{}) (Stage, error) {
+		stage := NewDeployStage()
+		if err := mapstructure.Decode(stageMap, stage); err != nil {
+			return nil, err
+		}
+		return stage, nil
 	}
 }
 

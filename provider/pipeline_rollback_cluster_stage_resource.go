@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineRollbackClusterStageResource() *schema.Resource {
-	newRollbackClusterInterface := func() interface{} {
+	newRollbackClusterInterface := func() stage {
 		return newRollbackClusterStage()
 	}
 	return &schema.Resource{

@@ -1,11 +1,19 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // PipelineType pipeline stage
 var PipelineType StageType = "pipeline"
 
 func init() {
-	stageFactories[PipelineType] = func() interface{} {
-		return NewPipelineStage()
+	stageFactories[PipelineType] = func(stageMap map[string]interface{}) (Stage, error) {
+		stage := NewPipelineStage()
+		if err := mapstructure.Decode(stageMap, stage); err != nil {
+			return nil, err
+		}
+		return stage, nil
 	}
 }
 

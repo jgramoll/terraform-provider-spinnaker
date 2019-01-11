@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineDeployStageResource() *schema.Resource {
-	newDeployStageInterface := func() interface{} {
+	newDeployStageInterface := func() stage {
 		return newDeployStage()
 	}
 	return &schema.Resource{

@@ -10,7 +10,7 @@ const StageFailedKey = "stage.failed"
 const StageStartingKey = "stage.starting"
 
 func init() {
-	messageFactories[NotificationLevelStage] = func() interface{} {
+	messageFactories[NotificationLevelStage] = func() Message {
 		return &StageMessage{}
 	}
 }

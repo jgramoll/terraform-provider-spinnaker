@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineJenkinsStageResource() *schema.Resource {
-	newJenkinsStageInterface := func() interface{} {
+	newJenkinsStageInterface := func() stage {
 		return newJenkinsStage()
 	}
 	return &schema.Resource{

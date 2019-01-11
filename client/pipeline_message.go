@@ -10,7 +10,7 @@ const PipelineFailedKey = "pipeline.failed"
 const PipelineStartingKey = "pipeline.starting"
 
 func init() {
-	messageFactories[NotificationLevelPipeline] = func() interface{} {
+	messageFactories[NotificationLevelPipeline] = func() Message {
 		return &PipelineMessage{}
 	}
 }

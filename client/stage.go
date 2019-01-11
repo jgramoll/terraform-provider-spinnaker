@@ -3,8 +3,6 @@ package client
 import (
 	"errors"
 	"log"
-
-	"github.com/mitchellh/mapstructure"
 )
 
 // ErrStageNotFound stage not found
@@ -82,12 +80,11 @@ func parseStages(stagesHashInterface interface{}) (*[]Stage, error) {
 			log.Printf("[WARN] unknown pipeline stage \"%s\"\n", stageType)
 			continue
 		}
-		stage := factory()
-
-		if err := mapstructure.Decode(stageMap, stage); err != nil {
+		stage, err := factory(stageMap)
+		if err != nil {
 			return nil, err
 		}
-		stages = append(stages, stage.(Stage))
+		stages = append(stages, stage)
 	}
 	return &stages, nil
 }

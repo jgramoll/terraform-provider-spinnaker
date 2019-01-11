@@ -9,7 +9,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createStage func() interface{}) error {
+func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createStage func() stage) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
@@ -33,7 +33,11 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 	}
 
 	stages := *pipeline.Stages
-	stages = append(stages, stage.toClientStage())
+	cs, err := stage.toClientStage()
+	if err != nil {
+		return err
+	}
+	stages = append(stages, cs)
 	pipeline.Stages = &stages
 
 	err = pipelineService.UpdatePipeline(pipeline)
@@ -46,7 +50,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 	return resourcePipelineStageRead(d, m, createStage)
 }
 
-func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStage func() interface{}) error {
+func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStage func() stage) error {
 	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
@@ -71,7 +75,7 @@ func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStag
 	return nil
 }
 
-func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createStage func() interface{}) error {
+func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createStage func() stage) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
@@ -89,7 +93,11 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	err = pipeline.UpdateStage(stage.toClientStage())
+	cs, err := stage.toClientStage()
+	if err != nil {
+		return err
+	}
+	err = pipeline.UpdateStage(cs)
 	if err != nil {
 		return err
 	}
@@ -103,7 +111,7 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 	return resourcePipelineStageRead(d, m, createStage)
 }
 
-func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createStage func() interface{}) error {
+func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createStage func() stage) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 

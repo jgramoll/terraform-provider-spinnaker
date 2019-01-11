@@ -28,7 +28,7 @@ func newPipelineStage() *pipelineStage {
 	return &pipelineStage{Type: client.PipelineType}
 }
 
-func (s *pipelineStage) toClientStage() client.Stage {
+func (s *pipelineStage) toClientStage() (client.Stage, error) {
 	cs := client.NewPipelineStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
@@ -47,7 +47,7 @@ func (s *pipelineStage) toClientStage() client.Stage {
 	cs.PipelineParameters = s.PipelineParameters
 	cs.WaitForCompletion = s.WaitForCompletion
 
-	return cs
+	return cs, nil
 }
 
 // TODO can we just update the ptr?

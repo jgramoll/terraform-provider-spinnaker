@@ -1,11 +1,19 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // RollbackClusterType rollback cluster stage
 var RollbackClusterType StageType = "rollbackCluster"
 
 func init() {
-	stageFactories[RollbackClusterType] = func() interface{} {
-		return NewRollbackClusterStage()
+	stageFactories[RollbackClusterType] = func(stageMap map[string]interface{}) (Stage, error) {
+		stage := NewRollbackClusterStage()
+		if err := mapstructure.Decode(stageMap, stage); err != nil {
+			return nil, err
+		}
+		return stage, nil
 	}
 }
 

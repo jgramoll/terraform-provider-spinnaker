@@ -13,6 +13,7 @@ import (
 // ErrNotificationNotFound notification not found
 var ErrNotificationNotFound = errors.New("Could not find notification")
 
+// PipelineKey key for pipeline in map
 const PipelineKey = "pipeline"
 
 func pipelineNotificationResource() *schema.Resource {
@@ -112,7 +113,11 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 	}
 
 	notifications := *pipeline.Notifications
-	notifications = append(notifications, *notification.toClientNotification(client.NotificationLevelPipeline))
+	cn, err := notification.toClientNotification(client.NotificationLevelPipeline)
+	if err != nil {
+		return err
+	}
+	notifications = append(notifications, cn)
 	pipeline.Notifications = &notifications
 
 	err = pipelineService.UpdatePipeline(pipeline)
@@ -179,7 +184,12 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = pipeline.UpdateNotification(notification.toClientNotification(client.NotificationLevelPipeline))
+	cn, err := notification.toClientNotification(client.NotificationLevelPipeline)
+	if err != nil {
+		return err
+	}
+
+	err = pipeline.UpdateNotification(cn)
 	if err != nil {
 		return err
 	}

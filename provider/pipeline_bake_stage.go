@@ -34,9 +34,9 @@ func newBakeStage() *bakeStage {
 	return &bakeStage{Type: client.BakeStageType}
 }
 
-func (s *bakeStage) toClientStage() client.Stage {
+func (s *bakeStage) toClientStage() (client.Stage, error) {
 	cs := client.BakeStage(*s)
-	return &cs
+	return &cs, nil
 }
 
 // TODO can we just update the ptr?

@@ -29,7 +29,7 @@ func (pipeline *Pipeline) GetNotification(notificationID string) (*Notification,
 	notifications := *pipeline.Notifications
 	for _, notification := range notifications {
 		if notification.ID != nil && *notification.ID == notificationID {
-			return &notification, nil
+			return notification, nil
 		}
 	}
 	return nil, ErrPipelineNotificationNotFound
@@ -39,8 +39,8 @@ func (pipeline *Pipeline) GetNotification(notificationID string) (*Notification,
 func (pipeline *Pipeline) UpdateNotification(notification *Notification) error {
 	notifications := *pipeline.Notifications
 	for i, t := range notifications {
-		if t.ID == notification.ID {
-			notifications[i] = *notification
+		if *t.ID == *notification.ID {
+			notifications[i] = notification
 			return nil
 		}
 	}
@@ -60,8 +60,8 @@ func (pipeline *Pipeline) DeleteNotification(notificationID string) error {
 	return ErrPipelineNotificationNotFound
 }
 
-func parseNotifications(notificationsHashInterface interface{}) (*[]Notification, error) {
-	notifications := []Notification{}
+func parseNotifications(notificationsHashInterface interface{}) (*[]*Notification, error) {
+	notifications := []*Notification{}
 	if notificationsHashInterface == nil {
 		return &notifications, nil
 	}
@@ -84,7 +84,7 @@ func parseNotifications(notificationsHashInterface interface{}) (*[]Notification
 			notification.Message = message
 		}
 
-		notifications = append(notifications, notification)
+		notifications = append(notifications, &notification)
 	}
 	return &notifications, nil
 }

@@ -1,11 +1,19 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // DestroyServerGroupType destroy server group stage
 var DestroyServerGroupType StageType = "destroyServerGroup"
 
 func init() {
-	stageFactories[DestroyServerGroupType] = func() interface{} {
-		return NewDestroyServerGroupStage()
+	stageFactories[DestroyServerGroupType] = func(stageMap map[string]interface{}) (Stage, error) {
+		stage := NewDestroyServerGroupStage()
+		if err := mapstructure.Decode(stageMap, stage); err != nil {
+			return nil, err
+		}
+		return stage, nil
 	}
 }
 

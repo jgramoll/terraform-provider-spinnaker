@@ -7,7 +7,7 @@ import (
 
 type stage interface {
 	fromClientStage(client.Stage) stage
-	toClientStage() client.Stage
+	toClientStage() (client.Stage, error)
 	SetResourceData(*schema.ResourceData)
 	SetRefID(string)
 	GetRefID() string

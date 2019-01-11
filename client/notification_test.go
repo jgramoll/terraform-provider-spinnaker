@@ -12,7 +12,7 @@ func newNotificationTestPipeline() (*Pipeline, *Notification) {
 		},
 	}
 	return &Pipeline{
-		Notifications: &[]Notification{expected},
+		Notifications: &[]*Notification{&expected},
 	}, &expected
 }
 

@@ -4,7 +4,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-var messageFactories = map[NotificationLevel]func() interface{}{}
+var messageFactories = map[NotificationLevel]func() Message{}
 
 // MessageText for Pipeline Notification
 type MessageText struct {
@@ -24,19 +24,21 @@ type Message interface {
 }
 
 // NewMessage new message
-func NewMessage(level NotificationLevel) Message {
-	return messageFactories[level]().(Message)
-}
-
-func parseMessage(level NotificationLevel, messageMap map[string]interface{}) (Message, error) {
+func NewMessage(level NotificationLevel) (Message, error) {
 	factory := messageFactories[level]
 	if factory == nil {
 		return nil, ErrInvalidNotificatoinLevel
 	}
-	message := factory()
+	return factory(), nil
+}
 
+func parseMessage(level NotificationLevel, messageMap map[string]interface{}) (Message, error) {
+	message, err := NewMessage(level)
+	if err != nil {
+		return nil, err
+	}
 	if err := mapstructure.Decode(messageMap, message); err != nil {
 		return nil, err
 	}
-	return message.(Message), nil
+	return message, nil
 }
