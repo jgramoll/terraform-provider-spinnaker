@@ -19,10 +19,10 @@ func TestPipelineStageGetName(t *testing.T) {
 }
 
 func TestPipelineStageGetType(t *testing.T) {
-	if pipelineStage.GetType() != PipelineType {
-		t.Fatalf("Pipeline stage GetType() should be %s, not \"%s\"", PipelineType, pipelineStage.GetType())
+	if pipelineStage.GetType() != PipelineStageType {
+		t.Fatalf("Pipeline stage GetType() should be %s, not \"%s\"", PipelineStageType, pipelineStage.GetType())
 	}
-	if pipelineStage.Type != PipelineType {
-		t.Fatalf("Pipeline stage Type should be %s, not \"%s\"", PipelineType, pipelineStage.Type)
+	if pipelineStage.Type != PipelineStageType {
+		t.Fatalf("Pipeline stage Type should be %s, not \"%s\"", PipelineStageType, pipelineStage.Type)
 	}
 }

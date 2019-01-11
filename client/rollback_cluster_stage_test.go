@@ -19,10 +19,10 @@ func TestRollbackClusterStageGetName(t *testing.T) {
 }
 
 func TestRollbackClusterStageGetType(t *testing.T) {
-	if rollbackClusterStage.GetType() != RollbackClusterType {
-		t.Fatalf("Rollback Cluster stage GetType() should be %s, not \"%s\"", RollbackClusterType, rollbackClusterStage.GetType())
+	if rollbackClusterStage.GetType() != RollbackClusterStageType {
+		t.Fatalf("Rollback Cluster stage GetType() should be %s, not \"%s\"", RollbackClusterStageType, rollbackClusterStage.GetType())
 	}
-	if rollbackClusterStage.Type != RollbackClusterType {
-		t.Fatalf("Rollback Cluster stage Type should be %s, not \"%s\"", RollbackClusterType, rollbackClusterStage.Type)
+	if rollbackClusterStage.Type != RollbackClusterStageType {
+		t.Fatalf("Rollback Cluster stage Type should be %s, not \"%s\"", RollbackClusterStageType, rollbackClusterStage.Type)
 	}
 }

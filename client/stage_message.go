@@ -1,5 +1,7 @@
 package client
 
+// TODO FRD
+
 // StageCompleteKey for stage complete
 const StageCompleteKey = "stage.complete"
 

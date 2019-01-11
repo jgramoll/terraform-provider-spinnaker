@@ -5,15 +5,15 @@ import (
 )
 
 type notification struct {
-	ID      *string
+	ID      string
 	Address string
-	Message []*message
+	Message *[]*message
 	Type    string
-	When    []*when
+	When    *[]*when
 }
 
 func (n *notification) toClientNotification(level client.NotificationLevel) (*client.Notification, error) {
-	message, err := n.Message[0].toClientMessage(level)
+	message, err := toClientMessage(level, (*n.Message)[0])
 	if err != nil {
 		return nil, err
 	}
@@ -23,24 +23,22 @@ func (n *notification) toClientNotification(level client.NotificationLevel) (*cl
 			Address: n.Address,
 			Level:   level,
 			Type:    n.Type,
-			When:    n.When[0].toClientWhen(level),
+			When:    *toClientWhen(level, (*n.When)[0]),
 		},
 		Message: message,
 	}, nil
 }
 
 func toClientNotifications(notifications *[]*notification) (*[]*client.Notification, error) {
-	if notifications == nil {
-		return nil, nil
-	}
-
 	clientNotifications := []*client.Notification{}
-	for _, n := range *notifications {
-		cn, err := n.toClientNotification(client.NotificationLevelStage)
-		if err != nil {
-			return nil, err
+	if notifications != nil {
+		for _, n := range *notifications {
+			cn, err := n.toClientNotification(client.NotificationLevelStage)
+			if err != nil {
+				return nil, err
+			}
+			clientNotifications = append(clientNotifications, cn)
 		}
-		clientNotifications = append(clientNotifications, cn)
 	}
 	return &clientNotifications, nil
 }
@@ -55,9 +53,9 @@ func fromClientNotifications(notifications *[]*client.Notification) *[]*notifica
 		newNotifications = append(newNotifications, &notification{
 			ID:      cn.ID,
 			Address: cn.Address,
-			Message: []*message{(&message{}).fromClientMessage(cn.Message)},
+			Message: &[]*message{(&message{}).fromClientMessage(cn.Message)},
 			Type:    cn.Type,
-			When:    []*when{(&when{}).fromClientWhen(cn)},
+			When:    &[]*when{(&when{}).fromClientWhen(cn)},
 		})
 	}
 	return &newNotifications

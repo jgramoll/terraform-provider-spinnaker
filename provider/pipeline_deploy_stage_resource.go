@@ -42,6 +42,12 @@ func pipelineDeployStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        notificationResource(),
+			},
 			"complete_other_branches_then_fail": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",

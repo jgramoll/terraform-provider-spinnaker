@@ -10,7 +10,7 @@ type when struct {
 	Failed   string
 }
 
-func (w *when) toClientWhen(level client.NotificationLevel) []string {
+func toClientWhen(level client.NotificationLevel, w *when) *[]string {
 	clientWhen := []string{}
 	// TODO
 	if level == client.NotificationLevelPipeline {
@@ -34,7 +34,7 @@ func (w *when) toClientWhen(level client.NotificationLevel) []string {
 			clientWhen = append(clientWhen, client.StageStartingKey)
 		}
 	}
-	return clientWhen
+	return &clientWhen
 }
 
 func (w *when) fromClientWhen(cn *client.Notification) *when {

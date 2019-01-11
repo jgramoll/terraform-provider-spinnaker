@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	stageTypes["spinnaker_pipeline_pipeline_stage"] = client.PipelineType
+	stageTypes["spinnaker_pipeline_pipeline_stage"] = client.PipelineStageType
 }
 
 func TestAccPipelinePipelineStageBasic(t *testing.T) {

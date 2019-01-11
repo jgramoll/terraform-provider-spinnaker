@@ -75,7 +75,9 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	pipeline.Triggers = append(pipeline.Triggers, client.Trigger(trigger))
+	clientTrigger := client.Trigger(trigger)
+	pipeline.AppendTrigger(&clientTrigger)
+
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err

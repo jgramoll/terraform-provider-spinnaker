@@ -103,8 +103,7 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 	if err != nil {
 		return err
 	}
-	idStr := id.String()
-	notification.ID = &idStr
+	notification.ID = id.String()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -112,13 +111,11 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	notifications := *pipeline.Notifications
 	cn, err := notification.toClientNotification(client.NotificationLevelPipeline)
 	if err != nil {
 		return err
 	}
-	notifications = append(notifications, cn)
-	pipeline.Notifications = &notifications
+	pipeline.AppendNotification(cn)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
@@ -146,7 +143,7 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 		log.Println("[WARN] No Pipeline Notification found:", err)
 		d.SetId("")
 	} else {
-		d.SetId(*notification.ID)
+		d.SetId(notification.ID)
 		d.Set("address", notification.Address)
 		newMessage := message{}
 		if notification.Message.CompleteText() != "" {
@@ -175,8 +172,7 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err
 	}
-	id := d.Id()
-	notification.ID = &id
+	notification.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -212,8 +208,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err
 	}
-	id := d.Id()
-	notification.ID = &id
+	notification.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -221,7 +216,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = pipeline.DeleteNotification(id)
+	err = pipeline.DeleteNotification(notification.ID)
 	if err != nil {
 		return err
 	}

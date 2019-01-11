@@ -48,6 +48,13 @@ func pipelineJenkinsStageResource() *schema.Resource {
 				Optional:    true,
 				Elem:        notificationResource(),
 			},
+			"stage_enabled": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Stage will only execute when the supplied expression evaluates true.\nThe expression does not need to be wrapped in ${ and }.\nIf this expression evaluates to false, the stages following this stage will still execute.",
+				Optional:    true,
+				MaxItems:    1,
+				Elem:        stageEnabledResource(),
+			},
 			"complete_other_branches_then_fail": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",

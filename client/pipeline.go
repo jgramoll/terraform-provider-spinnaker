@@ -9,16 +9,15 @@ type ParameterConfig struct{}
 
 // SerializablePipeline deploy pipeline in application
 type SerializablePipeline struct {
-	Application          string            `json:"application"`
-	Disabled             bool              `json:"disabled"`
-	ID                   string            `json:"id"`
-	Index                int               `json:"index"`
-	KeepWaitingPipelines bool              `json:"keepWaitingPipelines"`
-	LimitConcurrent      bool              `json:"limitConcurrent"`
-	Name                 string            `json:"name"`
-	ParameterConfig      []ParameterConfig `json:"parameterConfig"`
-	Triggers             []Trigger         `json:"triggers"`
-	// TODO pointers?
+	Application          string              `json:"application"`
+	Disabled             bool                `json:"disabled"`
+	ID                   string              `json:"id"`
+	Index                int                 `json:"index"`
+	KeepWaitingPipelines bool                `json:"keepWaitingPipelines"`
+	LimitConcurrent      bool                `json:"limitConcurrent"`
+	Name                 string              `json:"name"`
+	ParameterConfig      *[]*ParameterConfig `json:"parameterConfig"`
+	Triggers             *[]*Trigger         `json:"triggers"`
 }
 
 // Pipeline deploy pipeline in application
@@ -66,4 +65,31 @@ func parsePipeline(pipelineHash map[string]interface{}) (*Pipeline, error) {
 		Notifications:        notifications,
 		Stages:               stages,
 	}, nil
+}
+
+// AppendTrigger append trigger
+func (pipeline *Pipeline) AppendTrigger(trigger *Trigger) {
+	if pipeline.Triggers == nil {
+		pipeline.Triggers = &[]*Trigger{}
+	}
+	triggers := append(*pipeline.Triggers, trigger)
+	pipeline.Triggers = &triggers
+}
+
+// AppendStage append stage
+func (pipeline *Pipeline) AppendStage(stage Stage) {
+	if pipeline.Stages == nil {
+		pipeline.Stages = &[]Stage{}
+	}
+	stages := append(*pipeline.Stages, stage)
+	pipeline.Stages = &stages
+}
+
+// AppendNotification append notification
+func (pipeline *Pipeline) AppendNotification(notification *Notification) {
+	if pipeline.Notifications == nil {
+		pipeline.Notifications = &[]*Notification{}
+	}
+	newNotifications := append(*pipeline.Notifications, notification)
+	pipeline.Notifications = &newNotifications
 }

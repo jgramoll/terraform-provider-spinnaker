@@ -6,13 +6,21 @@ import (
 )
 
 type rollbackClusterStage struct {
-	// TODO does this baseStage work?
 	// baseStage
-	Name                 string           `mapstructure:"name"`
-	RefID                string           `mapstructure:"ref_id"`
-	Type                 client.StageType `mapstructure:"type"`
-	RequisiteStageRefIds []string         `mapstructure:"requisite_stage_ref_ids"`
-	StageEnabled         []stageEnabled   `mapstructure:"stage_enabled"`
+	Name                              string                   `mapstructure:"name"`
+	RefID                             string                   `mapstructure:"ref_id"`
+	Type                              client.StageType         `mapstructure:"type"`
+	RequisiteStageRefIds              []string                 `mapstructure:"requisite_stage_ref_ids"`
+	Notifications                     *[]*notification         `mapstructure:"notification"`
+	StageEnabled                      *[]*stageEnabled         `mapstructure:"stage_enabled"`
+	CompleteOtherBranchesThenFail     bool                     `mapstructure:"complete_other_branches_then_fail"`
+	ContinuePipeline                  bool                     `mapstructure:"continue_pipeline"`
+	FailOnFailedExpressions           bool                     `mapstructure:"fail_on_failed_expressions"`
+	FailPipeline                      bool                     `mapstructure:"fail_pipeline"`
+	OverrideTimeout                   bool                     `mapstructure:"override_timeout"`
+	RestrictExecutionDuringTimeWindow bool                     `mapstructure:"restrict_execution_during_time_window"`
+	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
+	// End baseStage
 
 	CloudProvider     string    `mapstructure:"cloud_provider"`
 	CloudProviderType string    `mapstructure:"cloud_provider_type"`
@@ -25,64 +33,78 @@ type rollbackClusterStage struct {
 }
 
 func newRollbackClusterStage() *rollbackClusterStage {
-	return &rollbackClusterStage{Type: client.RollbackClusterType}
+	return &rollbackClusterStage{Type: client.RollbackClusterStageType}
 }
 
 func (s *rollbackClusterStage) toClientStage() (client.Stage, error) {
+	// baseStage
+	notifications, err := toClientNotifications(s.Notifications)
+	if err != nil {
+		return nil, err
+	}
+
 	cs := client.NewRollbackClusterStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
+	cs.Notifications = notifications
+	cs.SendNotifications = notifications != nil && len(*notifications) > 0
+	cs.StageEnabled = toClientStageEnabled(s.StageEnabled)
+	cs.CompleteOtherBranchesThenFail = s.CompleteOtherBranchesThenFail
+	cs.ContinuePipeline = s.ContinuePipeline
+	cs.FailOnFailedExpressions = s.FailOnFailedExpressions
+	cs.FailPipeline = s.FailPipeline
+	cs.OverrideTimeout = s.OverrideTimeout
+	cs.RestrictExecutionDuringTimeWindow = s.RestrictExecutionDuringTimeWindow
+	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
+	// End baseStage
 
-	if len(s.StageEnabled) > 0 {
-		newStageEnabled := client.StageEnabled(s.StageEnabled[0])
-		cs.StageEnabled = &newStageEnabled
-	}
-
-	cs.CloudProvider = s.CloudProvider
-	cs.CloudProviderType = s.CloudProviderType
-	cs.Cluster = s.Cluster
-	cs.Credentials = s.Credentials
-	cs.Regions = s.Regions
 	cs.TargetHealthyRollbackPercentage = s.TargetHealthyRollbackPercentage
-
-	if len(s.Moniker) > 0 {
-		newMoniker := client.Moniker(s.Moniker[0])
-		cs.Moniker = &newMoniker
-	}
 
 	return cs, nil
 }
 
-// TODO can we just update the ptr?
 func (s *rollbackClusterStage) fromClientStage(cs client.Stage) stage {
-	rollbackStage := cs.(*client.RollbackClusterStage)
+	clientStage := cs.(*client.RollbackClusterStage)
 	newStage := newRollbackClusterStage()
-	newStage.Name = rollbackStage.Name
-	newStage.RefID = rollbackStage.RefID
-	newStage.RequisiteStageRefIds = rollbackStage.RequisiteStageRefIds
 
-	if rollbackStage.StageEnabled != nil {
-		newStage.StageEnabled = append(newStage.StageEnabled, stageEnabled(*rollbackStage.StageEnabled))
-	}
+	// baseStage
+	newStage.Name = clientStage.Name
+	newStage.RefID = clientStage.RefID
+	newStage.RequisiteStageRefIds = clientStage.RequisiteStageRefIds
+	newStage.Notifications = fromClientNotifications(clientStage.Notifications)
+	newStage.StageEnabled = fromClientStageEnabled(clientStage.StageEnabled)
+	newStage.CompleteOtherBranchesThenFail = clientStage.CompleteOtherBranchesThenFail
+	newStage.ContinuePipeline = clientStage.ContinuePipeline
+	newStage.FailOnFailedExpressions = clientStage.FailOnFailedExpressions
+	newStage.FailPipeline = clientStage.FailPipeline
+	newStage.OverrideTimeout = clientStage.OverrideTimeout
+	newStage.RestrictExecutionDuringTimeWindow = clientStage.RestrictExecutionDuringTimeWindow
+	newStage.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
+	// end baseStage
 
-	newStage.CloudProvider = rollbackStage.CloudProvider
-	newStage.CloudProviderType = rollbackStage.CloudProviderType
-	newStage.Cluster = rollbackStage.Cluster
-	newStage.Credentials = rollbackStage.Credentials
-	newStage.Regions = rollbackStage.Regions
-	newStage.TargetHealthyRollbackPercentage = rollbackStage.TargetHealthyRollbackPercentage
-
-	if rollbackStage.Moniker != nil {
-		newStage.Moniker = append(newStage.Moniker, moniker(*rollbackStage.Moniker))
-	}
+	newStage.TargetHealthyRollbackPercentage = clientStage.TargetHealthyRollbackPercentage
 
 	return newStage
 }
 
 func (s *rollbackClusterStage) SetResourceData(d *schema.ResourceData) {
-	// TODO
+	// baseStage
 	d.Set("name", s.Name)
+	d.Set("ref_id", s.RefID)
+	d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
+	d.Set("notification", s.Notifications)
+	d.Set("stage_enabled", s.StageEnabled)
+	d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
+	d.Set("continue_pipeline", s.ContinuePipeline)
+	d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
+	d.Set("fail_pipeline", s.FailPipeline)
+	d.Set("override_timeout", s.OverrideTimeout)
+	d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
+	d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	// End baseStage
+
+	d.Set("target_healthy_rollback_percentage", s.TargetHealthyRollbackPercentage)
 }
 
 func (s *rollbackClusterStage) SetRefID(id string) {

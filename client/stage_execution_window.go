@@ -18,7 +18,7 @@ type StageExecutionWindowWhitelist struct {
 
 // StageExecutionWindow when to execute pipeline stage
 type StageExecutionWindow struct {
-	Days      []int                           `json:"days"`
-	Jitter    *StageExecutionWindowJitter     `json:"jitter"`
-	Whitelist []StageExecutionWindowWhitelist `json:"whitelist"`
+	Days      []int                             `json:"days"`
+	Jitter    *StageExecutionWindowJitter       `json:"jitter"`
+	Whitelist *[]*StageExecutionWindowWhitelist `json:"whitelist"`
 }

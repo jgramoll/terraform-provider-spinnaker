@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -86,15 +87,21 @@ func TestParsePipeline(t *testing.T) {
 }
 
 func (pipeline *Pipeline) equals(expected *Pipeline) error {
-	for i, n := range *pipeline.Notifications {
-		expectedNotifications := *expected.Notifications
-		if !reflect.DeepEqual(n.Message, expectedNotifications[i].Message) {
-			return fmt.Errorf("Pipeline Notification Message %v does not match %v", n.Message, expectedNotifications[i].Message)
+	if pipeline.Notifications != nil {
+		if expected.Notifications == nil {
+			return errors.New("Expected Notifications, but was nil")
 		}
-		if !reflect.DeepEqual(n, expectedNotifications[i]) {
-			return fmt.Errorf("Pipeline Notification %v does not match %v", n, expectedNotifications[i])
+		for i, n := range *pipeline.Notifications {
+			expectedNotifications := *expected.Notifications
+			if !reflect.DeepEqual(n.Message, expectedNotifications[i].Message) {
+				return fmt.Errorf("Pipeline Notification Message %v does not match %v", n.Message, expectedNotifications[i].Message)
+			}
+			if !reflect.DeepEqual(n, expectedNotifications[i]) {
+				return fmt.Errorf("Pipeline Notification %v does not match %v", n, expectedNotifications[i])
+			}
 		}
 	}
+
 	if !reflect.DeepEqual(pipeline, expected) {
 		return fmt.Errorf("Pipeline %v does not match %v", pipeline, expected)
 	}

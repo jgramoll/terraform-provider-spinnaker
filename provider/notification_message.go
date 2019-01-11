@@ -10,7 +10,7 @@ type message struct {
 	Starting string
 }
 
-func (m *message) toClientMessage(level client.NotificationLevel) (client.Message, error) {
+func toClientMessage(level client.NotificationLevel, m *message) (client.Message, error) {
 	newMessage, err := client.NewMessage(level)
 	if err != nil {
 		return nil, err

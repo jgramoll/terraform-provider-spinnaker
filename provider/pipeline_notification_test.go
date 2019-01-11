@@ -132,7 +132,7 @@ func testAccCheckPipelineNotifications(resourceName string, expected []string) r
 func ensureNotification(notifications *[]*client.Notification, expected *terraform.ResourceState) error {
 	expectedID := expected.Primary.Attributes["id"]
 	for _, notification := range *notifications {
-		if *notification.ID == expectedID {
+		if notification.ID == expectedID {
 			err := ensureMessage(notification, expected)
 			if err != nil {
 				return err

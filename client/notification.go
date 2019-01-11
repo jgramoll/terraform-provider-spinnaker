@@ -11,7 +11,7 @@ var ErrPipelineNotificationNotFound = errors.New("notification not found")
 
 // SerializableNotification for pipeline
 type SerializableNotification struct {
-	ID      *string           `json:"id"`
+	ID      string            `json:"id,omitempty"`
 	Address string            `json:"address"`
 	Level   NotificationLevel `json:"level"`
 	Type    string            `json:"type"`
@@ -26,10 +26,11 @@ type Notification struct {
 
 //GetNotification Get notification by id
 func (pipeline *Pipeline) GetNotification(notificationID string) (*Notification, error) {
-	notifications := *pipeline.Notifications
-	for _, notification := range notifications {
-		if notification.ID != nil && *notification.ID == notificationID {
-			return notification, nil
+	if pipeline.Notifications != nil {
+		for _, notification := range *pipeline.Notifications {
+			if notification.ID == notificationID {
+				return notification, nil
+			}
 		}
 	}
 	return nil, ErrPipelineNotificationNotFound
@@ -37,11 +38,12 @@ func (pipeline *Pipeline) GetNotification(notificationID string) (*Notification,
 
 // UpdateNotification update notification
 func (pipeline *Pipeline) UpdateNotification(notification *Notification) error {
-	notifications := *pipeline.Notifications
-	for i, t := range notifications {
-		if *t.ID == *notification.ID {
-			notifications[i] = notification
-			return nil
+	if pipeline.Notifications != nil {
+		for i, t := range *pipeline.Notifications {
+			if t.ID == notification.ID {
+				(*pipeline.Notifications)[i] = notification
+				return nil
+			}
 		}
 	}
 	return ErrPipelineNotificationNotFound
@@ -49,23 +51,25 @@ func (pipeline *Pipeline) UpdateNotification(notification *Notification) error {
 
 //DeleteNotification delete notification
 func (pipeline *Pipeline) DeleteNotification(notificationID string) error {
-	notifications := *pipeline.Notifications
-	for i, t := range notifications {
-		if t.ID != nil && *t.ID == notificationID {
-			notifications = append(notifications[:i], notifications[i+1:]...)
-			pipeline.Notifications = &notifications
-			return nil
+	if pipeline.Notifications != nil {
+		notifications := *pipeline.Notifications
+		for i, t := range notifications {
+			if t.ID == notificationID {
+				notifications = append(notifications[:i], notifications[i+1:]...)
+				pipeline.Notifications = &notifications
+				return nil
+			}
 		}
 	}
 	return ErrPipelineNotificationNotFound
 }
 
 func parseNotifications(notificationsHashInterface interface{}) (*[]*Notification, error) {
-	notifications := []*Notification{}
 	if notificationsHashInterface == nil {
-		return &notifications, nil
+		return nil, nil
 	}
 
+	notifications := []*Notification{}
 	notificationsToParse := notificationsHashInterface.([]interface{})
 	for _, notificationInterface := range notificationsToParse {
 		notificationMap := notificationInterface.(map[string]interface{})

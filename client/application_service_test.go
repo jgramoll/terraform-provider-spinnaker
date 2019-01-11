@@ -71,7 +71,6 @@ func TestApplicationCleanup(t *testing.T) {
 
 // GetApplications get all applications
 func (service *ApplicationService) getApplicationByName(name string) (*Application, error) {
-	var applications *[]*Application
 	applications, err := service.GetApplications()
 	if err != nil {
 		return nil, err

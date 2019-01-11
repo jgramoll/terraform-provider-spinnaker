@@ -13,8 +13,9 @@ type stage interface {
 	GetRefID() string
 }
 
-type baseStage struct {
-	Name  string           `mapstructure:"name"`
-	RefID string           `mapstructure:"ref_id"`
-	Type  client.StageType `mapstructure:"type"`
-}
+// TODO why does this not like mapstructure
+// type baseStage struct {
+// 	Name  string           `mapstructure:"name"`
+// 	RefID string           `mapstructure:"ref_id"`
+// 	Type  client.StageType `mapstructure:"type"`
+// }

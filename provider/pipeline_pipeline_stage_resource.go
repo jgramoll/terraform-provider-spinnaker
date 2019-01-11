@@ -42,6 +42,12 @@ func pipelinePipelineResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        notificationResource(),
+			},
 			"stage_enabled": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Stage will only execute when the supplied expression evaluates true.\nThe expression does not need to be wrapped in ${ and }.\nIf this expression evaluates to false, the stages following this stage will still execute.",

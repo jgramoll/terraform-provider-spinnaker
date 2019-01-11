@@ -32,13 +32,11 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	stages := *pipeline.Stages
 	cs, err := stage.toClientStage()
 	if err != nil {
 		return err
 	}
-	stages = append(stages, cs)
-	pipeline.Stages = &stages
+	pipeline.AppendStage(cs)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
