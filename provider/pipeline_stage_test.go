@@ -23,9 +23,9 @@ func testAccCheckPipelineStages(resourceName string, expected []string) resource
 			return err
 		}
 
-		if len(expected) != len(pipeline.Stages) {
+		if len(expected) != len(*pipeline.Stages) {
 			return fmt.Errorf("Stages count of %v is expected to be %v",
-				len(pipeline.Stages), len(expected))
+				len(*pipeline.Stages), len(expected))
 		}
 
 		for _, stageResourceName := range expected {
@@ -44,9 +44,9 @@ func testAccCheckPipelineStages(resourceName string, expected []string) resource
 	}
 }
 
-func ensureStage(stages []client.Stage, expected *terraform.ResourceState) error {
+func ensureStage(stages *[]client.Stage, expected *terraform.ResourceState) error {
 	expectedID := expected.Primary.Attributes["id"]
-	for _, s := range stages {
+	for _, s := range *stages {
 		if s.GetRefID() == expectedID {
 			var expectedType = stageTypes[expected.Type]
 			if expectedType != s.GetType() {

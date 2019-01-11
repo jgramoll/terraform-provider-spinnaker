@@ -34,11 +34,6 @@ func pipelineNotificationResource() *schema.Resource {
 				Description: "Address of the notification (slack channel, email, etc)",
 				Required:    true,
 			},
-			"level": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Level of the notification (pipeline, stage)",
-				Required:    true,
-			},
 			"message": {
 				Type:        schema.TypeList,
 				Description: "Custom messages",
@@ -107,7 +102,8 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 	if err != nil {
 		return err
 	}
-	notification.ID = id.String()
+	idStr := id.String()
+	notification.ID = &idStr
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -115,7 +111,10 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	pipeline.Notifications = append(pipeline.Notifications, *notification.toClientNotification())
+	notifications := *pipeline.Notifications
+	notifications = append(notifications, *notification.toClientNotification(client.NotificationLevelPipeline))
+	pipeline.Notifications = &notifications
+
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
@@ -142,18 +141,17 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 		log.Println("[WARN] No Pipeline Notification found:", err)
 		d.SetId("")
 	} else {
-		d.SetId(notification.ID)
+		d.SetId(*notification.ID)
 		d.Set("address", notification.Address)
-		d.Set("level", notification.Level)
 		newMessage := message{}
-		if notification.Message.Complete != nil {
-			newMessage.Complete = notification.Message.Complete.Text
+		if notification.Message.CompleteText() != "" {
+			newMessage.Complete = notification.Message.CompleteText()
 		}
-		if notification.Message.Starting != nil {
-			newMessage.Starting = notification.Message.Starting.Text
+		if notification.Message.StartingText() != "" {
+			newMessage.Starting = notification.Message.StartingText()
 		}
-		if notification.Message.Failed != nil {
-			newMessage.Failed = notification.Message.Failed.Text
+		if notification.Message.FailedText() != "" {
+			newMessage.Failed = notification.Message.FailedText()
 		}
 		d.Set("message", newMessage)
 		d.Set("type", notification.Type)
@@ -172,7 +170,8 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err
 	}
-	notification.ID = d.Id()
+	id := d.Id()
+	notification.ID = &id
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -180,7 +179,7 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = pipeline.UpdateNotification(notification.toClientNotification())
+	err = pipeline.UpdateNotification(notification.toClientNotification(client.NotificationLevelPipeline))
 	if err != nil {
 		return err
 	}
@@ -203,7 +202,8 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err
 	}
-	notification.ID = d.Id()
+	id := d.Id()
+	notification.ID = &id
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -211,7 +211,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = pipeline.DeleteNotification(notification.ID)
+	err = pipeline.DeleteNotification(id)
 	if err != nil {
 		return err
 	}

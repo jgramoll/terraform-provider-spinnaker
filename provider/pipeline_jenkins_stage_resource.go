@@ -29,6 +29,25 @@ func pipelineJenkinsStageResource() *schema.Resource {
 				Required:    true,
 				ForceNew:    true,
 			},
+			"name": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Name of the stage",
+				Required:    true,
+			},
+			"requisite_stage_ref_ids": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Stage(s) that must be complete before this one",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        notificationResource(),
+			},
 			"complete_other_branches_then_fail": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",
@@ -63,11 +82,6 @@ func pipelineJenkinsStageResource() *schema.Resource {
 				Description: "Name of the Jenkins master where the job will be executed",
 				Required:    true,
 			},
-			"name": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the stage",
-				Required:    true,
-			},
 			"parameters": &schema.Schema{
 				Type:        schema.TypeMap,
 				Description: "Parameters to pass to the Jenkins job",
@@ -77,14 +91,6 @@ func pipelineJenkinsStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the property file to use for results",
 				Optional:    true,
-			},
-			"requisite_stage_ref_ids": &schema.Schema{
-				Type:        schema.TypeList,
-				Description: "Stage(s) that must be complete before this one",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 		},
 	}

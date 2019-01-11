@@ -74,7 +74,6 @@ func testAccPipelineNotificationConfigBasic(address string, count int) string {
 resource "spinnaker_pipeline_notification" "%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	address = "%v"
-	level = "pipeline"
 	message = {
 		complete = "%v is done"
 		failed = "%v is failed"
@@ -109,9 +108,9 @@ func testAccCheckPipelineNotifications(resourceName string, expected []string) r
 			return err
 		}
 
-		if len(expected) != len(pipeline.Notifications) {
+		if len(expected) != len(*pipeline.Notifications) {
 			return fmt.Errorf("Notifications count of %v is expected to be %v",
-				len(pipeline.Notifications), len(expected))
+				len(*pipeline.Notifications), len(expected))
 		}
 
 		for _, notificationResourceName := range expected {
@@ -130,10 +129,10 @@ func testAccCheckPipelineNotifications(resourceName string, expected []string) r
 	}
 }
 
-func ensureNotification(notifications []client.Notification, expected *terraform.ResourceState) error {
+func ensureNotification(notifications *[]client.Notification, expected *terraform.ResourceState) error {
 	expectedID := expected.Primary.Attributes["id"]
-	for _, notification := range notifications {
-		if notification.ID == expectedID {
+	for _, notification := range *notifications {
+		if *notification.ID == expectedID {
 			err := ensureMessage(&notification, expected)
 			if err != nil {
 				return err
@@ -145,17 +144,17 @@ func ensureNotification(notifications []client.Notification, expected *terraform
 }
 
 func ensureMessage(notification *client.Notification, expected *terraform.ResourceState) error {
-	if notification.Message.Complete.Text != expected.Primary.Attributes["message.0.complete"] {
+	if notification.Message.CompleteText() != expected.Primary.Attributes["message.0.complete"] {
 		return fmt.Errorf("Expected complete mesage \"%s\", not \"%s\"",
-			expected.Primary.Attributes["message.0.complete"], notification.Message.Complete.Text)
+			expected.Primary.Attributes["message.0.complete"], notification.Message.CompleteText())
 	}
-	if notification.Message.Starting.Text != expected.Primary.Attributes["message.0.starting"] {
+	if notification.Message.StartingText() != expected.Primary.Attributes["message.0.starting"] {
 		return fmt.Errorf("Expected starting mesage \"%s\", not \"%s\"",
-			expected.Primary.Attributes["message.0.starting"], notification.Message.Complete.Text)
+			expected.Primary.Attributes["message.0.starting"], notification.Message.StartingText())
 	}
-	if notification.Message.Failed.Text != expected.Primary.Attributes["message.0.failed"] {
+	if notification.Message.FailedText() != expected.Primary.Attributes["message.0.failed"] {
 		return fmt.Errorf("Expected failed mesage \"%s\", not \"%s\"",
-			expected.Primary.Attributes["message.0.failed"], notification.Message.Complete.Text)
+			expected.Primary.Attributes["message.0.failed"], notification.Message.FailedText())
 	}
 	return nil
 }

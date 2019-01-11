@@ -11,10 +11,12 @@ func init() {
 
 // JenkinsStage for pipeline
 type JenkinsStage struct {
-	Name                 string    `json:"name"`
-	RefID                string    `json:"refId"`
-	Type                 StageType `json:"type"`
-	RequisiteStageRefIds []string  `json:"requisiteStageRefIds"`
+	Name                 string          `json:"name"`
+	RefID                string          `json:"refId"`
+	Type                 StageType       `json:"type"`
+	RequisiteStageRefIds []string        `json:"requisiteStageRefIds"`
+	Notifications        []*Notification `json:"notifications"`
+	SendNotifications    bool            `json:"sendNotifications"`
 
 	CompleteOtherBranchesThenFail bool              `json:"completeOtherBranchesThenFail"`
 	ContinuePipeline              bool              `json:"continuePipeline"`

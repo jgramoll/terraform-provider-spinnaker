@@ -37,7 +37,6 @@ resource "spinnaker_pipeline_trigger" "jenkins" {
 resource "spinnaker_pipeline_notification" "edge" {
 	pipeline = "${spinnaker_pipeline.edge.id}"
 	address = "bridge-career-deploys"
-	level = "pipeline"
 	message = {
 		complete = "edge is done"
 		failed = "edge is failed"

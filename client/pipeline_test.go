@@ -31,16 +31,18 @@ func TestParsePipeline(t *testing.T) {
 	expectedStage.AmiName = "ami-test"
 
 	expectedNotification := Notification{
-		Address: "test-address",
-		Level:   "pipeline",
-		Type:    "slack",
-		Message: Message{
+		SerializableNotification: SerializableNotification{
+			Address: "test-address",
+			Level:   NotificationLevelPipeline,
+			Type:    "slack",
+			When: []string{
+				PipelineStartingKey,
+				PipelineCompleteKey,
+			},
+		},
+		Message: &PipelineMessage{
 			Complete: &MessageText{Text: "pipe is complete"},
 			Failed:   &MessageText{Text: "pipe is failed"},
-		},
-		When: []string{
-			PipelineStartingKey,
-			PipelineCompleteKey,
 		},
 	}
 
@@ -59,10 +61,10 @@ func TestParsePipeline(t *testing.T) {
 				"level":   expectedNotification.Level,
 				"message": map[string]interface{}{
 					PipelineCompleteKey: map[string]string{
-						"text": expectedNotification.Message.Complete.Text,
+						"text": expectedNotification.Message.CompleteText(),
 					},
 					PipelineFailedKey: map[string]string{
-						"text": expectedNotification.Message.Failed.Text,
+						"text": expectedNotification.Message.FailedText(),
 					},
 				},
 				"type": expectedNotification.Type,
@@ -75,8 +77,8 @@ func TestParsePipeline(t *testing.T) {
 	}
 	expected := NewPipeline()
 	expected.Name = expectedName
-	expected.Stages = []Stage{expectedStage}
-	expected.Notifications = []Notification{expectedNotification}
+	expected.Stages = &[]Stage{expectedStage}
+	expected.Notifications = &[]Notification{expectedNotification}
 	err = pipeline.equals(expected)
 	if err != nil {
 		t.Fatal(err)
@@ -84,6 +86,15 @@ func TestParsePipeline(t *testing.T) {
 }
 
 func (pipeline *Pipeline) equals(expected *Pipeline) error {
+	for i, n := range *pipeline.Notifications {
+		expectedNotifications := *expected.Notifications
+		if !reflect.DeepEqual(n.Message, expectedNotifications[i].Message) {
+			return fmt.Errorf("Pipeline Notification Message %v does not match %v", n.Message, expectedNotifications[i].Message)
+		}
+		if !reflect.DeepEqual(n, expectedNotifications[i]) {
+			return fmt.Errorf("Pipeline Notification %v does not match %v", n, expectedNotifications[i])
+		}
+	}
 	if !reflect.DeepEqual(pipeline, expected) {
 		return fmt.Errorf("Pipeline %v does not match %v", pipeline, expected)
 	}
