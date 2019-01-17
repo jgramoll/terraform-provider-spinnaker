@@ -1,23 +1,32 @@
 package client
 
-// DestroyServerGroupType destroy server group stage
-var DestroyServerGroupType StageType = "destroyServerGroup"
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
+// DestroyServerGroupStageType destroy server group stage
+var DestroyServerGroupStageType StageType = "destroyServerGroup"
 
 func init() {
-	stageFactories[DestroyServerGroupType] = func() interface{} {
-		return NewDestroyServerGroupStage()
-	}
+	stageFactories[DestroyServerGroupStageType] = parseDestroyServerGroupStage
 }
 
-// DestroyServerGroupStage for pipeline
-type DestroyServerGroupStage struct {
-	// TODO why does BaseStage not like mapstructure
+type serializableDestroyServerGroupStage struct {
 	// BaseStage
-	Name                 string        `json:"name"`
-	RefID                string        `json:"refId"`
-	Type                 StageType     `json:"type"`
-	RequisiteStageRefIds []string      `json:"requisiteStageRefIds"`
-	StageEnabled         *StageEnabled `json:"stageEnabled"`
+	Name                              string                `json:"name"`
+	RefID                             string                `json:"refId"`
+	Type                              StageType             `json:"type"`
+	RequisiteStageRefIds              []string              `json:"requisiteStageRefIds"`
+	SendNotifications                 bool                  `json:"sendNotifications"`
+	StageEnabled                      *StageEnabled         `json:"stageEnabled"`
+	CompleteOtherBranchesThenFail     bool                  `json:"completeOtherBranchesThenFail"`
+	ContinuePipeline                  bool                  `json:"continuePipeline"`
+	FailOnFailedExpressions           bool                  `json:"failOnFailedExpressions"`
+	FailPipeline                      bool                  `json:"failPipeline"`
+	OverrideTimeout                   bool                  `json:"overrideTimeout"`
+	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
+	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
+	// End BaseStage
 
 	CloudProvider     string   `json:"cloudProvider"`
 	CloudProviderType string   `json:"cloudProviderType"`
@@ -28,12 +37,22 @@ type DestroyServerGroupStage struct {
 	Target            string   `json:"target"`
 }
 
+// DestroyServerGroupStage for pipeline
+type DestroyServerGroupStage struct {
+	*serializableDestroyServerGroupStage
+	Notifications *[]*Notification `json:"notifications"`
+}
+
+func newSerializableDestroyServerGroupStage() *serializableDestroyServerGroupStage {
+	return &serializableDestroyServerGroupStage{
+		Type: DestroyServerGroupStageType,
+	}
+}
+
 // NewDestroyServerGroupStage for pipeline
 func NewDestroyServerGroupStage() *DestroyServerGroupStage {
 	return &DestroyServerGroupStage{
-		// BaseStage: BaseStage{
-		Type: DestroyServerGroupType,
-		// },
+		serializableDestroyServerGroupStage: newSerializableDestroyServerGroupStage(),
 	}
 }
 
@@ -50,4 +69,20 @@ func (s *DestroyServerGroupStage) GetType() StageType {
 // GetRefID for Stage interface
 func (s *DestroyServerGroupStage) GetRefID() string {
 	return s.RefID
+}
+
+func parseDestroyServerGroupStage(stageMap map[string]interface{}) (Stage, error) {
+	stage := newSerializableDestroyServerGroupStage()
+	if err := mapstructure.Decode(stageMap, stage); err != nil {
+		return nil, err
+	}
+
+	notifications, err := parseNotifications(stageMap["notifications"])
+	if err != nil {
+		return nil, err
+	}
+	return &DestroyServerGroupStage{
+		serializableDestroyServerGroupStage: stage,
+		Notifications:                       notifications,
+	}, nil
 }

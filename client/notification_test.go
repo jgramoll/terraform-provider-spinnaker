@@ -6,12 +6,12 @@ import (
 
 func newNotificationTestPipeline() (*Pipeline, *Notification) {
 	expected := Notification{
-		ID: "notId",
+		SerializableNotification: SerializableNotification{
+			ID: "notId",
+		},
 	}
 	return &Pipeline{
-		PipelineWithoutStages: PipelineWithoutStages{
-			Notifications: []Notification{expected},
-		},
+		Notifications: &[]*Notification{&expected},
 	}, &expected
 }
 
@@ -35,7 +35,7 @@ func TestUpdateNotification(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if pipeline.Notifications[0].Address == expected.Address {
+	if (*pipeline.Notifications)[0].Address == expected.Address {
 		t.Fatal("Pipeline Notification was not updated")
 	}
 }
@@ -46,7 +46,7 @@ func TestDeleteNotification(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(pipeline.Notifications) != 0 {
+	if len(*pipeline.Notifications) != 0 {
 		t.Fatal("Pipeline Notification was not deleted")
 	}
 }

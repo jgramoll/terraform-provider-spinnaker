@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineBakeStageResource() *schema.Resource {
-	newBakeStageInterface := func() interface{} {
+	newBakeStageInterface := func() stage {
 		return newBakeStage()
 	}
 	return &schema.Resource{
@@ -28,6 +28,32 @@ func pipelineBakeStageResource() *schema.Resource {
 				Description: "Id of the pipeline to send notification",
 				Required:    true,
 				ForceNew:    true,
+			},
+			"name": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Name of the stage",
+				Required:    true,
+			},
+			"requisite_stage_ref_ids": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Stage(s) that must be complete before this one",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        notificationResource(),
+			},
+			"stage_enabled": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Stage will only execute when the supplied expression evaluates true.\nThe expression does not need to be wrapped in ${ and }.\nIf this expression evaluates to false, the stages following this stage will still execute.",
+				Optional:    true,
+				MaxItems:    1,
+				Elem:        stageEnabledResource(),
 			},
 			"ami_name": &schema.Schema{
 				Type:        schema.TypeString,
@@ -71,11 +97,6 @@ func pipelineBakeStageResource() *schema.Resource {
 				Description: "Extra attributes to give the packer template",
 				Optional:    true,
 			},
-			"name": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the stage",
-				Required:    true,
-			},
 			"rebake": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "Rebake image without regard to the status of any existing bake",
@@ -85,14 +106,6 @@ func pipelineBakeStageResource() *schema.Resource {
 			"regions": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "regions to create the ami (us-east-1)",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"requisite_stage_ref_ids": &schema.Schema{
-				Type:        schema.TypeList,
-				Description: "Stage(s) that must be complete before this one",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

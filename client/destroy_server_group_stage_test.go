@@ -19,10 +19,10 @@ func TestDestroyServerGroupStageGetName(t *testing.T) {
 }
 
 func TestDestroyServerGroupStageGetType(t *testing.T) {
-	if destroyServerGroupStage.GetType() != DestroyServerGroupType {
-		t.Fatalf("Destroy Server Group stage GetType() should be %s, not \"%s\"", DestroyServerGroupType, destroyServerGroupStage.GetType())
+	if destroyServerGroupStage.GetType() != DestroyServerGroupStageType {
+		t.Fatalf("Destroy Server Group stage GetType() should be %s, not \"%s\"", DestroyServerGroupStageType, destroyServerGroupStage.GetType())
 	}
-	if destroyServerGroupStage.Type != DestroyServerGroupType {
-		t.Fatalf("Destroy Server Group stage Type should be %s, not \"%s\"", DestroyServerGroupType, destroyServerGroupStage.Type)
+	if destroyServerGroupStage.Type != DestroyServerGroupStageType {
+		t.Fatalf("Destroy Server Group stage Type should be %s, not \"%s\"", DestroyServerGroupStageType, destroyServerGroupStage.Type)
 	}
 }

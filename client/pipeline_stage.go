@@ -1,39 +1,55 @@
 package client
 
-// PipelineType pipeline stage
-var PipelineType StageType = "pipeline"
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
+// PipelineStageType pipeline stage
+var PipelineStageType StageType = "pipeline"
 
 func init() {
-	stageFactories[PipelineType] = func() interface{} {
-		return NewPipelineStage()
-	}
+	stageFactories[PipelineStageType] = parsePipelineStage
+}
+
+type serializablePipelineStage struct {
+	// BaseStage
+	Name                              string                `json:"name"`
+	RefID                             string                `json:"refId"`
+	Type                              StageType             `json:"type"`
+	RequisiteStageRefIds              []string              `json:"requisiteStageRefIds"`
+	SendNotifications                 bool                  `json:"sendNotifications"`
+	StageEnabled                      *StageEnabled         `json:"stageEnabled"`
+	CompleteOtherBranchesThenFail     bool                  `json:"completeOtherBranchesThenFail"`
+	ContinuePipeline                  bool                  `json:"continuePipeline"`
+	FailOnFailedExpressions           bool                  `json:"failOnFailedExpressions"`
+	FailPipeline                      bool                  `json:"failPipeline"`
+	OverrideTimeout                   bool                  `json:"overrideTimeout"`
+	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
+	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
+	// End BaseStage
+
+	Application        string            `json:"application"`
+	Pipeline           string            `json:"pipeline"`
+	PipelineParameters map[string]string `json:"pipelineParameters"`
+	WaitForCompletion  bool              `json:"waitForCompletion"`
 }
 
 // PipelineStage for pipeline
 type PipelineStage struct {
-	// TODO why does BaseStage not like mapstructure
-	// BaseStage
-	Name                 string        `json:"name"`
-	RefID                string        `json:"refId"`
-	Type                 StageType     `json:"type"`
-	RequisiteStageRefIds []string      `json:"requisiteStageRefIds"`
-	StageEnabled         *StageEnabled `json:"stageEnabled"`
+	*serializablePipelineStage
+	Notifications *[]*Notification `json:"notifications"`
+}
 
-	Application                   string            `json:"application"`
-	CompleteOtherBranchesThenFail bool              `json:"completeOtherBranchesThenFail"`
-	ContinuePipeline              bool              `json:"continuePipeline"`
-	FailPipeline                  bool              `json:"failPipeline"`
-	Pipeline                      string            `json:"pipeline"`
-	PipelineParameters            map[string]string `json:"pipelineParameters"`
-	WaitForCompletion             bool              `json:"waitForCompletion"`
+func newSerializablePipelineStage() *serializablePipelineStage {
+	return &serializablePipelineStage{
+		Type: PipelineStageType,
+	}
 }
 
 // NewPipelineStage for pipeline
 func NewPipelineStage() *PipelineStage {
 	return &PipelineStage{
-		// BaseStage: BaseStage{
-		Type: PipelineType,
-		// },
+		serializablePipelineStage: newSerializablePipelineStage(),
 	}
 }
 
@@ -50,4 +66,20 @@ func (s *PipelineStage) GetType() StageType {
 // GetRefID for Stage interface
 func (s *PipelineStage) GetRefID() string {
 	return s.RefID
+}
+
+func parsePipelineStage(stageMap map[string]interface{}) (Stage, error) {
+	stage := newSerializablePipelineStage()
+	if err := mapstructure.Decode(stageMap, stage); err != nil {
+		return nil, err
+	}
+
+	notifications, err := parseNotifications(stageMap["notifications"])
+	if err != nil {
+		return nil, err
+	}
+	return &PipelineStage{
+		serializablePipelineStage: stage,
+		Notifications:             notifications,
+	}, nil
 }

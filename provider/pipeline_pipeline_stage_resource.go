@@ -5,7 +5,7 @@ import (
 )
 
 func pipelinePipelineResource() *schema.Resource {
-	newStageInterface := func() interface{} {
+	newStageInterface := func() stage {
 		return newPipelineStage()
 	}
 	return &schema.Resource{
@@ -41,6 +41,12 @@ func pipelinePipelineResource() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        notificationResource(),
 			},
 			"stage_enabled": &schema.Schema{
 				Type:        schema.TypeList,

@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	stageTypes["spinnaker_pipeline_rollback_cluster_stage"] = client.RollbackClusterType
+	stageTypes["spinnaker_pipeline_rollback_cluster_stage"] = client.RollbackClusterStageType
 }
 
 func TestAccPipelineRollbackClusterStageBasic(t *testing.T) {

@@ -103,9 +103,9 @@ func testAccCheckPipelineTriggers(resourceName string, expected []string) resour
 			return err
 		}
 
-		if len(expected) != len(pipeline.Triggers) {
+		if len(expected) != len(*pipeline.Triggers) {
 			return fmt.Errorf("Trigger count of %v is expected to be %v",
-				len(pipeline.Triggers), len(expected))
+				len(*pipeline.Triggers), len(expected))
 		}
 
 		for _, triggerResourceName := range expected {
@@ -124,9 +124,9 @@ func testAccCheckPipelineTriggers(resourceName string, expected []string) resour
 	}
 }
 
-func ensureTrigger(triggers []client.Trigger, expected *terraform.ResourceState) error {
+func ensureTrigger(triggers *[]*client.Trigger, expected *terraform.ResourceState) error {
 	expectedID := expected.Primary.Attributes["id"]
-	for _, trigger := range triggers {
+	for _, trigger := range *triggers {
 		if trigger.ID == expectedID {
 			return nil
 		}

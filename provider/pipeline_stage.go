@@ -7,14 +7,15 @@ import (
 
 type stage interface {
 	fromClientStage(client.Stage) stage
-	toClientStage() client.Stage
+	toClientStage() (client.Stage, error)
 	SetResourceData(*schema.ResourceData)
 	SetRefID(string)
 	GetRefID() string
 }
 
-type baseStage struct {
-	Name  string           `mapstructure:"name"`
-	RefID string           `mapstructure:"ref_id"`
-	Type  client.StageType `mapstructure:"type"`
-}
+// TODO why does this not like mapstructure
+// type baseStage struct {
+// 	Name  string           `mapstructure:"name"`
+// 	RefID string           `mapstructure:"ref_id"`
+// 	Type  client.StageType `mapstructure:"type"`
+// }

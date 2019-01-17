@@ -8,7 +8,7 @@ func newStageTestPipeline() (*Pipeline, *BakeStage) {
 	expected := NewBakeStage()
 	expected.RefID = "stageId"
 	return &Pipeline{
-		Stages: []Stage{expected},
+		Stages: &[]Stage{expected},
 	}, expected
 }
 
@@ -32,8 +32,9 @@ func TestUpdateStage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if pipeline.Stages[0].GetName() == expected.Name {
-		t.Fatal("Pipeline Stage was not updated")
+	stages := *pipeline.Stages
+	if stages[0].GetName() != expected.Name {
+		t.Fatalf("Stage was not updated. Expected %v, got %v", expected.Name, stages[0].GetName())
 	}
 }
 
@@ -43,7 +44,7 @@ func TestDeleteStage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(pipeline.Stages) != 0 {
+	if len(*pipeline.Stages) != 0 {
 		t.Fatal("Pipeline Stage was not deleted")
 	}
 }

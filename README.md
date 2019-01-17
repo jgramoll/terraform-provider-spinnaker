@@ -37,7 +37,6 @@ resource "spinnaker_pipeline_trigger" "jenkins" {
 resource "spinnaker_pipeline_notification" "edge" {
 	pipeline = "${spinnaker_pipeline.edge.id}"
 	address = "bridge-career-deploys"
-	level = "pipeline"
 	message = {
 		complete = "edge is done"
 		failed = "edge is failed"
@@ -61,6 +60,17 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
 	name     = "Stage Jenkins"
 
 	requisite_stage_ref_ids = ["${spinnaker_pipeline_bake_stage.id}"]
+
+	notification {
+		address = "#my-slack-channel"
+		message = {
+			failed = "Jenkins Stage failed"
+		}
+		type = "slack"
+		when = {
+			failed = true
+		}
+	}
 }
 
 resource "spinnaker_pipeline_deploy_stage" "deploy" {

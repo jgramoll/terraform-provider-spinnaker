@@ -13,6 +13,7 @@ import (
 // ErrNotificationNotFound notification not found
 var ErrNotificationNotFound = errors.New("Could not find notification")
 
+// PipelineKey key for pipeline in map
 const PipelineKey = "pipeline"
 
 func pipelineNotificationResource() *schema.Resource {
@@ -32,11 +33,6 @@ func pipelineNotificationResource() *schema.Resource {
 			"address": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Address of the notification (slack channel, email, etc)",
-				Required:    true,
-			},
-			"level": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Level of the notification (pipeline, stage)",
 				Required:    true,
 			},
 			"message": {
@@ -115,7 +111,12 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	pipeline.Notifications = append(pipeline.Notifications, *notification.toClientNotification())
+	cn, err := notification.toClientNotification(client.NotificationLevelPipeline)
+	if err != nil {
+		return err
+	}
+	pipeline.AppendNotification(cn)
+
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
@@ -144,16 +145,15 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 	} else {
 		d.SetId(notification.ID)
 		d.Set("address", notification.Address)
-		d.Set("level", notification.Level)
 		newMessage := message{}
-		if notification.Message.Complete != nil {
-			newMessage.Complete = notification.Message.Complete.Text
+		if notification.Message.CompleteText() != "" {
+			newMessage.Complete = notification.Message.CompleteText()
 		}
-		if notification.Message.Starting != nil {
-			newMessage.Starting = notification.Message.Starting.Text
+		if notification.Message.StartingText() != "" {
+			newMessage.Starting = notification.Message.StartingText()
 		}
-		if notification.Message.Failed != nil {
-			newMessage.Failed = notification.Message.Failed.Text
+		if notification.Message.FailedText() != "" {
+			newMessage.Failed = notification.Message.FailedText()
 		}
 		d.Set("message", newMessage)
 		d.Set("type", notification.Type)
@@ -180,7 +180,12 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 
-	err = pipeline.UpdateNotification(notification.toClientNotification())
+	cn, err := notification.toClientNotification(client.NotificationLevelPipeline)
+	if err != nil {
+		return err
+	}
+
+	err = pipeline.UpdateNotification(cn)
 	if err != nil {
 		return err
 	}

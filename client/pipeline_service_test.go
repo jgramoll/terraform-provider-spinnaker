@@ -74,7 +74,7 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 	newName := fmt.Sprintf("My New Name Pipe %d", rand.Int())
 	pipeline.Name = newName
 	pipeline.Application = newApp
-	pipeline.Stages = []Stage{
+	pipeline.Stages = &[]Stage{
 		NewBakeStage(),
 	}
 	err = pipelineService.UpdatePipeline(pipeline)

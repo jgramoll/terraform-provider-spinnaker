@@ -1,22 +1,32 @@
 package client
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 // BakeStageType bake stage
 var BakeStageType StageType = "bake"
 
 func init() {
-	stageFactories[BakeStageType] = func() interface{} {
-		return NewBakeStage()
-	}
+	stageFactories[BakeStageType] = parseBakeStage
 }
 
-// BakeStage for pipeline
-type BakeStage struct {
-	// TODO why does BaseStage not like mapstructure
+type serializableBakeStage struct {
 	// BaseStage
-	Name                 string    `json:"name"`
-	RefID                string    `json:"refId"`
-	Type                 StageType `json:"type"`
-	RequisiteStageRefIds []string  `json:"requisiteStageRefIds"`
+	Name                              string                `json:"name"`
+	RefID                             string                `json:"refId"`
+	Type                              StageType             `json:"type"`
+	RequisiteStageRefIds              []string              `json:"requisiteStageRefIds"`
+	SendNotifications                 bool                  `json:"sendNotifications"`
+	StageEnabled                      *StageEnabled         `json:"stageEnabled"`
+	CompleteOtherBranchesThenFail     bool                  `json:"completeOtherBranchesThenFail"`
+	ContinuePipeline                  bool                  `json:"continuePipeline"`
+	FailOnFailedExpressions           bool                  `json:"failOnFailedExpressions"`
+	FailPipeline                      bool                  `json:"failPipeline"`
+	OverrideTimeout                   bool                  `json:"overrideTimeout"`
+	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
+	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
+	// End BaseStage
 
 	AmiName            string            `json:"amiName"`
 	AmiSuffix          string            `json:"amiSuffix,omitempty"`
@@ -28,19 +38,28 @@ type BakeStage struct {
 	ExtendedAttributes map[string]string `json:"extendedAttributes"`
 	Rebake             bool              `json:"rebake"`
 	Regions            []string          `json:"regions"`
-	RequisiteStages    []string          `json:"requisiteStages"`
 	StoreType          string            `json:"storeType"`
 	TemplateFileName   string            `json:"templateFileName"`
 	VarFileName        string            `json:"varFileName,omitempty"`
 	VMType             string            `json:"vmType"`
 }
 
+// BakeStage for pipeline
+type BakeStage struct {
+	*serializableBakeStage
+	Notifications *[]*Notification `json:"notifications"`
+}
+
+func newSerializableBakeStage() *serializableBakeStage {
+	return &serializableBakeStage{
+		Type: BakeStageType,
+	}
+}
+
 // NewBakeStage for pipeline
 func NewBakeStage() *BakeStage {
 	return &BakeStage{
-		// BaseStage: BaseStage{
-		Type: BakeStageType,
-		// },
+		serializableBakeStage: newSerializableBakeStage(),
 	}
 }
 
@@ -57,4 +76,20 @@ func (s *BakeStage) GetType() StageType {
 // GetRefID for Stage interface
 func (s *BakeStage) GetRefID() string {
 	return s.RefID
+}
+
+func parseBakeStage(stageMap map[string]interface{}) (Stage, error) {
+	stage := newSerializableBakeStage()
+	if err := mapstructure.Decode(stageMap, stage); err != nil {
+		return nil, err
+	}
+
+	notifications, err := parseNotifications(stageMap["notifications"])
+	if err != nil {
+		return nil, err
+	}
+	return &BakeStage{
+		serializableBakeStage: stage,
+		Notifications:         notifications,
+	}, nil
 }

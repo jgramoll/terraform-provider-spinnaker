@@ -5,7 +5,7 @@ import (
 )
 
 func pipelineDeployStageResource() *schema.Resource {
-	newDeployStageInterface := func() interface{} {
+	newDeployStageInterface := func() stage {
 		return newDeployStage()
 	}
 	return &schema.Resource{
@@ -41,6 +41,12 @@ func pipelineDeployStageResource() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        notificationResource(),
 			},
 			"complete_other_branches_then_fail": &schema.Schema{
 				Type:        schema.TypeBool,

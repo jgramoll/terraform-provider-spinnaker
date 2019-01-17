@@ -19,7 +19,7 @@ type Pipeline struct {
 // TODO better way?
 func (pipeline *Pipeline) ToClientPipeline() *client.Pipeline {
 	return &client.Pipeline{
-		PipelineWithoutStages: client.PipelineWithoutStages{
+		SerializablePipeline: client.SerializablePipeline{
 			Application:          pipeline.Application,
 			Disabled:             pipeline.Disabled,
 			ID:                   pipeline.ID,

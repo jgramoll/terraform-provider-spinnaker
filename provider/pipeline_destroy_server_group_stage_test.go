@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	stageTypes["spinnaker_pipeline_destroy_server_group_stage"] = client.DestroyServerGroupType
+	stageTypes["spinnaker_pipeline_destroy_server_group_stage"] = client.DestroyServerGroupStageType
 }
 
 func TestAccPipelineDestroyServerGroupStageBasic(t *testing.T) {
