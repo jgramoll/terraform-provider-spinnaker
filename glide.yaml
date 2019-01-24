@@ -1,8 +1,0 @@
-package: github.com/jgramoll/terraform-provider-spinnaker
-import:
-- package: github.com/hashicorp/terraform
-  version: v0.11.6
-  subpackages:
-  - helper/schema
-  - plugin
-  - terraform

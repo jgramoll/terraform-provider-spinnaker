@@ -77,6 +77,19 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 	pipeline.Stages = &[]Stage{
 		NewBakeStage(),
 	}
+	pipeline.ParameterConfig = &[]*PipelineParameter{
+		&PipelineParameter{Name: "new parameter"},
+		&PipelineParameter{Name: "descriptive parameter", Description: "This is a very descriptive parameter."},
+		&PipelineParameter{
+			Name:        "Options parameter",
+			Description: "Setting parameter via options.",
+			HasOptions:  true,
+			Options: &[]PipelineParameterOption{
+				PipelineParameterOption{Value: "something"},
+			},
+			Required: true,
+		},
+	}
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		t.Fatal(err)

@@ -62,6 +62,40 @@ func pipelineResource() *schema.Resource {
 				Optional:    true,
 				Default:     0,
 			},
+			"parameter": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Pipeline parameters",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"option": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Required: true,
+									},
+								},
+							},
+						},
+						"required": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  false,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -102,13 +136,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[INFO] Got Pipeline %s", pipeline.ID)
-	d.SetId(pipeline.ID)
-	d.Set(ApplicationKey, pipeline.Application)
-	d.Set("name", pipeline.Name)
-	d.Set("index", pipeline.Index)
-	d.Set("disabled", pipeline.Disabled)
-	d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
-	d.Set("limit_concurrent", pipeline.LimitConcurrent)
+	SetResourceData(pipeline, d)
 	return nil
 }
 
@@ -121,14 +149,15 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	PipelineFromResourceData(pipeline, d)
 
 	// TODO can we use mapstructure
-	pipeline.Index = d.Get("index").(int)
-	pipeline.Application = d.Get(ApplicationKey).(string)
-	pipeline.Name = d.Get("name").(string)
-	pipeline.Disabled = d.Get("disabled").(bool)
-	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
-	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
+	// err = mapstructure.Decode(d.Get(""), &pipeline)
+	// if err != nil {
+	// 	return err
+	// }
+	// fmt.Printf("State: %+v\n", d.Get(""))
+	// fmt.Printf("Pipeline after mapstructure: %+v\n", pipeline)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {

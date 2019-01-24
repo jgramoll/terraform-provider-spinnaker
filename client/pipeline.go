@@ -4,20 +4,17 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// ParameterConfig config for pipeline parameters
-type ParameterConfig struct{}
-
 // SerializablePipeline deploy pipeline in application
 type SerializablePipeline struct {
-	Application          string              `json:"application"`
-	Disabled             bool                `json:"disabled"`
-	ID                   string              `json:"id"`
-	Index                int                 `json:"index"`
-	KeepWaitingPipelines bool                `json:"keepWaitingPipelines"`
-	LimitConcurrent      bool                `json:"limitConcurrent"`
-	Name                 string              `json:"name"`
-	ParameterConfig      *[]*ParameterConfig `json:"parameterConfig"`
-	Triggers             *[]*Trigger         `json:"triggers"`
+	Application          string                `json:"application"`
+	Disabled             bool                  `json:"disabled"`
+	ID                   string                `json:"id"`
+	Index                int                   `json:"index"`
+	KeepWaitingPipelines bool                  `json:"keepWaitingPipelines"`
+	LimitConcurrent      bool                  `json:"limitConcurrent"`
+	Name                 string                `json:"name"`
+	ParameterConfig      *[]*PipelineParameter `json:"parameterConfig"`
+	Triggers             *[]*Trigger           `json:"triggers"`
 }
 
 // Pipeline deploy pipeline in application
