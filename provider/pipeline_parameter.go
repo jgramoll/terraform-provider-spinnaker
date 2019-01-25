@@ -30,6 +30,7 @@ func (parameters *pipelineParameter) ToClientPipelineParameterOption() *[]*clien
 	return &options
 }
 
+// PipelineParametersFromResourceData
 func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.PipelineParameter {
 	parameters := []*client.PipelineParameter{}
 	state := d.Get("parameter").([]interface{})

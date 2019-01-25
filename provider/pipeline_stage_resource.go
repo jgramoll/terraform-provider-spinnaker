@@ -2,12 +2,20 @@ package provider
 
 import (
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
+
+func resourcePipelineImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	id := strings.Split(d.Id(), "_")
+	d.Set(PipelineKey, id[0])
+	d.SetId(id[1])
+	return []*schema.ResourceData{d}, nil
+}
 
 func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createStage func() stage) error {
 	pipelineLock.Lock()

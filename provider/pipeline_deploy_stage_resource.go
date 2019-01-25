@@ -22,7 +22,7 @@ func pipelineDeployStageResource() *schema.Resource {
 			return resourcePipelineStageDelete(d, m, newDeployStageInterface)
 		},
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: resourcePipelineImporter,
 		},
 
 		Schema: map[string]*schema.Schema{
