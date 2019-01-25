@@ -22,7 +22,7 @@ func pipelineJenkinsStageResource() *schema.Resource {
 			return resourcePipelineStageDelete(d, m, newJenkinsStageInterface)
 		},
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: resourcePipelineImporter,
 		},
 
 		Schema: map[string]*schema.Schema{
