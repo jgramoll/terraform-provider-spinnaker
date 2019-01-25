@@ -21,6 +21,9 @@ func pipelineDeployStageResource() *schema.Resource {
 		Delete: func(d *schema.ResourceData, m interface{}) error {
 			return resourcePipelineStageDelete(d, m, newDeployStageInterface)
 		},
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{

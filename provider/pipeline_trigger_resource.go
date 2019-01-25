@@ -15,6 +15,9 @@ func pipelineTriggerResource() *schema.Resource {
 		Read:   resourcePipelineTriggerRead,
 		Update: resourcePipelineTriggerUpdate,
 		Delete: resourcePipelineTriggerDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{

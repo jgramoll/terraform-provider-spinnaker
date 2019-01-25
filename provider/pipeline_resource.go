@@ -26,6 +26,9 @@ func pipelineResource() *schema.Resource {
 		Read:   resourcePipelineRead,
 		Update: resourcePipelineUpdate,
 		Delete: resourcePipelineDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			ApplicationKey: &schema.Schema{
