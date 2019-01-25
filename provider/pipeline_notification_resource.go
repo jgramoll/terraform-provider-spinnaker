@@ -22,6 +22,9 @@ func pipelineNotificationResource() *schema.Resource {
 		Read:   resourcePipelineNotificationRead,
 		Update: resourcePipelineNotificationUpdate,
 		Delete: resourcePipelineNotificationDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{
