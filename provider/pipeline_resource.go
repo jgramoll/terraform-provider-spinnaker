@@ -72,7 +72,6 @@ func pipelineResource() *schema.Resource {
 							Type:        schema.TypeString,
 							Description: "Default value",
 							Optional:    true,
-							Default:     false,
 						},
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
@@ -82,7 +81,6 @@ func pipelineResource() *schema.Resource {
 							Type:        schema.TypeString,
 							Description: "A label to display when users are triggering the pipeline manually",
 							Optional:    true,
-							Default:     false,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,

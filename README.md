@@ -7,7 +7,10 @@ Terraform Provider to manage spinnaker pipelines
 
 You should have a working Go environment setup.  If not check out the Go [getting started](http://golang.org/doc/install) guide.
 
-[Glide](https://github.com/Masterminds/glide) is used for dependency management.  To install all dependencies run `glide i`.
+[Go modules](https://github.com/golang/go/wiki/Modules) are used for dependency management.  To install all dependencies run the following:
+
+`export GO111MODULE=on`
+`go mod vendor`
 
 ### Install ###
 
