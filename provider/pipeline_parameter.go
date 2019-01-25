@@ -10,10 +10,24 @@ type pipelineParameterOption struct {
 }
 
 type pipelineParameter struct {
-	Description string                    `mapstructure:"description"`
-	Name        string                    `mapstructure:"name"`
-	Options     []pipelineParameterOption `mapstructure:"option"`
-	Required    bool                      `mapstructure:"required"`
+	Default     string                     `mapstructure:"default"`
+	Description string                     `mapstructure:"description"`
+	Label       string                     `mapstructure:"label"`
+	Name        string                     `mapstructure:"name"`
+	Options     []*pipelineParameterOption `mapstructure:"options"`
+	Required    bool                       `mapstructure:"required"`
+}
+
+func (parameters *pipelineParameter) ToClientPipelineParameterOption() []*client.PipelineParameterOption {
+	options := []*client.PipelineParameterOption{}
+
+	for _, option := range parameters.Options {
+		options = append(options, &client.PipelineParameterOption{
+			Value: option.Value,
+		})
+	}
+
+	return options
 }
 
 func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.PipelineParameter {
@@ -23,9 +37,11 @@ func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.Pipel
 		param := paramInterface.(map[string]interface{})
 		options := PipelineParameterOptionFromMap(param["option"].([]interface{}))
 		parameters = append(parameters, &client.PipelineParameter{
-			Name:        param["name"].(string),
+			Default:     param["default"].(string),
 			Description: param["description"].(string),
-			HasOptions:  len(*options) > 0,
+			HasOptions:  len(options) > 0,
+			Label:       param["label"].(string),
+			Name:        param["name"].(string),
 			Options:     options,
 			Required:    param["required"].(bool),
 		})
@@ -34,14 +50,14 @@ func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.Pipel
 	return &parameters
 }
 
-func PipelineParameterOptionFromMap(options []interface{}) *[]client.PipelineParameterOption {
-	clientOptions := []client.PipelineParameterOption{}
+func PipelineParameterOptionFromMap(options []interface{}) []*client.PipelineParameterOption {
+	clientOptions := []*client.PipelineParameterOption{}
 	for _, optionInterface := range options {
 		option := optionInterface.(map[string]interface{})
-		clientOptions = append(clientOptions, client.PipelineParameterOption{
+		clientOptions = append(clientOptions, &client.PipelineParameterOption{
 			Value: option["value"].(string),
 		})
 	}
 
-	return &clientOptions
+	return clientOptions
 }

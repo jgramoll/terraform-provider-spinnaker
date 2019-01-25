@@ -40,10 +40,12 @@ func (pipeline *Pipeline) ToClientPipelineConfig() *[]*client.PipelineParameter 
 	for _, pc := range pipeline.ParameterConfig {
 		config = append(config, &client.PipelineParameter{
 			Name:        pc.Name,
+			Default:     pc.Default,
 			Description: pc.Description,
 			HasOptions:  len(pc.Options) > 0,
-			// Options:     &[]client.PipelineParameterOption(pc.Options),
-			Required: pc.Required,
+			Label:       pc.Label,
+			Options:     pc.ToClientPipelineParameterOption(),
+			Required:    pc.Required,
 		})
 	}
 

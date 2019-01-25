@@ -68,9 +68,21 @@ func pipelineResource() *schema.Resource {
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"default": &schema.Schema{
+							Type:        schema.TypeString,
+							Description: "Default value",
+							Optional:    true,
+							Default:     false,
+						},
 						"description": &schema.Schema{
 							Type:     schema.TypeString,
 							Optional: true,
+						},
+						"label": &schema.Schema{
+							Type:        schema.TypeString,
+							Description: "A label to display when users are triggering the pipeline manually",
+							Optional:    true,
+							Default:     false,
 						},
 						"name": &schema.Schema{
 							Type:     schema.TypeString,
@@ -150,14 +162,6 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	PipelineFromResourceData(pipeline, d)
-
-	// TODO can we use mapstructure
-	// err = mapstructure.Decode(d.Get(""), &pipeline)
-	// if err != nil {
-	// 	return err
-	// }
-	// fmt.Printf("State: %+v\n", d.Get(""))
-	// fmt.Printf("Pipeline after mapstructure: %+v\n", pipeline)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {

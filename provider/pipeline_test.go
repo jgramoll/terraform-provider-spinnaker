@@ -30,6 +30,8 @@ func TestAccPipelineBasic(t *testing.T) {
 					testAccCheckPipelineExists(pipeline),
 					resource.TestCheckResourceAttr(pipeline, "name", name),
 					resource.TestCheckResourceAttr(pipeline, "parameter.0.name", pipelineParameterName),
+					resource.TestCheckResourceAttr(pipeline, "parameter.1.default", "mosdef"),
+					resource.TestCheckResourceAttr(pipeline, "parameter.1.label", "whatevs"),
 					resource.TestCheckResourceAttr(pipeline, "application", app),
 					testAccCheckPipelineParameters(pipeline, []string{pipelineParameterName, "Detailed parameter"}),
 				),
@@ -40,6 +42,8 @@ func TestAccPipelineBasic(t *testing.T) {
 					testAccCheckPipelineExists(pipeline),
 					resource.TestCheckResourceAttr(pipeline, "name", newName),
 					resource.TestCheckResourceAttr(pipeline, "parameter.0.name", pipelineParameterNewName),
+					resource.TestCheckResourceAttr(pipeline, "parameter.1.default", "mosdef"),
+					resource.TestCheckResourceAttr(pipeline, "parameter.1.label", "whatevs"),
 					resource.TestCheckResourceAttr(pipeline, "application", app),
 					testAccCheckPipelineParameters(pipeline, []string{pipelineParameterNewName, "Detailed parameter"}),
 				),
@@ -93,13 +97,18 @@ resource "spinnaker_pipeline" "test" {
   application = "%s"
   name        = "%s"
   index       = 2
+
   parameter {
     name = "My %s parameter"
   }
 
   parameter {
-    name = "Detailed parameter"
+    name        = "Detailed parameter"
 	description = "Setting options"
+
+	default = "mosdef"
+	label   = "whatevs"
+
 	option {
 	  value = 1
 	}
