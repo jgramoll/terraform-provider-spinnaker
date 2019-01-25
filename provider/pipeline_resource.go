@@ -62,6 +62,50 @@ func pipelineResource() *schema.Resource {
 				Optional:    true,
 				Default:     0,
 			},
+			"parameter": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Pipeline parameters",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"default": &schema.Schema{
+							Type:        schema.TypeString,
+							Description: "Default value",
+							Optional:    true,
+						},
+						"description": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"label": &schema.Schema{
+							Type:        schema.TypeString,
+							Description: "A label to display when users are triggering the pipeline manually",
+							Optional:    true,
+						},
+						"name": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"option": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Required: true,
+									},
+								},
+							},
+						},
+						"required": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  false,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -102,13 +146,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[INFO] Got Pipeline %s", pipeline.ID)
-	d.SetId(pipeline.ID)
-	d.Set(ApplicationKey, pipeline.Application)
-	d.Set("name", pipeline.Name)
-	d.Set("index", pipeline.Index)
-	d.Set("disabled", pipeline.Disabled)
-	d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
-	d.Set("limit_concurrent", pipeline.LimitConcurrent)
+	SetResourceData(pipeline, d)
 	return nil
 }
 
@@ -121,14 +159,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	// TODO can we use mapstructure
-	pipeline.Index = d.Get("index").(int)
-	pipeline.Application = d.Get(ApplicationKey).(string)
-	pipeline.Name = d.Get("name").(string)
-	pipeline.Disabled = d.Get("disabled").(bool)
-	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
-	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
+	PipelineFromResourceData(pipeline, d)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {

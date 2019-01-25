@@ -2,6 +2,7 @@ package provider
 
 import (
 	"log"
+	"os/user"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -80,14 +81,16 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	log.Println("[INFO] Initializing Spinnaker client")
 
+	u, _ := user.Current()
+
 	// TODO Why do we need this...
 	// debug.PrintStack()
 	// fmt.Println("config", config)
 	// fmt.Println("config", client.Config(config))
 	config.Address = "https://api.spinnaker.inseng.net"
-	config.CertPath = "/Users/jgramoll/.spin/client.crt"
-	config.KeyPath = "/Users/jgramoll/.spin/client.key"
-	config.UserEmail = "jgramoll@instructure.com"
+	config.CertPath = u.HomeDir + "/.spin/client.crt"
+	config.KeyPath = u.HomeDir + "/.spin/client.key"
+	config.UserEmail = "rcolvin@instructure.com"
 
 	clientConfig := client.Config(config)
 	c := client.NewClient(clientConfig)
