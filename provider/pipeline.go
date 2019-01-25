@@ -44,7 +44,7 @@ func (pipeline *Pipeline) ToClientPipelineConfig() *[]*client.PipelineParameter 
 			Description: pc.Description,
 			HasOptions:  len(pc.Options) > 0,
 			Label:       pc.Label,
-			Options:     pc.ToClientPipelineParameterOption(),
+			Options:     *pc.ToClientPipelineParameterOption(),
 			Required:    pc.Required,
 		})
 	}

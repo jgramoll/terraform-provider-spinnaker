@@ -18,7 +18,7 @@ type pipelineParameter struct {
 	Required    bool                       `mapstructure:"required"`
 }
 
-func (parameters *pipelineParameter) ToClientPipelineParameterOption() []*client.PipelineParameterOption {
+func (parameters *pipelineParameter) ToClientPipelineParameterOption() *[]*client.PipelineParameterOption {
 	options := []*client.PipelineParameterOption{}
 
 	for _, option := range parameters.Options {
@@ -27,7 +27,7 @@ func (parameters *pipelineParameter) ToClientPipelineParameterOption() []*client
 		})
 	}
 
-	return options
+	return &options
 }
 
 func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.PipelineParameter {
@@ -39,10 +39,10 @@ func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.Pipel
 		parameters = append(parameters, &client.PipelineParameter{
 			Default:     param["default"].(string),
 			Description: param["description"].(string),
-			HasOptions:  len(options) > 0,
+			HasOptions:  len(*options) > 0,
 			Label:       param["label"].(string),
 			Name:        param["name"].(string),
-			Options:     options,
+			Options:     *options,
 			Required:    param["required"].(bool),
 		})
 	}
@@ -50,7 +50,7 @@ func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.Pipel
 	return &parameters
 }
 
-func PipelineParameterOptionFromMap(options []interface{}) []*client.PipelineParameterOption {
+func PipelineParameterOptionFromMap(options []interface{}) *[]*client.PipelineParameterOption {
 	clientOptions := []*client.PipelineParameterOption{}
 	for _, optionInterface := range options {
 		option := optionInterface.(map[string]interface{})
@@ -59,5 +59,5 @@ func PipelineParameterOptionFromMap(options []interface{}) []*client.PipelinePar
 		})
 	}
 
-	return clientOptions
+	return &clientOptions
 }
