@@ -35,6 +35,16 @@ func TestAccPipelineTriggerBasic(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      trigger1,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				ResourceName:      trigger2,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccPipelineTriggerConfigBasic(newJenkinsMaster, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(trigger1, "master", newJenkinsMaster),
