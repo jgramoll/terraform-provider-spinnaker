@@ -29,14 +29,17 @@ resource "spinnaker_pipeline" "edge" {
   }
 
   parameter {
-    name = "Detailed Parameter"
-	description = "Setting options"
-	option {
-	  value = 1
-	}
-	option {
-	  value = "two"
-	}
+    name        = "Detailed Parameter"
+    description = "Setting options"
+    default     = "Default value"
+    label       = "Trigger label"
+
+    option {
+      value = 1
+    }
+    option {
+      value = "two"
+    }
   }
 }
 
