@@ -33,7 +33,10 @@ type rollbackClusterStage struct {
 }
 
 func newRollbackClusterStage() *rollbackClusterStage {
-	return &rollbackClusterStage{Type: client.RollbackClusterStageType}
+	return &rollbackClusterStage{
+		Type:         client.RollbackClusterStageType,
+		FailPipeline: true,
+	}
 }
 
 func (s *rollbackClusterStage) toClientStage() (client.Stage, error) {

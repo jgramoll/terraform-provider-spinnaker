@@ -45,7 +45,8 @@ type DeployStage struct {
 
 func newSerializableDeployStage() *serializableDeployStage {
 	return &serializableDeployStage{
-		Type: DeployStageType,
+		Type:         DeployStageType,
+		FailPipeline: true,
 	}
 }
 

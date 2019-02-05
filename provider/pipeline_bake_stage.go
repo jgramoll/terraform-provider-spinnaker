@@ -39,7 +39,10 @@ type bakeStage struct {
 }
 
 func newBakeStage() *bakeStage {
-	return &bakeStage{Type: client.BakeStageType}
+	return &bakeStage{
+		Type:         client.BakeStageType,
+		FailPipeline: true,
+	}
 }
 
 func (s *bakeStage) toClientStage() (client.Stage, error) {

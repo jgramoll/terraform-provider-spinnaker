@@ -6,7 +6,7 @@ import (
 
 type stageExecutionWindow struct {
 	Days      []int                             `mapstructure:"days"`
-	Jitter    *stageExecutionWindowJitter       `mapstructure:"jitter"`
+	Jitter    *[]*stageExecutionWindowJitter    `mapstructure:"jitter"`
 	Whitelist *[]*stageExecutionWindowWhitelist `mapstructure:"whitelist"`
 }
 

@@ -26,7 +26,10 @@ type deployStage struct {
 }
 
 func newDeployStage() *deployStage {
-	return &deployStage{Type: client.DeployStageType}
+	return &deployStage{
+		Type:         client.DeployStageType,
+		FailPipeline: true,
+	}
 }
 
 func (s *deployStage) toClientStage() (client.Stage, error) {

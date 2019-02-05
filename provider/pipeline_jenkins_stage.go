@@ -30,7 +30,10 @@ type jenkinsStage struct {
 }
 
 func newJenkinsStage() *jenkinsStage {
-	return &jenkinsStage{Type: client.JenkinsStageType}
+	return &jenkinsStage{
+		Type:         client.JenkinsStageType,
+		FailPipeline: true,
+	}
 }
 
 func (s *jenkinsStage) toClientStage() (client.Stage, error) {

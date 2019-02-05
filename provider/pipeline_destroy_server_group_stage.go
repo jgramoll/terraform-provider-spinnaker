@@ -32,7 +32,10 @@ type destroyServerGroupStage struct {
 }
 
 func newDestroyServerGroupStage() *destroyServerGroupStage {
-	return &destroyServerGroupStage{Type: client.DestroyServerGroupStageType}
+	return &destroyServerGroupStage{
+		Type:         client.DestroyServerGroupStageType,
+		FailPipeline: true,
+	}
 }
 
 func (s *destroyServerGroupStage) toClientStage() (client.Stage, error) {

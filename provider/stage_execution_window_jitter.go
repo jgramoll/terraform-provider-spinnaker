@@ -11,18 +11,18 @@ type stageExecutionWindowJitter struct {
 	SkipManual bool `mapstructure:"skip_manual"`
 }
 
-func toClientWindowJitter(jitter *stageExecutionWindowJitter) *client.StageExecutionWindowJitter {
-	if jitter == nil {
+func toClientWindowJitter(jitter *[]*stageExecutionWindowJitter) *client.StageExecutionWindowJitter {
+	if jitter == nil || len(*jitter) == 0 {
 		return nil
 	}
-	newJitter := client.StageExecutionWindowJitter(*jitter)
+	newJitter := client.StageExecutionWindowJitter(*(*jitter)[0])
 	return &newJitter
 }
 
-func fromClientExecutionJitter(clientWindowJitter *client.StageExecutionWindowJitter) *stageExecutionWindowJitter {
+func fromClientExecutionJitter(clientWindowJitter *client.StageExecutionWindowJitter) *[]*stageExecutionWindowJitter {
 	if clientWindowJitter == nil {
 		return nil
 	}
 	newJitter := stageExecutionWindowJitter(*clientWindowJitter)
-	return &newJitter
+	return &[]*stageExecutionWindowJitter{&newJitter}
 }

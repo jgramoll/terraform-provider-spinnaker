@@ -52,7 +52,8 @@ type BakeStage struct {
 
 func newSerializableBakeStage() *serializableBakeStage {
 	return &serializableBakeStage{
-		Type: BakeStageType,
+		Type:         BakeStageType,
+		FailPipeline: true,
 	}
 }
 

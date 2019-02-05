@@ -29,7 +29,10 @@ type pipelineStage struct {
 }
 
 func newPipelineStage() *pipelineStage {
-	return &pipelineStage{Type: client.PipelineStageType}
+	return &pipelineStage{
+		Type:         client.PipelineStageType,
+		FailPipeline: true,
+	}
 }
 
 func (s *pipelineStage) toClientStage() (client.Stage, error) {
