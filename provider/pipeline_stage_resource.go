@@ -10,10 +10,11 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func resourcePipelineImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourcePipelineImporter(d *schema.ResourceData, meta interface{}, setData func(d *schema.ResourceData)) ([]*schema.ResourceData, error) {
 	id := strings.Split(d.Id(), "_")
 	d.Set(PipelineKey, id[0])
 	d.SetId(id[1])
+	setData(d)
 	return []*schema.ResourceData{d}, nil
 }
 

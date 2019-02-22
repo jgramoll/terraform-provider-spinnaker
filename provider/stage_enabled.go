@@ -5,8 +5,8 @@ import (
 )
 
 type stageEnabled struct {
-	Expression string `json:"expression"`
-	Type       string `json:"type"`
+	Expression string `mapstructure:"expression"`
+	Type       string `mapstructure:"type"`
 }
 
 func fromClientStageEnabled(clientStageEnabled *client.StageEnabled) *[]*stageEnabled {

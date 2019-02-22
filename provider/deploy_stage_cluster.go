@@ -14,6 +14,7 @@ type deployStageCluster struct {
 	CloudProvider                       string                         `mapstructure:"cloud_provider"`
 	Cooldown                            int                            `mapstructure:"cooldown"`
 	CopySourceCustomBlockDeviceMappings bool                           `mapstructure:"copy_source_custom_block_device_mappings"`
+	Dirty                               map[string]interface{}         `mapstructure:"dirty"`
 	EBSOptimized                        bool                           `mapstructure:"ebs_optimized"`
 	EnabledMetrics                      []string                       `mapstructure:"enabled_metrics"`
 	FreeFormDetails                     string                         `mapstructure:"free_form_details"`

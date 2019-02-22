@@ -16,6 +16,7 @@ type DeployStageCluster struct {
 	CloudProvider                       string                      `json:"cloudProvider"`
 	Cooldown                            int                         `json:"cooldown"`
 	CopySourceCustomBlockDeviceMappings bool                        `json:"copySourceCustomBlockDeviceMappings"`
+	Dirty                               map[string]interface{}      `json:"dirty"`
 	EBSOptimized                        bool                        `json:"ebsOptimized"`
 	EnabledMetrics                      []string                    `json:"enabledMetrics"`
 	FreeFormDetails                     string                      `json:"freeFormDetails"`

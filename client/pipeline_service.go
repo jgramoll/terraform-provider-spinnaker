@@ -84,12 +84,11 @@ func (service *PipelineService) CreatePipeline(pipeline *CreatePipelineRequest) 
 // UpdatePipeline in application
 func (service *PipelineService) UpdatePipeline(pipeline *Pipeline) error {
 	path := "/pipelines"
-	req, err := service.NewRequestWithBody("POST", path, pipeline)
-	if err != nil {
-		return err
-	}
-
-	_, respErr := service.Do(req)
+	// Hack around async updates to the pipeline
+	// If we don't do this we get periodic 400s
+	_, respErr := service.DoWithRetry(func() (*http.Request, error) {
+		return service.NewRequestWithBody("POST", path, pipeline)
+	})
 	return respErr
 }
 

@@ -7,14 +7,17 @@ import (
 
 // Pipeline deploy pipeline in application
 type Pipeline struct {
-	Application          string               `mapstructure:"application"`
-	Disabled             bool                 `mapstructure:"disabled"`
-	ID                   string               `mapstructure:"id"`
-	KeepWaitingPipelines bool                 `mapstructure:"keep_waiting_pipelines"`
-	LimitConcurrent      bool                 `mapstructure:"limit_concerrent"`
-	Name                 string               `mapstructure:"name"`
-	Index                int                  `mapstructure:"index"`
-	ParameterConfig      []*pipelineParameter `mapstructure:"parameter"`
+	Application          string                 `mapstructure:"application"`
+	AppConfig            map[string]interface{} `mapstructure:"appConfig"`
+	Disabled             bool                   `mapstructure:"disabled"`
+	ID                   string                 `mapstructure:"id"`
+	KeepWaitingPipelines bool                   `mapstructure:"keep_waiting_pipelines"`
+	LimitConcurrent      bool                   `mapstructure:"limit_concerrent"`
+	Name                 string                 `mapstructure:"name"`
+	Index                int                    `mapstructure:"index"`
+	ParameterConfig      *[]*pipelineParameter  `mapstructure:"parameter"`
+	Roles                *[]string              `mapstructure:"roles"`
+	ServiceAccount       string                 `mapstructure:"serviceAccount"`
 }
 
 // ToClientPipeline convert to client pipeline
@@ -23,6 +26,7 @@ func (pipeline *Pipeline) ToClientPipeline() *client.Pipeline {
 	return &client.Pipeline{
 		SerializablePipeline: client.SerializablePipeline{
 			Application:          pipeline.Application,
+			AppConfig:            pipeline.AppConfig,
 			Disabled:             pipeline.Disabled,
 			ID:                   pipeline.ID,
 			KeepWaitingPipelines: pipeline.KeepWaitingPipelines,
@@ -30,14 +34,18 @@ func (pipeline *Pipeline) ToClientPipeline() *client.Pipeline {
 			Name:                 pipeline.Name,
 			Index:                pipeline.Index,
 			ParameterConfig:      pipeline.ToClientPipelineConfig(),
+			Roles:                pipeline.Roles,
 		},
 	}
 }
 
 func (pipeline *Pipeline) ToClientPipelineConfig() *[]*client.PipelineParameter {
 	config := []*client.PipelineParameter{}
+	if pipeline.ParameterConfig == nil {
+		return &config
+	}
 
-	for _, pc := range pipeline.ParameterConfig {
+	for _, pc := range *pipeline.ParameterConfig {
 		config = append(config, &client.PipelineParameter{
 			Name:        pc.Name,
 			Default:     pc.Default,
@@ -61,8 +69,12 @@ func SetResourceData(pipeline *client.Pipeline, d *schema.ResourceData) {
 	d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
 	d.Set("limit_concurrent", pipeline.LimitConcurrent)
 	d.Set("parameter", pipeline.ParameterConfig)
+	d.Set("roles", pipeline.Roles)
+	d.Set("service_account", pipeline.ServiceAccount)
+	d.Set("triggers", pipeline.Triggers)
 }
 
+// PipelineFromResourceData get pipeline from resource data
 func PipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData) {
 	pipeline.Index = d.Get("index").(int)
 	pipeline.Application = d.Get(ApplicationKey).(string)
@@ -70,5 +82,24 @@ func PipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData)
 	pipeline.Disabled = d.Get("disabled").(bool)
 	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
 	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
-	pipeline.ParameterConfig = PipelineParametersFromResourceData(d)
+	pipeline.ParameterConfig = pipelineParametersFromResourceData(d)
+	pipeline.Roles = pipelineRolesFromResourceData(d)
+
+	serviceAccount, ok := d.GetOk("service_account")
+	if ok {
+		pipeline.ServiceAccount = serviceAccount.(string)
+	}
+}
+
+func pipelineRolesFromResourceData(d *schema.ResourceData) *[]string {
+	rolesInterface, ok := d.GetOk("roles")
+	if !ok {
+		return nil
+	}
+
+	roles := []string{}
+	for _, role := range rolesInterface.([]interface{}) {
+		roles = append(roles, role.(string))
+	}
+	return &roles
 }

@@ -22,7 +22,9 @@ func pipelineDestroyServerGroupStageResource() *schema.Resource {
 			return resourcePipelineStageDelete(d, m, stageInterface)
 		},
 		Importer: &schema.ResourceImporter{
-			State: resourcePipelineImporter,
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				return resourcePipelineImporter(d, meta, newDestroyServerGroupStage().SetResourceData)
+			},
 		},
 
 		Schema: map[string]*schema.Schema{

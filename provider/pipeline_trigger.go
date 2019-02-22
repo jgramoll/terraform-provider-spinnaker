@@ -7,5 +7,6 @@ type Trigger struct {
 	Job          string
 	Master       string
 	PropertyFile string `mapstructure:"property_file"`
+	RunAsUser    string `mapstructure:"run_as_user"`
 	Type         string
 }

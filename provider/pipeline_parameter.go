@@ -30,8 +30,7 @@ func (parameters *pipelineParameter) ToClientPipelineParameterOption() *[]*clien
 	return &options
 }
 
-// PipelineParametersFromResourceData
-func PipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.PipelineParameter {
+func pipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.PipelineParameter {
 	parameters := []*client.PipelineParameter{}
 	state := d.Get("parameter").([]interface{})
 	for _, paramInterface := range state {

@@ -22,7 +22,9 @@ func pipelineRollbackClusterStageResource() *schema.Resource {
 			return resourcePipelineStageDelete(d, m, newRollbackClusterInterface)
 		},
 		Importer: &schema.ResourceImporter{
-			State: resourcePipelineImporter,
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				return resourcePipelineImporter(d, meta, newRollbackClusterStage().SetResourceData)
+			},
 		},
 
 		Schema: map[string]*schema.Schema{

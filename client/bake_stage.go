@@ -37,9 +37,11 @@ type serializableBakeStage struct {
 	CloudProviderType  string            `json:"cloudProviderType"`
 	ExtendedAttributes map[string]string `json:"extendedAttributes"`
 	Rebake             bool              `json:"rebake"`
-	Regions            []string          `json:"regions"`
+	Region             string            `json:"region"`
+	Regions            []string          `json:"regions,omitempty"`
 	StoreType          string            `json:"storeType"`
 	TemplateFileName   string            `json:"templateFileName"`
+	User               string            `json:"user,omitempty"`
 	VarFileName        string            `json:"varFileName,omitempty"`
 	VMType             string            `json:"vmType"`
 }

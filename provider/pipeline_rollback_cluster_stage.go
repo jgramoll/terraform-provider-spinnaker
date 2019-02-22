@@ -22,12 +22,12 @@ type rollbackClusterStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	CloudProvider     string    `mapstructure:"cloud_provider"`
-	CloudProviderType string    `mapstructure:"cloud_provider_type"`
-	Cluster           string    `mapstructure:"cluster"`
-	Credentials       string    `mapstructure:"credentials"`
-	Moniker           []moniker `mapstructure:"moniker"`
-	Regions           []string  `mapstructure:"regions"`
+	CloudProvider     string      `mapstructure:"cloud_provider"`
+	CloudProviderType string      `mapstructure:"cloud_provider_type"`
+	Cluster           string      `mapstructure:"cluster"`
+	Credentials       string      `mapstructure:"credentials"`
+	Moniker           *[]*moniker `mapstructure:"moniker"`
+	Regions           []string    `mapstructure:"regions"`
 
 	TargetHealthyRollbackPercentage int `mapstructure:"target_healthy_rollback_percentage"`
 }
@@ -62,6 +62,12 @@ func (s *rollbackClusterStage) toClientStage() (client.Stage, error) {
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
 	// End baseStage
 
+	cs.CloudProvider = s.CloudProvider
+	cs.CloudProviderType = s.CloudProviderType
+	cs.Cluster = s.Cluster
+	cs.Credentials = s.Credentials
+	cs.Moniker = toClientMoniker(s.Moniker)
+	cs.Regions = s.Regions
 	cs.TargetHealthyRollbackPercentage = s.TargetHealthyRollbackPercentage
 
 	return cs, nil
@@ -86,6 +92,12 @@ func (s *rollbackClusterStage) fromClientStage(cs client.Stage) stage {
 	newStage.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
 	// end baseStage
 
+	newStage.CloudProvider = clientStage.CloudProvider
+	newStage.CloudProviderType = clientStage.CloudProviderType
+	newStage.Cluster = clientStage.Cluster
+	newStage.Credentials = clientStage.Credentials
+	newStage.Moniker = fromClientMoniker(clientStage.Moniker)
+	newStage.Regions = clientStage.Regions
 	newStage.TargetHealthyRollbackPercentage = clientStage.TargetHealthyRollbackPercentage
 
 	return newStage
@@ -107,6 +119,12 @@ func (s *rollbackClusterStage) SetResourceData(d *schema.ResourceData) {
 	d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
 	// End baseStage
 
+	d.Set("cloud_provider", s.CloudProvider)
+	d.Set("cloud_provider_type", s.CloudProviderType)
+	d.Set("cluster", s.Cluster)
+	d.Set("credentials", s.Credentials)
+	d.Set("moniker", s.Moniker)
+	d.Set("regions", s.Regions)
 	d.Set("target_healthy_rollback_percentage", s.TargetHealthyRollbackPercentage)
 }
 

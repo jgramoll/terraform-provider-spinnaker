@@ -119,6 +119,7 @@ func (s *destroyServerGroupStage) SetResourceData(d *schema.ResourceData) {
 	// End baseStage
 
 	d.Set("cloud_provider", s.CloudProvider)
+	d.Set("cloud_provider_type", s.CloudProviderType)
 	d.Set("cluster", s.Cluster)
 	d.Set("credentials", s.Credentials)
 	d.Set("moniker", s.Moniker)

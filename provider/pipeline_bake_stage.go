@@ -31,9 +31,11 @@ type bakeStage struct {
 	CloudProviderType  string            `mapstructure:"cloud_provider_type"`
 	ExtendedAttributes map[string]string `mapstructure:"extended_attributes"`
 	Rebake             bool              `mapstructure:"rebake"`
+	Region             string            `mapstructure:"region"`
 	Regions            []string          `mapstructure:"regions"`
 	StoreType          string            `mapstructure:"store_type"`
 	TemplateFileName   string            `mapstructure:"template_file_name"`
+	User               string            `mapstructure:"user"`
 	VarFileName        string            `mapstructure:"var_file_name"`
 	VMType             string            `mapstructure:"vm_type"`
 }
@@ -77,9 +79,11 @@ func (s *bakeStage) toClientStage() (client.Stage, error) {
 	cs.CloudProviderType = s.CloudProviderType
 	cs.ExtendedAttributes = s.ExtendedAttributes
 	cs.Rebake = s.Rebake
+	cs.Region = s.Region
 	cs.Regions = s.Regions
 	cs.StoreType = s.StoreType
 	cs.TemplateFileName = s.TemplateFileName
+	cs.User = s.User
 	cs.VarFileName = s.VarFileName
 	cs.VMType = s.VMType
 
@@ -114,9 +118,11 @@ func (s *bakeStage) fromClientStage(cs client.Stage) stage {
 	newStage.CloudProviderType = clientStage.CloudProviderType
 	newStage.ExtendedAttributes = clientStage.ExtendedAttributes
 	newStage.Rebake = clientStage.Rebake
+	newStage.Region = clientStage.Region
 	newStage.Regions = clientStage.Regions
 	newStage.StoreType = clientStage.StoreType
 	newStage.TemplateFileName = clientStage.TemplateFileName
+	newStage.User = clientStage.User
 	newStage.VarFileName = clientStage.VarFileName
 	newStage.VMType = clientStage.VMType
 
@@ -148,9 +154,11 @@ func (s *bakeStage) SetResourceData(d *schema.ResourceData) {
 	d.Set("cloud_provider_type", s.CloudProviderType)
 	d.Set("extended_attributes", s.ExtendedAttributes)
 	d.Set("rebake", s.Rebake)
+	d.Set("region", s.Region)
 	d.Set("regions", s.Regions)
 	d.Set("store_type", s.StoreType)
 	d.Set("template_file_name", s.TemplateFileName)
+	d.Set("user", s.User)
 	d.Set("var_file_name", s.VarFileName)
 	d.Set("vm_type", s.VMType)
 }
