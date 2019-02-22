@@ -35,6 +35,8 @@ func NewSerializablePipeline() SerializablePipeline {
 		KeepWaitingPipelines: false,
 		LimitConcurrent:      true,
 		Triggers:             []*Trigger{},
+		AppConfig:            map[string]interface{}{},
+		ParameterConfig:      &[]*PipelineParameter{},
 	}
 }
 

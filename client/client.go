@@ -67,7 +67,7 @@ func (client *Client) NewRequestWithBody(method string, path string, data interf
 		return nil, jsonErr
 	}
 
-	log.Printf("[INFO] Sending %v %v with body %v\n", method, reqURL, jsonValue)
+	log.Printf("[INFO] Sending %s %s with body %s\n", method, reqURL, jsonValue)
 	req, err := http.NewRequest(method, reqURL.String(), bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return nil, err

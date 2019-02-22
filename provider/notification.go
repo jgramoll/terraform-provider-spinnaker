@@ -13,7 +13,7 @@ type notification struct {
 }
 
 func (n *notification) toClientNotification(level client.NotificationLevel) (*client.Notification, error) {
-	message, err := toClientMessage(level, (*n.Message)[0])
+	message, err := toClientMessage(level, n.Message)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func fromClientNotifications(notifications *[]*client.Notification) *[]*notifica
 		newNotifications = append(newNotifications, &notification{
 			ID:      cn.ID,
 			Address: cn.Address,
-			Message: &[]*message{(&message{}).fromClientMessage(cn.Message)},
+			Message: &[]*message{fromClientMessage(cn.Message)},
 			Type:    cn.Type,
 			When:    &[]*when{(&when{}).fromClientWhen(cn)},
 		})
