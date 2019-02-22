@@ -5,10 +5,11 @@ import (
 )
 
 type moniker struct {
-	App     string `mapstructure:"app"`
-	Cluster string `mapstructure:"cluster"`
-	Detail  string `mapstructure:"detail"`
-	Stack   string `mapstructure:"stack"`
+	App      string `mapstructure:"app"`
+	Cluster  string `mapstructure:"cluster"`
+	Detail   string `mapstructure:"detail"`
+	Stack    string `mapstructure:"stack"`
+	Sequence string `mapstructure:"sequence"`
 }
 
 func fromClientMoniker(clientMoniker *client.Moniker) *[]*moniker {

@@ -5,9 +5,9 @@ import (
 )
 
 type when struct {
-	Complete string
-	Starting string
-	Failed   string
+	Complete string `mapstructure:"complete"`
+	Starting string `mapstructure:"starting"`
+	Failed   string `mapstructure:"failed"`
 }
 
 func toClientWhen(level client.NotificationLevel, w *when) *[]string {

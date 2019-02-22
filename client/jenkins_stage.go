@@ -43,8 +43,9 @@ type JenkinsStage struct {
 
 func newSerializableJenkinsStage() *serializableJenkinsStage {
 	return &serializableJenkinsStage{
-		Type:         JenkinsStageType,
-		FailPipeline: true,
+		Type:                 JenkinsStageType,
+		FailPipeline:         true,
+		RequisiteStageRefIds: []string{},
 	}
 }
 

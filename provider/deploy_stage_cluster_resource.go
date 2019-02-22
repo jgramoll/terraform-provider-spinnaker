@@ -80,6 +80,11 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"dirty": &schema.Schema{
+				Type:        schema.TypeMap,
+				Description: "",
+				Optional:    true,
+			},
 			"ebs_optimized": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "",

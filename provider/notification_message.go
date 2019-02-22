@@ -5,9 +5,9 @@ import (
 )
 
 type message struct {
-	Complete string
-	Failed   string
-	Starting string
+	Complete string `mapstructure:"complete"`
+	Failed   string `mapstructure:"failed"`
+	Starting string `mapstructure:"starting"`
 }
 
 func toClientMessage(level client.NotificationLevel, m *[]*message) (client.Message, error) {

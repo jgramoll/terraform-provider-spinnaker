@@ -19,6 +19,10 @@ func monikerResource() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"sequence": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"stack": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

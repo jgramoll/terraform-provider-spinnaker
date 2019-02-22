@@ -16,6 +16,8 @@ type DeployStageCluster struct {
 	CloudProvider                       string                      `json:"cloudProvider"`
 	Cooldown                            int                         `json:"cooldown"`
 	CopySourceCustomBlockDeviceMappings bool                        `json:"copySourceCustomBlockDeviceMappings"`
+	DelayBeforeDisableSec               int                         `json:"delayBeforeDisableSec"`
+	DelayBeforeScaleDownSec             int                         `json:"delayBeforeDisableSec"`
 	Dirty                               map[string]interface{}      `json:"dirty"`
 	EBSOptimized                        bool                        `json:"ebsOptimized"`
 	EnabledMetrics                      []string                    `json:"enabledMetrics"`
@@ -27,8 +29,11 @@ type DeployStageCluster struct {
 	InstanceType                        string                      `json:"instanceType"`
 	KeyPair                             string                      `json:"keyPair"`
 	LoadBalancers                       []string                    `json:"loadBalancers"`
+	MaxRemainingAsgs                    int                         `json:"maxRemainingAsgs"`
 	Moniker                             *Moniker                    `json:"moniker"`
 	Provider                            string                      `json:"provider"`
+	Rollback                            *Rollback                   `json:"rollback"`
+	ScaleDown                           bool                        `json:"scaleDown"`
 	SecurityGroups                      []string                    `json:"securityGroups"`
 	SpelLoadBalancers                   []string                    `json:"spelLoadBalancers"`
 	SpelTargetGroups                    []string                    `json:"spelTargetGroups"`
@@ -43,4 +48,20 @@ type DeployStageCluster struct {
 	TerminationPolicies                 []string                    `json:"terminationPolicies"`
 	UseAmiBlockDeviceMappings           bool                        `json:"useAmiBlockDeviceMappings"`
 	UseSourceCapacity                   bool                        `json:"useSourceCapacity"`
+}
+
+func NewDeployStageCluster() *DeployStageCluster {
+	return &DeployStageCluster{
+		DelayBeforeDisableSec:   0,
+		DelayBeforeScaleDownSec: 0,
+		Dirty:                   map[string]interface{}{},
+		EnabledMetrics:          []string{},
+		LoadBalancers:           []string{},
+		MaxRemainingAsgs:        2,
+		Rollback:                NewRollback(),
+		ScaleDown:               false,
+		SpelLoadBalancers:       []string{},
+		SpelTargetGroups:        []string{},
+		SuspendedProcesses:      []string{},
+	}
 }

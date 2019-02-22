@@ -11,7 +11,7 @@ import (
 
 // Services used by provider
 type Services struct {
-	config             client.Config
+	Config             client.Config
 	ApplicationService client.ApplicationService
 	PipelineService    client.PipelineService
 }
@@ -79,7 +79,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	clientConfig := client.Config(config)
 	c := client.NewClient(clientConfig)
 	return &Services{
-		config:             clientConfig,
+		Config:             clientConfig,
 		ApplicationService: client.ApplicationService{Client: c},
 		PipelineService:    client.PipelineService{Client: c},
 	}, nil

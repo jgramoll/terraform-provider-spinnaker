@@ -7,8 +7,8 @@ import (
 
 type stage interface {
 	fromClientStage(client.Stage) stage
-	toClientStage() (client.Stage, error)
-	SetResourceData(*schema.ResourceData)
+	toClientStage(*client.Config) (client.Stage, error)
+	SetResourceData(*schema.ResourceData) error
 	SetRefID(string)
 	GetRefID() string
 }

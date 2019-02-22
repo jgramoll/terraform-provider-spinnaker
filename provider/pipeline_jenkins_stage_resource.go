@@ -22,9 +22,7 @@ func pipelineJenkinsStageResource() *schema.Resource {
 			return resourcePipelineStageDelete(d, m, newJenkinsStageInterface)
 		},
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				return resourcePipelineImporter(d, meta, newJenkinsStage().SetResourceData)
-			},
+			State: resourcePipelineImporter,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -39,12 +37,96 @@ func pipelineJenkinsStageResource() *schema.Resource {
 				Description: "Name of the stage",
 				Required:    true,
 			},
+			"fail_on_failed_expressions": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "The stage will be marked as failed if it contains any failed expressions",
+				Optional:    true,
+				Default:     false,
+			},
 			"requisite_stage_ref_ids": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Stage(s) that must be complete before this one",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
+				},
+			},
+			"override_timeout": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Allows you to override the amount of time the stage can run before failing.\nNote: this represents the overall time the stage has to complete (the sum of all the task times).",
+				Optional:    true,
+				Default:     false,
+			},
+			"restrict_execution_during_time_window": &schema.Schema{
+				Type:        schema.TypeBool,
+				Description: "Restrict execution to specific time windows",
+				Optional:    true,
+				Default:     false,
+			},
+			"restricted_execution_window": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Time windows to restrict execution",
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"days": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeInt,
+							},
+						},
+						"jitter": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": &schema.Schema{
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+									"max_delay": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"min_delay": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"skip_manual": &schema.Schema{
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+								},
+							},
+						},
+						"whitelist": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"end_hour": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"end_min": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"start_hour": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+									"start_min": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			"notification": &schema.Schema{

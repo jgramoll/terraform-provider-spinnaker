@@ -47,8 +47,9 @@ type RollbackClusterStage struct {
 
 func newSerializableRollbackClusterStage() *serializableRollbackClusterStage {
 	return &serializableRollbackClusterStage{
-		Type:         RollbackClusterStageType,
-		FailPipeline: true,
+		Type:                 RollbackClusterStageType,
+		FailPipeline:         true,
+		RequisiteStageRefIds: []string{},
 	}
 }
 

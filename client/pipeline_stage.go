@@ -42,8 +42,9 @@ type PipelineStage struct {
 
 func newSerializablePipelineStage() *serializablePipelineStage {
 	return &serializablePipelineStage{
-		Type:         PipelineStageType,
-		FailPipeline: true,
+		Type:                 PipelineStageType,
+		FailPipeline:         true,
+		RequisiteStageRefIds: []string{},
 	}
 }
 

@@ -117,6 +117,11 @@ func pipelineResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"service_account": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Service account to run pipeline",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -157,8 +162,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Printf("[INFO] Got Pipeline %s", pipeline.ID)
-	SetResourceData(pipeline, d)
-	return nil
+	return SetResourceData(pipeline, d)
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {

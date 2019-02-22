@@ -45,8 +45,9 @@ type DestroyServerGroupStage struct {
 
 func newSerializableDestroyServerGroupStage() *serializableDestroyServerGroupStage {
 	return &serializableDestroyServerGroupStage{
-		Type:         DestroyServerGroupStageType,
-		FailPipeline: true,
+		Type:                 DestroyServerGroupStageType,
+		FailPipeline:         true,
+		RequisiteStageRefIds: []string{},
 	}
 }
 

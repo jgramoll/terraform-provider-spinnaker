@@ -3,6 +3,7 @@ package provider
 import (
 	"errors"
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -23,7 +24,12 @@ func pipelineNotificationResource() *schema.Resource {
 		Update: resourcePipelineNotificationUpdate,
 		Delete: resourcePipelineNotificationDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				id := strings.Split(d.Id(), "_")
+				d.Set(PipelineKey, id[0])
+				d.SetId(id[1])
+				return []*schema.ResourceData{d}, nil
+			},
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -147,10 +153,7 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 	} else {
 		d.SetId(notification.ID)
-		d.Set("address", notification.Address)
-		d.Set("message", fromClientMessage(notification.Message))
-		d.Set("type", notification.Type)
-		d.Set("when", notification.When)
+		fromClientNotification(notification).setNotificationResourceData(d)
 	}
 
 	return nil

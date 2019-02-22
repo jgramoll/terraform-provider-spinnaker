@@ -60,18 +60,45 @@ func (pipeline *Pipeline) ToClientPipelineConfig() *[]*client.PipelineParameter 
 	return &config
 }
 
-func SetResourceData(pipeline *client.Pipeline, d *schema.ResourceData) {
+func SetResourceData(pipeline *client.Pipeline, d *schema.ResourceData) error {
 	d.SetId(pipeline.ID)
-	d.Set(ApplicationKey, pipeline.Application)
-	d.Set("name", pipeline.Name)
-	d.Set("index", pipeline.Index)
-	d.Set("disabled", pipeline.Disabled)
-	d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
-	d.Set("limit_concurrent", pipeline.LimitConcurrent)
-	d.Set("parameter", pipeline.ParameterConfig)
-	d.Set("roles", pipeline.Roles)
-	d.Set("service_account", pipeline.ServiceAccount)
-	d.Set("triggers", pipeline.Triggers)
+	err := d.Set(ApplicationKey, pipeline.Application)
+	if err != nil {
+		return err
+	}
+	err = d.Set("name", pipeline.Name)
+	if err != nil {
+		return err
+	}
+	err = d.Set("index", pipeline.Index)
+	if err != nil {
+		return err
+	}
+	err = d.Set("disabled", pipeline.Disabled)
+	if err != nil {
+		return err
+	}
+	err = d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
+	if err != nil {
+		return err
+	}
+	err = d.Set("limit_concurrent", pipeline.LimitConcurrent)
+	if err != nil {
+		return err
+	}
+	err = d.Set("parameter", pipeline.ParameterConfig)
+	if err != nil {
+		return err
+	}
+	err = d.Set("roles", pipeline.Roles)
+	if err != nil {
+		return err
+	}
+	err = d.Set("service_account", pipeline.ServiceAccount)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // PipelineFromResourceData get pipeline from resource data

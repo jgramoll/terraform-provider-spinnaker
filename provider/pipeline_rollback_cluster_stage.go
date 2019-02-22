@@ -39,7 +39,7 @@ func newRollbackClusterStage() *rollbackClusterStage {
 	}
 }
 
-func (s *rollbackClusterStage) toClientStage() (client.Stage, error) {
+func (s *rollbackClusterStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
@@ -103,29 +103,79 @@ func (s *rollbackClusterStage) fromClientStage(cs client.Stage) stage {
 	return newStage
 }
 
-func (s *rollbackClusterStage) SetResourceData(d *schema.ResourceData) {
+func (s *rollbackClusterStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
-	d.Set("name", s.Name)
-	d.Set("ref_id", s.RefID)
+	err := d.Set("name", s.Name)
+	if err != nil {
+		return nil
+	}
 	d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
+	if err != nil {
+		return nil
+	}
 	d.Set("notification", s.Notifications)
+	if err != nil {
+		return nil
+	}
 	d.Set("stage_enabled", s.StageEnabled)
+	if err != nil {
+		return nil
+	}
 	d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
+	if err != nil {
+		return nil
+	}
 	d.Set("continue_pipeline", s.ContinuePipeline)
-	d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
-	d.Set("fail_pipeline", s.FailPipeline)
-	d.Set("override_timeout", s.OverrideTimeout)
-	d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
-	d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	if err != nil {
+		return nil
+	}
+	err = d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_pipeline", s.FailPipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("override_timeout", s.OverrideTimeout)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	if err != nil {
+		return err
+	}
 	// End baseStage
 
-	d.Set("cloud_provider", s.CloudProvider)
-	d.Set("cloud_provider_type", s.CloudProviderType)
-	d.Set("cluster", s.Cluster)
-	d.Set("credentials", s.Credentials)
-	d.Set("moniker", s.Moniker)
-	d.Set("regions", s.Regions)
-	d.Set("target_healthy_rollback_percentage", s.TargetHealthyRollbackPercentage)
+	err = d.Set("cloud_provider", s.CloudProvider)
+	if err != nil {
+		return err
+	}
+	err = d.Set("cloud_provider_type", s.CloudProviderType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("cluster", s.Cluster)
+	if err != nil {
+		return err
+	}
+	err = d.Set("credentials", s.Credentials)
+	if err != nil {
+		return err
+	}
+	err = d.Set("moniker", s.Moniker)
+	if err != nil {
+		return err
+	}
+	err = d.Set("regions", s.Regions)
+	if err != nil {
+		return err
+	}
+	return d.Set("target_healthy_rollback_percentage", s.TargetHealthyRollbackPercentage)
 }
 
 func (s *rollbackClusterStage) SetRefID(id string) {
