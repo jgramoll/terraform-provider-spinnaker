@@ -35,15 +35,3 @@ func fromClientPipelineParameterOptions(parameters *[]*client.PipelineParameterO
 
 	return &options
 }
-
-func pipelineParameterOptionFromMap(options []interface{}) *[]*client.PipelineParameterOption {
-	clientOptions := []*client.PipelineParameterOption{}
-	for _, optionInterface := range options {
-		option := optionInterface.(map[string]interface{})
-		clientOptions = append(clientOptions, &client.PipelineParameterOption{
-			Value: option["value"].(string),
-		})
-	}
-
-	return &clientOptions
-}
