@@ -224,4 +224,9 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
   }
 }
 
+resource "spinnaker_pipeline_parameter" "version" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "version"
+}
+
 ```
