@@ -70,11 +70,6 @@ func parsePipeline(pipelineHash map[string]interface{}) (*Pipeline, error) {
 	}, nil
 }
 
-// AppendTrigger append trigger
-func (pipeline *Pipeline) AppendTrigger(trigger *Trigger) {
-	pipeline.Triggers = append(pipeline.Triggers, trigger)
-}
-
 // AppendStage append stage
 func (pipeline *Pipeline) AppendStage(stage Stage) {
 	if pipeline.Stages == nil {

@@ -46,22 +46,7 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Capacity for cluster",
 				MaxItems:    1,
 				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"desired": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"max": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-						"min": &schema.Schema{
-							Type:     schema.TypeInt,
-							Optional: true,
-						},
-					},
-				},
+				Elem:        capacityResource(),
 			},
 			"cloud_provider": &schema.Schema{
 				Type:        schema.TypeString,

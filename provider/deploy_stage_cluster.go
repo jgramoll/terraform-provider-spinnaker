@@ -7,40 +7,40 @@ import (
 )
 
 type deployStageCluster struct {
-	Account                             string                         `mapstructure:"account"`
-	Application                         string                         `mapstructure:"application"`
-	AvailabilityZones                   []map[string][]string          `mapstructure:"availability_zones"`
-	Capacity                            *[]*deployStageClusterCapacity `mapstructure:"capacity"`
-	CloudProvider                       string                         `mapstructure:"cloud_provider"`
-	Cooldown                            int                            `mapstructure:"cooldown"`
-	CopySourceCustomBlockDeviceMappings bool                           `mapstructure:"copy_source_custom_block_device_mappings"`
-	Dirty                               map[string]interface{}         `mapstructure:"dirty"`
-	EBSOptimized                        bool                           `mapstructure:"ebs_optimized"`
-	EnabledMetrics                      []string                       `mapstructure:"enabled_metrics"`
-	FreeFormDetails                     string                         `mapstructure:"free_form_details"`
-	HealthCheckGracePeriod              string                         `mapstructure:"health_check_grace_period"`
-	HealthCheckType                     string                         `mapstructure:"health_check_type"`
-	IAMRole                             string                         `mapstructure:"iam_role"`
-	InstanceMonitoring                  bool                           `mapstructure:"instance_monitoring"`
-	InstanceType                        string                         `mapstructure:"instance_type"`
-	KeyPair                             string                         `mapstructure:"key_pair"`
-	LoadBalancers                       []string                       `mapstructure:"load_balancers"`
-	Moniker                             *[]*moniker                    `mapstructure:"moniker"`
-	Provider                            string                         `mapstructure:"provider"`
-	SecurityGroups                      []string                       `mapstructure:"security_groups"`
-	SpelLoadBalancers                   []string                       `mapstructure:"spel_load_balancers"`
-	SpelTargetGroups                    []string                       `mapstructure:"spel_target_groups"`
-	SpotPrice                           string                         `mapstructure:"spot_price"`
-	Stack                               string                         `mapstructure:"stack"`
-	Strategy                            string                         `mapstructure:"strategy"`
-	SubnetType                          string                         `mapstructure:"subnet_type"`
-	SuspendedProcesses                  []string                       `mapstructure:"suspended_processes"`
-	Tags                                map[string]string              `mapstructure:"tags"`
-	TargetGroups                        []string                       `mapstructure:"target_groups"`
-	TargetHealthyDeployPercentage       int                            `mapstructure:"target_healthy_deploy_percentage"`
-	TerminationPolicies                 []string                       `mapstructure:"termination_policies"`
-	UseAmiBlockDeviceMappings           bool                           `mapstructure:"use_ami_block_device_mappings"`
-	UseSourceCapacity                   bool                           `mapstructure:"use_source_capacity"`
+	Account                             string                 `mapstructure:"account"`
+	Application                         string                 `mapstructure:"application"`
+	AvailabilityZones                   []map[string][]string  `mapstructure:"availability_zones"`
+	Capacity                            *[]*capacity           `mapstructure:"capacity"`
+	CloudProvider                       string                 `mapstructure:"cloud_provider"`
+	Cooldown                            int                    `mapstructure:"cooldown"`
+	CopySourceCustomBlockDeviceMappings bool                   `mapstructure:"copy_source_custom_block_device_mappings"`
+	Dirty                               map[string]interface{} `mapstructure:"dirty"`
+	EBSOptimized                        bool                   `mapstructure:"ebs_optimized"`
+	EnabledMetrics                      []string               `mapstructure:"enabled_metrics"`
+	FreeFormDetails                     string                 `mapstructure:"free_form_details"`
+	HealthCheckGracePeriod              string                 `mapstructure:"health_check_grace_period"`
+	HealthCheckType                     string                 `mapstructure:"health_check_type"`
+	IAMRole                             string                 `mapstructure:"iam_role"`
+	InstanceMonitoring                  bool                   `mapstructure:"instance_monitoring"`
+	InstanceType                        string                 `mapstructure:"instance_type"`
+	KeyPair                             string                 `mapstructure:"key_pair"`
+	LoadBalancers                       []string               `mapstructure:"load_balancers"`
+	Moniker                             *[]*moniker            `mapstructure:"moniker"`
+	Provider                            string                 `mapstructure:"provider"`
+	SecurityGroups                      []string               `mapstructure:"security_groups"`
+	SpelLoadBalancers                   []string               `mapstructure:"spel_load_balancers"`
+	SpelTargetGroups                    []string               `mapstructure:"spel_target_groups"`
+	SpotPrice                           string                 `mapstructure:"spot_price"`
+	Stack                               string                 `mapstructure:"stack"`
+	Strategy                            string                 `mapstructure:"strategy"`
+	SubnetType                          string                 `mapstructure:"subnet_type"`
+	SuspendedProcesses                  []string               `mapstructure:"suspended_processes"`
+	Tags                                map[string]string      `mapstructure:"tags"`
+	TargetGroups                        []string               `mapstructure:"target_groups"`
+	TargetHealthyDeployPercentage       int                    `mapstructure:"target_healthy_deploy_percentage"`
+	TerminationPolicies                 []string               `mapstructure:"termination_policies"`
+	UseAmiBlockDeviceMappings           bool                   `mapstructure:"use_ami_block_device_mappings"`
+	UseSourceCapacity                   bool                   `mapstructure:"use_source_capacity"`
 }
 
 func (c *deployStageCluster) clientAvailabilityZones() *map[string][]string {
@@ -73,7 +73,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	clientCluster.Account = c.Account
 	clientCluster.Application = c.Application
 	clientCluster.AvailabilityZones = *c.clientAvailabilityZones()
-	clientCluster.Capacity = toClientClusterCapacity(c.Capacity)
+	clientCluster.Capacity = toClientCapacity(c.Capacity)
 	clientCluster.CloudProvider = c.CloudProvider
 	clientCluster.Cooldown = c.Cooldown
 	clientCluster.CopySourceCustomBlockDeviceMappings = c.CopySourceCustomBlockDeviceMappings
@@ -154,7 +154,7 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 		UseSourceCapacity:             c.UseSourceCapacity,
 	}
 	newCluster.importAvailabilityZones(c)
-	newCluster.Capacity = fromClientClusterCapacity(c.Capacity)
+	newCluster.Capacity = fromClientCapacity(c.Capacity)
 	newCluster.Moniker = fromClientMoniker(c.Moniker)
 	return &newCluster
 }

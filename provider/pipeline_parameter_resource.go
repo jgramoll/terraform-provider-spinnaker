@@ -10,12 +10,12 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func pipelineTriggerResource() *schema.Resource {
+func pipelineParameterResource() *schema.Resource {
 	return &schema.Resource{
-		Create: resourcePipelineTriggerCreate,
-		Read:   resourcePipelineTriggerRead,
-		Update: resourcePipelineTriggerUpdate,
-		Delete: resourcePipelineTriggerDelete,
+		Create: resourcePipelineParameterCreate,
+		Read:   resourcePipelineParameterRead,
+		Update: resourcePipelineParameterUpdate,
+		Delete: resourcePipelineParameterDelete,
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				id := strings.Split(d.Id(), "_")
@@ -28,47 +28,56 @@ func pipelineTriggerResource() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Id of the pipeline to trigger",
+				Description: "Id of the pipeline to add parameter",
 				Required:    true,
 				ForceNew:    true,
 			},
-			"enabled": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "If the trigger is enabled",
-				Optional:    true,
-				Default:     true,
-			},
-			"job": &schema.Schema{
+			"default": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Name of the job",
-				Required:    true,
-			},
-			"master": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the job master",
-				Required:    true,
-			},
-			"property_file": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of file to use for properties",
+				Description: "Default value",
 				Optional:    true,
 			},
-			"type": &schema.Schema{
+			"description": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"label": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Type of trigger (jenkins, etc)",
-				Required:    true,
+				Description: "A label to display when users are triggering the pipeline manually",
+				Optional:    true,
+			},
+			"name": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"option": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"value": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
+			"required": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
 			},
 		},
 	}
 }
 
-func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineParameterCreate(d *schema.ResourceData, m interface{}) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var t trigger
+	var parameter pipelineParameter
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &t); err != nil {
+	if err := mapstructure.Decode(configRaw, &parameter); err != nil {
 		return err
 	}
 
@@ -76,7 +85,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 	if err != nil {
 		return err
 	}
-	t.ID = id.String()
+	parameter.ID = id.String()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -84,20 +93,20 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	clientTrigger := client.Trigger(t)
-	pipeline.AppendTrigger(&clientTrigger)
+	clientParameter := toClientPipelineParameter(&parameter)
+	pipeline.AppendParameter(clientParameter)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[DEBUG] Creating pipeline trigger:", id)
+	log.Println("[DEBUG] Creating pipeline parameter:", id)
 	d.SetId(id.String())
-	return resourcePipelineTriggerRead(d, m)
+	return resourcePipelineParameterRead(d, m)
 }
 
-func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineParameterRead(d *schema.ResourceData, m interface{}) error {
 	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
@@ -107,29 +116,29 @@ func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	var clientTrigger *client.Trigger
-	clientTrigger, err = pipeline.GetTrigger(d.Id())
+	var parameter *client.PipelineParameter
+	parameter, err = pipeline.GetParameter(d.Id())
 	if err != nil {
-		log.Println("[WARN] No Pipeline Trigger found:", err)
+		log.Println("[WARN] No Pipeline Parameter found:", err)
 		d.SetId("")
 	} else {
-		d.SetId(clientTrigger.ID)
-		fromClientTrigger(clientTrigger).setResourceData(d)
+		d.SetId(parameter.ID)
+		fromClientPipelineParameter(parameter).setResourceData(d)
 	}
 
 	return nil
 }
 
-func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineParameterUpdate(d *schema.ResourceData, m interface{}) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var t trigger
+	var parameter pipelineParameter
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &t); err != nil {
+	if err := mapstructure.Decode(configRaw, &parameter); err != nil {
 		return err
 	}
-	t.ID = d.Id()
+	parameter.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -137,8 +146,8 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	clientTrigger := client.Trigger(t)
-	err = pipeline.UpdateTrigger(&clientTrigger)
+	clientParameter := toClientPipelineParameter(&parameter)
+	err = pipeline.UpdateParameter(clientParameter)
 	if err != nil {
 		return err
 	}
@@ -148,11 +157,11 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	log.Println("[DEBUG] Updated pipeline trigger:", d.Id())
-	return resourcePipelineTriggerRead(d, m)
+	log.Println("[DEBUG] Updated pipeline parameter:", d.Id())
+	return resourcePipelineParameterRead(d, m)
 }
 
-func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineParameterDelete(d *schema.ResourceData, m interface{}) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
@@ -162,7 +171,7 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	err = pipeline.DeleteTrigger(d.Id())
+	err = pipeline.DeleteParameter(d.Id())
 	if err != nil {
 		return err
 	}

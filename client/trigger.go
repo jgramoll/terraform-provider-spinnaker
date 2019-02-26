@@ -28,6 +28,11 @@ func (p *Pipeline) GetTrigger(triggerID string) (*Trigger, error) {
 	return nil, ErrTriggerNotFound
 }
 
+// AppendTrigger append trigger
+func (pipeline *Pipeline) AppendTrigger(trigger *Trigger) {
+	pipeline.Triggers = append(pipeline.Triggers, trigger)
+}
+
 // UpdateTrigger in pipeline
 func (p *Pipeline) UpdateTrigger(trigger *Trigger) error {
 	for i, t := range p.Triggers {
