@@ -22,10 +22,10 @@ type pipelineStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	Application        string            `mapstructure:"application"`
-	Pipeline           string            `mapstructure:"target_pipeline"`
-	PipelineParameters map[string]string `mapstructure:"pipeline_parameters"`
-	WaitForCompletion  bool              `mapstructure:"wait_for_completion"`
+	Application        string                `mapstructure:"application"`
+	Pipeline           string                `mapstructure:"target_pipeline"`
+	PipelineParameters *[]*pipelineParameter `mapstructure:"pipeline_parameters"`
+	WaitForCompletion  bool                  `mapstructure:"wait_for_completion"`
 }
 
 func newPipelineStage() *pipelineStage {
@@ -60,7 +60,7 @@ func (s *pipelineStage) toClientStage(config *client.Config) (client.Stage, erro
 
 	cs.Application = s.Application
 	cs.Pipeline = s.Pipeline
-	cs.PipelineParameters = s.PipelineParameters
+	cs.PipelineParameters = toClientPipelineConfig(s.PipelineParameters)
 	cs.WaitForCompletion = s.WaitForCompletion
 
 	return cs, nil
@@ -87,7 +87,7 @@ func (s *pipelineStage) fromClientStage(cs client.Stage) stage {
 
 	newStage.Application = clientStage.Application
 	newStage.Pipeline = clientStage.Pipeline
-	newStage.PipelineParameters = clientStage.PipelineParameters
+	newStage.PipelineParameters = fromClientPipelineConfig(clientStage.PipelineParameters)
 	newStage.WaitForCompletion = clientStage.WaitForCompletion
 
 	return newStage

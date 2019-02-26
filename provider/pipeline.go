@@ -33,31 +33,10 @@ func (pipeline *Pipeline) ToClientPipeline() *client.Pipeline {
 			LimitConcurrent:      pipeline.LimitConcurrent,
 			Name:                 pipeline.Name,
 			Index:                pipeline.Index,
-			ParameterConfig:      pipeline.ToClientPipelineConfig(),
+			ParameterConfig:      toClientPipelineConfig(pipeline.ParameterConfig),
 			Roles:                pipeline.Roles,
 		},
 	}
-}
-
-func (pipeline *Pipeline) ToClientPipelineConfig() *[]*client.PipelineParameter {
-	config := []*client.PipelineParameter{}
-	if pipeline.ParameterConfig == nil {
-		return &config
-	}
-
-	for _, pc := range *pipeline.ParameterConfig {
-		config = append(config, &client.PipelineParameter{
-			Name:        pc.Name,
-			Default:     pc.Default,
-			Description: pc.Description,
-			HasOptions:  len(pc.Options) > 0,
-			Label:       pc.Label,
-			Options:     *pc.ToClientPipelineParameterOption(),
-			Required:    pc.Required,
-		})
-	}
-
-	return &config
 }
 
 func SetResourceData(pipeline *client.Pipeline, d *schema.ResourceData) error {
