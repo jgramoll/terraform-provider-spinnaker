@@ -10,7 +10,7 @@ type pipelineParameter struct {
 	Description string                      `mapstructure:"description"`
 	Label       string                      `mapstructure:"label"`
 	Name        string                      `mapstructure:"name"`
-	Options     *[]*pipelineParameterOption `mapstructure:"options"`
+	Options     *[]*pipelineParameterOption `mapstructure:"option"`
 	Required    bool                        `mapstructure:"required"`
 }
 

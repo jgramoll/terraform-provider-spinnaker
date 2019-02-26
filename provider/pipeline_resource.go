@@ -154,15 +154,15 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 
 func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	pipelineService := m.(*Services).PipelineService
-	pipeline, err := pipelineService.GetPipelineByID(d.Id())
+	p, err := pipelineService.GetPipelineByID(d.Id())
 	if err != nil {
 		log.Println("[WARN] No Pipeline found:", d.Id())
 		d.SetId("")
 		return err
 	}
 
-	log.Printf("[INFO] Got Pipeline %s", pipeline.ID)
-	return SetResourceData(pipeline, d)
+	log.Printf("[INFO] Got Pipeline %s", p.ID)
+	return fromClientPipeline(p).setResourceData(d)
 }
 
 func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
@@ -174,7 +174,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	PipelineFromResourceData(pipeline, d)
+	pipelineFromResourceData(pipeline, d)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
@@ -186,21 +186,21 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
-	var pipeline Pipeline
+	var p pipeline
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &pipeline); err != nil {
+	if err := mapstructure.Decode(configRaw, &p); err != nil {
 		return err
 	}
 
-	if pipeline.Name == "" {
+	if p.Name == "" {
 		return ErrMissingPipelineName
 	}
-	if pipeline.Application == "" {
+	if p.Application == "" {
 		return ErrMissingPipelineApplication
 	}
 
 	log.Println("[DEBUG] Deleting pipeline:", d.Id())
 	d.SetId("")
 	pipelineService := m.(*Services).PipelineService
-	return pipelineService.DeletePipeline(pipeline.ToClientPipeline())
+	return pipelineService.DeletePipeline(p.toClientPipeline())
 }

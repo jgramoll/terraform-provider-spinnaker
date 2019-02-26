@@ -6,7 +6,7 @@ import (
 )
 
 // Pipeline deploy pipeline in application
-type Pipeline struct {
+type pipeline struct {
 	Application          string                 `mapstructure:"application"`
 	AppConfig            map[string]interface{} `mapstructure:"appConfig"`
 	Disabled             bool                   `mapstructure:"disabled"`
@@ -20,60 +20,73 @@ type Pipeline struct {
 	ServiceAccount       string                 `mapstructure:"serviceAccount"`
 }
 
-// ToClientPipeline convert to client pipeline
-// TODO better way?
-func (pipeline *Pipeline) ToClientPipeline() *client.Pipeline {
+func (p *pipeline) toClientPipeline() *client.Pipeline {
 	return &client.Pipeline{
 		SerializablePipeline: client.SerializablePipeline{
-			Application:          pipeline.Application,
-			AppConfig:            pipeline.AppConfig,
-			Disabled:             pipeline.Disabled,
-			ID:                   pipeline.ID,
-			KeepWaitingPipelines: pipeline.KeepWaitingPipelines,
-			LimitConcurrent:      pipeline.LimitConcurrent,
-			Name:                 pipeline.Name,
-			Index:                pipeline.Index,
-			ParameterConfig:      toClientPipelineConfig(pipeline.ParameterConfig),
-			Roles:                pipeline.Roles,
+			Application:          p.Application,
+			AppConfig:            p.AppConfig,
+			Disabled:             p.Disabled,
+			ID:                   p.ID,
+			KeepWaitingPipelines: p.KeepWaitingPipelines,
+			LimitConcurrent:      p.LimitConcurrent,
+			Name:                 p.Name,
+			Index:                p.Index,
+			ParameterConfig:      toClientPipelineConfig(p.ParameterConfig),
+			Roles:                p.Roles,
 		},
 	}
 }
 
-func SetResourceData(pipeline *client.Pipeline, d *schema.ResourceData) error {
-	d.SetId(pipeline.ID)
-	err := d.Set(ApplicationKey, pipeline.Application)
+func fromClientPipeline(p *client.Pipeline) *pipeline {
+	return &pipeline{
+		Application:          p.Application,
+		AppConfig:            p.AppConfig,
+		Disabled:             p.Disabled,
+		ID:                   p.ID,
+		KeepWaitingPipelines: p.KeepWaitingPipelines,
+		LimitConcurrent:      p.LimitConcurrent,
+		Name:                 p.Name,
+		Index:                p.Index,
+		ParameterConfig:      fromClientPipelineConfig(p.ParameterConfig),
+		Roles:                p.Roles,
+	}
+}
+
+func (p *pipeline) setResourceData(d *schema.ResourceData) error {
+	d.SetId(p.ID)
+	err := d.Set(ApplicationKey, p.Application)
 	if err != nil {
 		return err
 	}
-	err = d.Set("name", pipeline.Name)
+	err = d.Set("name", p.Name)
 	if err != nil {
 		return err
 	}
-	err = d.Set("index", pipeline.Index)
+	err = d.Set("index", p.Index)
 	if err != nil {
 		return err
 	}
-	err = d.Set("disabled", pipeline.Disabled)
+	err = d.Set("disabled", p.Disabled)
 	if err != nil {
 		return err
 	}
-	err = d.Set("keep_waiting_pipelines", pipeline.KeepWaitingPipelines)
+	err = d.Set("keep_waiting_pipelines", p.KeepWaitingPipelines)
 	if err != nil {
 		return err
 	}
-	err = d.Set("limit_concurrent", pipeline.LimitConcurrent)
+	err = d.Set("limit_concurrent", p.LimitConcurrent)
 	if err != nil {
 		return err
 	}
-	err = d.Set("parameter", pipeline.ParameterConfig)
+	err = d.Set("parameter", p.ParameterConfig)
 	if err != nil {
 		return err
 	}
-	err = d.Set("roles", pipeline.Roles)
+	err = d.Set("roles", p.Roles)
 	if err != nil {
 		return err
 	}
-	err = d.Set("service_account", pipeline.ServiceAccount)
+	err = d.Set("service_account", p.ServiceAccount)
 	if err != nil {
 		return err
 	}
@@ -81,7 +94,7 @@ func SetResourceData(pipeline *client.Pipeline, d *schema.ResourceData) error {
 }
 
 // PipelineFromResourceData get pipeline from resource data
-func PipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData) {
+func pipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData) {
 	pipeline.Index = d.Get("index").(int)
 	pipeline.Application = d.Get(ApplicationKey).(string)
 	pipeline.Name = d.Get("name").(string)
