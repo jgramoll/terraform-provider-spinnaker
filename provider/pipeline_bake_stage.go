@@ -31,18 +31,23 @@ type bakeStage struct {
 	CloudProviderType  string            `mapstructure:"cloud_provider_type"`
 	ExtendedAttributes map[string]string `mapstructure:"extended_attributes"`
 	Rebake             bool              `mapstructure:"rebake"`
+	Region             string            `mapstructure:"region"`
 	Regions            []string          `mapstructure:"regions"`
 	StoreType          string            `mapstructure:"store_type"`
 	TemplateFileName   string            `mapstructure:"template_file_name"`
+	User               string            `mapstructure:"user"`
 	VarFileName        string            `mapstructure:"var_file_name"`
 	VMType             string            `mapstructure:"vm_type"`
 }
 
 func newBakeStage() *bakeStage {
-	return &bakeStage{Type: client.BakeStageType}
+	return &bakeStage{
+		Type:         client.BakeStageType,
+		FailPipeline: true,
+	}
 }
 
-func (s *bakeStage) toClientStage() (client.Stage, error) {
+func (s *bakeStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
@@ -74,9 +79,19 @@ func (s *bakeStage) toClientStage() (client.Stage, error) {
 	cs.CloudProviderType = s.CloudProviderType
 	cs.ExtendedAttributes = s.ExtendedAttributes
 	cs.Rebake = s.Rebake
+	if s.Region == "" && len(s.Regions) == 1 {
+		cs.Region = s.Regions[0]
+	} else {
+		cs.Region = s.Region
+	}
 	cs.Regions = s.Regions
 	cs.StoreType = s.StoreType
 	cs.TemplateFileName = s.TemplateFileName
+	if s.User == "" {
+		cs.User = config.UserEmail
+	} else {
+		cs.User = s.User
+	}
 	cs.VarFileName = s.VarFileName
 	cs.VMType = s.VMType
 
@@ -111,45 +126,118 @@ func (s *bakeStage) fromClientStage(cs client.Stage) stage {
 	newStage.CloudProviderType = clientStage.CloudProviderType
 	newStage.ExtendedAttributes = clientStage.ExtendedAttributes
 	newStage.Rebake = clientStage.Rebake
+	newStage.Region = clientStage.Region
 	newStage.Regions = clientStage.Regions
 	newStage.StoreType = clientStage.StoreType
 	newStage.TemplateFileName = clientStage.TemplateFileName
+	newStage.User = clientStage.User
 	newStage.VarFileName = clientStage.VarFileName
 	newStage.VMType = clientStage.VMType
 
 	return newStage
 }
 
-func (s *bakeStage) SetResourceData(d *schema.ResourceData) {
+func (s *bakeStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
-	d.Set("name", s.Name)
-	d.Set("ref_id", s.RefID)
-	d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
-	d.Set("notification", s.Notifications)
-	d.Set("stage_enabled", s.StageEnabled)
-	d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
-	d.Set("continue_pipeline", s.ContinuePipeline)
-	d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
-	d.Set("fail_pipeline", s.FailPipeline)
-	d.Set("override_timeout", s.OverrideTimeout)
-	d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
-	d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	err := d.Set("name", s.Name)
+	if err != nil {
+		return err
+	}
+	err = d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
+	if err != nil {
+		return err
+	}
+	err = d.Set("notification", s.Notifications)
+	if err != nil {
+		return err
+	}
+	err = d.Set("stage_enabled", s.StageEnabled)
+	if err != nil {
+		return err
+	}
+	err = d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
+	if err != nil {
+		return err
+	}
+	err = d.Set("continue_pipeline", s.ContinuePipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_pipeline", s.FailPipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("override_timeout", s.OverrideTimeout)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	if err != nil {
+		return err
+	}
 	// End baseStage
 
-	d.Set("ami_name", s.AmiName)
-	d.Set("ami_suffix", s.AmiSuffix)
-	d.Set("base_ami", s.BaseAMI)
-	d.Set("base_label", s.BaseLabel)
-	d.Set("base_name", s.BaseName)
-	d.Set("base_os", s.BaseOS)
-	d.Set("cloud_provider_type", s.CloudProviderType)
-	d.Set("extended_attributes", s.ExtendedAttributes)
-	d.Set("rebake", s.Rebake)
-	d.Set("regions", s.Regions)
-	d.Set("store_type", s.StoreType)
-	d.Set("template_file_name", s.TemplateFileName)
-	d.Set("var_file_name", s.VarFileName)
-	d.Set("vm_type", s.VMType)
+	err = d.Set("ami_name", s.AmiName)
+	if err != nil {
+		return err
+	}
+	err = d.Set("ami_suffix", s.AmiSuffix)
+	if err != nil {
+		return err
+	}
+	err = d.Set("base_ami", s.BaseAMI)
+	if err != nil {
+		return err
+	}
+	err = d.Set("base_label", s.BaseLabel)
+	if err != nil {
+		return err
+	}
+	err = d.Set("base_name", s.BaseName)
+	if err != nil {
+		return err
+	}
+	err = d.Set("base_os", s.BaseOS)
+	if err != nil {
+		return err
+	}
+	err = d.Set("cloud_provider_type", s.CloudProviderType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("extended_attributes", s.ExtendedAttributes)
+	if err != nil {
+		return err
+	}
+	err = d.Set("rebake", s.Rebake)
+	if err != nil {
+		return err
+	}
+	err = d.Set("regions", s.Regions)
+	if err != nil {
+		return err
+	}
+	err = d.Set("store_type", s.StoreType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("template_file_name", s.TemplateFileName)
+	if err != nil {
+		return err
+	}
+	err = d.Set("var_file_name", s.VarFileName)
+	if err != nil {
+		return err
+	}
+	return d.Set("vm_type", s.VMType)
 }
 
 func (s *bakeStage) SetRefID(id string) {

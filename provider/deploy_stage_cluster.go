@@ -14,6 +14,7 @@ type deployStageCluster struct {
 	CloudProvider                       string                         `mapstructure:"cloud_provider"`
 	Cooldown                            int                            `mapstructure:"cooldown"`
 	CopySourceCustomBlockDeviceMappings bool                           `mapstructure:"copy_source_custom_block_device_mappings"`
+	Dirty                               map[string]interface{}         `mapstructure:"dirty"`
 	EBSOptimized                        bool                           `mapstructure:"ebs_optimized"`
 	EnabledMetrics                      []string                       `mapstructure:"enabled_metrics"`
 	FreeFormDetails                     string                         `mapstructure:"free_form_details"`
@@ -68,44 +69,41 @@ func (c *deployStageCluster) importAvailabilityZones(clientCluster *client.Deplo
 
 func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	// TODO better way?
-	return &client.DeployStageCluster{
-		Account:           c.Account,
-		Application:       c.Application,
-		AvailabilityZones: *c.clientAvailabilityZones(),
-		Capacity:          toClientClusterCapacity(c.Capacity),
-		CloudProvider:     c.CloudProvider,
-		Cooldown:          c.Cooldown,
-
-		CopySourceCustomBlockDeviceMappings: c.CopySourceCustomBlockDeviceMappings,
-
-		EBSOptimized:           c.EBSOptimized,
-		EnabledMetrics:         c.EnabledMetrics,
-		FreeFormDetails:        c.FreeFormDetails,
-		HealthCheckGracePeriod: c.HealthCheckGracePeriod,
-		HealthCheckType:        c.HealthCheckType,
-		IAMRole:                c.IAMRole,
-		InstanceMonitoring:     c.InstanceMonitoring,
-		InstanceType:           c.InstanceType,
-		KeyPair:                c.KeyPair,
-		LoadBalancers:          c.LoadBalancers,
-		Moniker:                toClientMoniker(c.Moniker),
-		Provider:               c.Provider,
-		SecurityGroups:         c.SecurityGroups,
-		SpelLoadBalancers:      c.SpelLoadBalancers,
-		SpelTargetGroups:       c.SpelTargetGroups,
-		SpotPrice:              c.SpotPrice,
-		Stack:                  c.Stack,
-		Strategy:               c.Strategy,
-		SubnetType:             c.SubnetType,
-		SuspendedProcesses:     c.SuspendedProcesses,
-		Tags:                   c.Tags,
-		TargetGroups:           c.TargetGroups,
-
-		TargetHealthyDeployPercentage: c.TargetHealthyDeployPercentage,
-		TerminationPolicies:           c.TerminationPolicies,
-		UseAmiBlockDeviceMappings:     c.UseAmiBlockDeviceMappings,
-		UseSourceCapacity:             c.UseSourceCapacity,
-	}
+	clientCluster := client.NewDeployStageCluster()
+	clientCluster.Account = c.Account
+	clientCluster.Application = c.Application
+	clientCluster.AvailabilityZones = *c.clientAvailabilityZones()
+	clientCluster.Capacity = toClientClusterCapacity(c.Capacity)
+	clientCluster.CloudProvider = c.CloudProvider
+	clientCluster.Cooldown = c.Cooldown
+	clientCluster.CopySourceCustomBlockDeviceMappings = c.CopySourceCustomBlockDeviceMappings
+	clientCluster.EBSOptimized = c.EBSOptimized
+	clientCluster.EnabledMetrics = c.EnabledMetrics
+	clientCluster.FreeFormDetails = c.FreeFormDetails
+	clientCluster.HealthCheckGracePeriod = c.HealthCheckGracePeriod
+	clientCluster.HealthCheckType = c.HealthCheckType
+	clientCluster.IAMRole = c.IAMRole
+	clientCluster.InstanceMonitoring = c.InstanceMonitoring
+	clientCluster.InstanceType = c.InstanceType
+	clientCluster.KeyPair = c.KeyPair
+	clientCluster.LoadBalancers = c.LoadBalancers
+	clientCluster.Moniker = toClientMoniker(c.Moniker)
+	clientCluster.Provider = c.Provider
+	clientCluster.SecurityGroups = c.SecurityGroups
+	clientCluster.SpelLoadBalancers = c.SpelLoadBalancers
+	clientCluster.SpelTargetGroups = c.SpelTargetGroups
+	clientCluster.SpotPrice = c.SpotPrice
+	clientCluster.Stack = c.Stack
+	clientCluster.Strategy = c.Strategy
+	clientCluster.SubnetType = c.SubnetType
+	clientCluster.SuspendedProcesses = c.SuspendedProcesses
+	clientCluster.Tags = c.Tags
+	clientCluster.TargetGroups = c.TargetGroups
+	clientCluster.TargetHealthyDeployPercentage = c.TargetHealthyDeployPercentage
+	clientCluster.TerminationPolicies = c.TerminationPolicies
+	clientCluster.UseAmiBlockDeviceMappings = c.UseAmiBlockDeviceMappings
+	clientCluster.UseSourceCapacity = c.UseSourceCapacity
+	return clientCluster
 }
 
 func (s *deployStage) toClientClusters() *[]*client.DeployStageCluster {

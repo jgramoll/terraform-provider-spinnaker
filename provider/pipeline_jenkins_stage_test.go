@@ -40,6 +40,16 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      stage1,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				ResourceName:      stage2,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccPipelineJenkinsStageConfigBasic(pipeName, newMaster, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),

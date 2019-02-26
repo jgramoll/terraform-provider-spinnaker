@@ -2,12 +2,23 @@ package provider
 
 import (
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
+
+func resourcePipelineImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	id := strings.Split(d.Id(), "_")
+	d.SetId(id[1])
+	err := d.Set(PipelineKey, id[0])
+	if err != nil {
+		return nil, err
+	}
+	return []*schema.ResourceData{d}, nil
+}
 
 func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createStage func() stage) error {
 	pipelineLock.Lock()
@@ -32,7 +43,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	cs, err := stage.toClientStage()
+	cs, err := stage.toClientStage(&m.(*Services).Config)
 	if err != nil {
 		return err
 	}
@@ -67,10 +78,10 @@ func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStag
 		s := createStage().(stage)
 		s = s.fromClientStage(cStage)
 		log.Println("[INFO] Updating from stage", cStage)
-		s.SetResourceData(d)
+		err = s.SetResourceData(d)
 	}
 
-	return nil
+	return err
 }
 
 func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createStage func() stage) error {
@@ -91,7 +102,7 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	cs, err := stage.toClientStage()
+	cs, err := stage.toClientStage(&m.(*Services).Config)
 	if err != nil {
 		return err
 	}

@@ -40,6 +40,16 @@ func TestAccPipelinePipelineStageBasic(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      stage1,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				ResourceName:      stage2,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccPipelinePipelineStageConfigBasic(pipeName, newTargetPipeline, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
@@ -67,6 +77,11 @@ func TestAccPipelinePipelineStageBasic(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineStages(pipeline, []string{}),
 				),
+			},
+			{
+				ResourceName:      pipeline,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})

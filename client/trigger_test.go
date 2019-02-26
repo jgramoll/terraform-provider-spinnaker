@@ -9,7 +9,7 @@ func newTriggerTestPipeline() (*Pipeline, *Trigger) {
 	expected.ID = "triggerId"
 	return &Pipeline{
 		SerializablePipeline: SerializablePipeline{
-			Triggers: &[]*Trigger{&expected},
+			Triggers: []*Trigger{&expected},
 		},
 	}, &expected
 }

@@ -29,10 +29,13 @@ type pipelineStage struct {
 }
 
 func newPipelineStage() *pipelineStage {
-	return &pipelineStage{Type: client.PipelineStageType}
+	return &pipelineStage{
+		Type:         client.PipelineStageType,
+		FailPipeline: true,
+	}
 }
 
-func (s *pipelineStage) toClientStage() (client.Stage, error) {
+func (s *pipelineStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
@@ -90,26 +93,67 @@ func (s *pipelineStage) fromClientStage(cs client.Stage) stage {
 	return newStage
 }
 
-func (s *pipelineStage) SetResourceData(d *schema.ResourceData) {
+func (s *pipelineStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
-	d.Set("name", s.Name)
-	d.Set("ref_id", s.RefID)
-	d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
-	d.Set("notification", s.Notifications)
-	d.Set("stage_enabled", s.StageEnabled)
-	d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
-	d.Set("continue_pipeline", s.ContinuePipeline)
-	d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
-	d.Set("fail_pipeline", s.FailPipeline)
-	d.Set("override_timeout", s.OverrideTimeout)
-	d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
-	d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	err := d.Set("name", s.Name)
+	if err != nil {
+		return err
+	}
+	err = d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
+	if err != nil {
+		return err
+	}
+	err = d.Set("notification", s.Notifications)
+	if err != nil {
+		return err
+	}
+	err = d.Set("stage_enabled", s.StageEnabled)
+	if err != nil {
+		return err
+	}
+	err = d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
+	if err != nil {
+		return err
+	}
+	err = d.Set("continue_pipeline", s.ContinuePipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_pipeline", s.FailPipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("override_timeout", s.OverrideTimeout)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	if err != nil {
+		return err
+	}
 	// End baseStage
 
-	d.Set("application", s.Application)
-	d.Set("target_pipeline", s.Pipeline)
-	d.Set("pipeline_parameters", s.PipelineParameters)
-	d.Set("wait_for_completion", s.WaitForCompletion)
+	err = d.Set("application", s.Application)
+	if err != nil {
+		return err
+	}
+	err = d.Set("target_pipeline", s.Pipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("pipeline_parameters", s.PipelineParameters)
+	if err != nil {
+		return err
+	}
+	return d.Set("wait_for_completion", s.WaitForCompletion)
 }
 
 func (s *pipelineStage) SetRefID(id string) {

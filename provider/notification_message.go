@@ -5,32 +5,39 @@ import (
 )
 
 type message struct {
-	Complete string
-	Failed   string
-	Starting string
+	Complete string `mapstructure:"complete"`
+	Failed   string `mapstructure:"failed"`
+	Starting string `mapstructure:"starting"`
 }
 
-func toClientMessage(level client.NotificationLevel, m *message) (client.Message, error) {
+func toClientMessage(level client.NotificationLevel, m *[]*message) (client.Message, error) {
+	if m == nil || len(*m) == 0 {
+		return nil, nil
+	}
 	newMessage, err := client.NewMessage(level)
 	if err != nil {
 		return nil, err
 	}
+	message := (*m)[0]
 
-	if m.Complete != "" {
-		newMessage.SetCompleteText(m.Complete)
+	if message.Complete != "" {
+		newMessage.SetCompleteText(message.Complete)
 	}
-	if m.Failed != "" {
-		newMessage.SetFailedText(m.Failed)
+	if message.Failed != "" {
+		newMessage.SetFailedText(message.Failed)
 	}
-	if m.Starting != "" {
-		newMessage.SetStartingText(m.Starting)
+	if message.Starting != "" {
+		newMessage.SetStartingText(message.Starting)
 	}
 	return newMessage, nil
 }
 
-func (m *message) fromClientMessage(cm client.Message) *message {
-	newMessage := message{}
+func fromClientMessage(cm client.Message) *message {
+	if cm == nil {
+		return nil
+	}
 
+	newMessage := message{}
 	if cm.CompleteText() != "" {
 		newMessage.Complete = cm.CompleteText()
 	}

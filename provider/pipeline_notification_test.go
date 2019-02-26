@@ -35,6 +35,16 @@ func TestAccPipelineNotificationBasic(t *testing.T) {
 				),
 			},
 			{
+				ResourceName:      notification1,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
+				ResourceName:      notification2,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+			{
 				Config: testAccPipelineNotificationConfigBasic(addressChanged, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", addressChanged),

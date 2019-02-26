@@ -30,10 +30,13 @@ type jenkinsStage struct {
 }
 
 func newJenkinsStage() *jenkinsStage {
-	return &jenkinsStage{Type: client.JenkinsStageType}
+	return &jenkinsStage{
+		Type:         client.JenkinsStageType,
+		FailPipeline: true,
+	}
 }
 
-func (s *jenkinsStage) toClientStage() (client.Stage, error) {
+func (s *jenkinsStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
@@ -93,27 +96,71 @@ func (s *jenkinsStage) fromClientStage(cs client.Stage) stage {
 	return newStage
 }
 
-func (s *jenkinsStage) SetResourceData(d *schema.ResourceData) {
+func (s *jenkinsStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
-	d.Set("name", s.Name)
-	d.Set("ref_id", s.RefID)
-	d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
-	d.Set("notification", s.Notifications)
-	d.Set("stage_enabled", s.StageEnabled)
-	d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
-	d.Set("continue_pipeline", s.ContinuePipeline)
-	d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
-	d.Set("fail_pipeline", s.FailPipeline)
-	d.Set("override_timeout", s.OverrideTimeout)
-	d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
-	d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	err := d.Set("name", s.Name)
+	if err != nil {
+		return err
+	}
+	err = d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
+	if err != nil {
+		return err
+	}
+	err = d.Set("notification", s.Notifications)
+	if err != nil {
+		return err
+	}
+	err = d.Set("stage_enabled", s.StageEnabled)
+	if err != nil {
+		return err
+	}
+	err = d.Set("complete_other_branches_then_fail", s.CompleteOtherBranchesThenFail)
+	if err != nil {
+		return err
+	}
+	err = d.Set("continue_pipeline", s.ContinuePipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_on_failed_expressions", s.FailOnFailedExpressions)
+	if err != nil {
+		return err
+	}
+	err = d.Set("fail_pipeline", s.FailPipeline)
+	if err != nil {
+		return err
+	}
+	err = d.Set("override_timeout", s.OverrideTimeout)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restrict_execution_during_time_window", s.RestrictExecutionDuringTimeWindow)
+	if err != nil {
+		return err
+	}
+	err = d.Set("restricted_execution_window", s.RestrictedExecutionWindow)
+	if err != nil {
+		return err
+	}
 	// End baseStage
 
-	d.Set("job", s.Job)
-	d.Set("mark_unstable_as_successful", s.MarkUnstableAsSuccessful)
-	d.Set("master", s.Master)
-	d.Set("parameters", s.Parameters)
-	d.Set("property_file", s.PropertyFile)
+	err = d.Set("job", s.Job)
+	if err != nil {
+		return err
+	}
+	err = d.Set("mark_unstable_as_successful", s.MarkUnstableAsSuccessful)
+	if err != nil {
+		return err
+	}
+	err = d.Set("master", s.Master)
+	if err != nil {
+		return err
+	}
+	err = d.Set("parameters", s.Parameters)
+	if err != nil {
+		return err
+	}
+	return d.Set("property_file", s.PropertyFile)
 }
 
 func (s *jenkinsStage) SetRefID(id string) {

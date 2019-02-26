@@ -197,17 +197,9 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
 
   application      = "my-other-app"
   target_pipeline  = "${spinnaker_pipeline.prod.id}"
-  pipelineParameters {
+  pipeline_parameters {
     version = "my-message"
   }
 }
 
 ```
-
-## TODO
-
-1. Parameters
-1. More Stages
-1. Stage Notifications
-1. More Triggers (refactor to make polymorphic)
-1. Import

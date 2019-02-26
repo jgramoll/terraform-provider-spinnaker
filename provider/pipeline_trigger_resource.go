@@ -2,6 +2,7 @@ package provider
 
 import (
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -15,6 +16,14 @@ func pipelineTriggerResource() *schema.Resource {
 		Read:   resourcePipelineTriggerRead,
 		Update: resourcePipelineTriggerUpdate,
 		Delete: resourcePipelineTriggerDelete,
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				id := strings.Split(d.Id(), "_")
+				d.Set(PipelineKey, id[0])
+				d.SetId(id[1])
+				return []*schema.ResourceData{d}, nil
+			},
+		},
 
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{

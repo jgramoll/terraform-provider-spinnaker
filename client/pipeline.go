@@ -6,15 +6,18 @@ import (
 
 // SerializablePipeline deploy pipeline in application
 type SerializablePipeline struct {
-	Application          string                `json:"application"`
-	Disabled             bool                  `json:"disabled"`
-	ID                   string                `json:"id"`
-	Index                int                   `json:"index"`
-	KeepWaitingPipelines bool                  `json:"keepWaitingPipelines"`
-	LimitConcurrent      bool                  `json:"limitConcurrent"`
-	Name                 string                `json:"name"`
-	ParameterConfig      *[]*PipelineParameter `json:"parameterConfig"`
-	Triggers             *[]*Trigger           `json:"triggers"`
+	Application          string                 `json:"application"`
+	AppConfig            map[string]interface{} `json:"appConfig"`
+	Disabled             bool                   `json:"disabled"`
+	ID                   string                 `json:"id"`
+	Index                int                    `json:"index"`
+	KeepWaitingPipelines bool                   `json:"keepWaitingPipelines"`
+	LimitConcurrent      bool                   `json:"limitConcurrent"`
+	Name                 string                 `json:"name"`
+	ParameterConfig      *[]*PipelineParameter  `json:"parameterConfig"`
+	Roles                *[]string              `json:"roles"`
+	ServiceAccount       string                 `json:"serviceAccount,omitempty"`
+	Triggers             []*Trigger             `json:"triggers"`
 }
 
 // Pipeline deploy pipeline in application
@@ -31,6 +34,9 @@ func NewSerializablePipeline() SerializablePipeline {
 		Disabled:             false,
 		KeepWaitingPipelines: false,
 		LimitConcurrent:      true,
+		Triggers:             []*Trigger{},
+		AppConfig:            map[string]interface{}{},
+		ParameterConfig:      &[]*PipelineParameter{},
 	}
 }
 
@@ -66,11 +72,7 @@ func parsePipeline(pipelineHash map[string]interface{}) (*Pipeline, error) {
 
 // AppendTrigger append trigger
 func (pipeline *Pipeline) AppendTrigger(trigger *Trigger) {
-	if pipeline.Triggers == nil {
-		pipeline.Triggers = &[]*Trigger{}
-	}
-	triggers := append(*pipeline.Triggers, trigger)
-	pipeline.Triggers = &triggers
+	pipeline.Triggers = append(pipeline.Triggers, trigger)
 }
 
 // AppendStage append stage

@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // ErrInvalidDecodeResponseParameter invalid parameter for decodeResponse
@@ -66,7 +67,7 @@ func (client *Client) NewRequestWithBody(method string, path string, data interf
 		return nil, jsonErr
 	}
 
-	log.Printf("[INFO] Sending %s to %s\n", method, reqURL)
+	log.Printf("[INFO] Sending %s %s with body %s\n", method, reqURL, jsonValue)
 	req, err := http.NewRequest(method, reqURL.String(), bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return nil, err
@@ -83,6 +84,35 @@ func (client *Client) Do(req *http.Request) (*http.Response, error) {
 	}
 	defer resp.Body.Close()
 	return resp, nil
+}
+
+// DoWithRetry send http request with retry
+func (client *Client) DoWithRetry(createReq func() (*http.Request, error)) (*http.Response, error) {
+	attempts := 0
+	req, err := createReq()
+	if err != nil {
+		return nil, err
+	}
+	resp, respErr := client.Do(req)
+	for respErr != nil && attempts < 5 {
+		spinnakerError, ok := respErr.(*SpinnakerError)
+		if !ok {
+			return nil, respErr
+		}
+		if spinnakerError.Status != 400 {
+			return nil, spinnakerError
+		}
+		time.Sleep(time.Duration(attempts*attempts) * time.Second)
+
+		req, err := createReq()
+		if err != nil {
+			return nil, err
+		}
+		log.Printf("[INFO] retry attempt %v for request %v\n", attempts+2, req)
+		resp, respErr = client.Do(req)
+		attempts++
+	}
+	return resp, respErr
 }
 
 // DoWithResponse send http request and parse response body
