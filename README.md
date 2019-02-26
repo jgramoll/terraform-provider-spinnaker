@@ -23,6 +23,14 @@ ln -s ~/go/bin/terraform-provider-spinnaker ~/.terraform.d/plugins/$(uname | tr 
 ## Usage ##
 
 ```terraform
+provider "spinnaker" {
+  address = "${var.spinnaker_address}"
+
+  cert_path  = "${var.cert_path}"
+  key_path   = "${var.key_path}"
+  user_email = "${var.user_email}"
+}
+
 resource "spinnaker_pipeline" "edge" {
   application = "career"
   name        = "My New Pipeline"
