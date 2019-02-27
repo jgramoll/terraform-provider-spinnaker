@@ -11,13 +11,12 @@ import (
 )
 
 func TestAccPipelineBasic(t *testing.T) {
+	var pipelineRef client.Pipeline
 	app := "app"
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	newName := name + "-changed"
-	pipeline := "spinnaker_pipeline.test"
-	pipelineParameterName := fmt.Sprintf("My %s parameter", name)
-	pipelineParameterNewName := fmt.Sprintf("My %s parameter", newName)
+	resourceName := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -27,25 +26,17 @@ func TestAccPipelineBasic(t *testing.T) {
 			{
 				Config: testAccPipelineConfigBasic(app, name),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists(pipeline),
-					resource.TestCheckResourceAttr(pipeline, "name", name),
-					resource.TestCheckResourceAttr(pipeline, "parameter.0.name", pipelineParameterName),
-					resource.TestCheckResourceAttr(pipeline, "parameter.1.default", "mosdef"),
-					resource.TestCheckResourceAttr(pipeline, "parameter.1.label", "whatevs"),
-					resource.TestCheckResourceAttr(pipeline, "application", app),
-					testAccCheckPipelineParameters(pipeline, []string{pipelineParameterName, "Detailed parameter"}),
+					testAccCheckPipelineExists(resourceName, &pipelineRef),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "application", app),
 				),
 			},
 			{
 				Config: testAccPipelineConfigBasic(app, newName),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists(pipeline),
-					resource.TestCheckResourceAttr(pipeline, "name", newName),
-					resource.TestCheckResourceAttr(pipeline, "parameter.0.name", pipelineParameterNewName),
-					resource.TestCheckResourceAttr(pipeline, "parameter.1.default", "mosdef"),
-					resource.TestCheckResourceAttr(pipeline, "parameter.1.label", "whatevs"),
-					resource.TestCheckResourceAttr(pipeline, "application", app),
-					testAccCheckPipelineParameters(pipeline, []string{pipelineParameterNewName, "Detailed parameter"}),
+					testAccCheckPipelineExists(resourceName, &pipelineRef),
+					resource.TestCheckResourceAttr(resourceName, "name", newName),
+					resource.TestCheckResourceAttr(resourceName, "application", app),
 				),
 			},
 		},
@@ -53,11 +44,13 @@ func TestAccPipelineBasic(t *testing.T) {
 }
 
 func TestAccPipelineTrigger(t *testing.T) {
+	var pipelineRef client.Pipeline
+	var triggers []*client.Trigger
 	app := "app"
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	newName := name + "-changed"
-	pipeline := "spinnaker_pipeline.test"
+	resourceName := "spinnaker_pipeline.test"
 	trigger := "spinnaker_pipeline_trigger.jenkins"
 
 	resource.Test(t, resource.TestCase{
@@ -68,23 +61,23 @@ func TestAccPipelineTrigger(t *testing.T) {
 			{
 				Config: testAccPipelineConfigTrigger(app, name),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists(pipeline),
-					resource.TestCheckResourceAttr(pipeline, "name", name),
-					resource.TestCheckResourceAttr(pipeline, "application", app),
-					testAccCheckPipelineTriggers(pipeline, []string{
+					testAccCheckPipelineExists(resourceName, &pipelineRef),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "application", app),
+					testAccCheckPipelineTriggers(resourceName, []string{
 						trigger,
-					}),
+					}, &triggers),
 				),
 			},
 			{
 				Config: testAccPipelineConfigTrigger(app, newName),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineExists(pipeline),
-					resource.TestCheckResourceAttr(pipeline, "name", newName),
-					resource.TestCheckResourceAttr(pipeline, "application", app),
-					testAccCheckPipelineTriggers(pipeline, []string{
+					testAccCheckPipelineExists(resourceName, &pipelineRef),
+					resource.TestCheckResourceAttr(resourceName, "name", newName),
+					resource.TestCheckResourceAttr(resourceName, "application", app),
+					testAccCheckPipelineTriggers(resourceName, []string{
 						trigger,
-					}),
+					}, &triggers),
 				),
 			},
 		},
@@ -97,27 +90,7 @@ resource "spinnaker_pipeline" "test" {
   application = "%s"
   name        = "%s"
   index       = 2
-
-  parameter {
-    name = "My %s parameter"
-  }
-
-  parameter {
-    name        = "Detailed parameter"
-	description = "Setting options"
-
-	default = "mosdef"
-	label   = "whatevs"
-
-	option {
-	  value = 1
-	}
-	option {
-	  value = "two"
-	}
-  }
-}
-`, app, name, name)
+}`, app, name)
 }
 
 func testAccPipelineConfigTrigger(app string, name string) string {
@@ -137,7 +110,7 @@ resource "spinnaker_pipeline_trigger" "jenkins" {
 `, app, name)
 }
 
-func testAccCheckPipelineExists(resourceName string) resource.TestCheckFunc {
+func testAccCheckPipelineExists(resourceName string, p *client.Pipeline) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -145,61 +118,14 @@ func testAccCheckPipelineExists(resourceName string) resource.TestCheckFunc {
 		}
 
 		pipelineService := testAccProvider.Meta().(*Services).PipelineService
-		_, err := pipelineService.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
+		pipe, err := pipelineService.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
 		if err != nil {
 			return err
 		}
+		*p = *pipe
 
 		return nil
 	}
-}
-
-func testAccCheckPipelineParameters(resourceName string, expected []string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[resourceName]
-		if !ok {
-			return fmt.Errorf("Not found: %s", resourceName)
-		}
-
-		pipelineService := testAccProvider.Meta().(*Services).PipelineService
-		pipeline, err := pipelineService.GetPipeline(rs.Primary.Attributes["application"], rs.Primary.Attributes["name"])
-		if err != nil {
-			return err
-		}
-
-		err = assertParameters(pipeline, expected)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	}
-}
-
-func assertParameters(pipeline *client.Pipeline, expected []string) error {
-	if len(expected) > 0 {
-		if pipeline.ParameterConfig == nil {
-			return fmt.Errorf("pipeline.ParameterConfig is nil, expected: %v for pipeline:\n%+v", expected, pipeline)
-		}
-
-		if len(*pipeline.ParameterConfig) != len(expected) {
-			return fmt.Errorf("pipeline.ParameterConfig is smaller than: %v", expected)
-		}
-	} else {
-		if (pipeline.ParameterConfig != nil) && len(*pipeline.ParameterConfig) > 0 {
-			return fmt.Errorf("pipeline.ParameterConfig should be empty")
-		}
-	}
-
-	for _, p := range *pipeline.ParameterConfig {
-		for _, s := range expected {
-			if p.Name == s {
-				return nil
-			}
-		}
-	}
-
-	return fmt.Errorf("Parameters do not match: %v, %v", expected, pipeline.ParameterConfig)
 }
 
 func testAccCheckPipelineDestroy(s *terraform.State) error {

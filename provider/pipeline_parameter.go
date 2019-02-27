@@ -17,6 +17,7 @@ type pipelineParameter struct {
 
 func fromClientPipelineParameter(pc *client.PipelineParameter) *pipelineParameter {
 	return &pipelineParameter{
+		ID:          pc.ID,
 		Name:        pc.Name,
 		Default:     pc.Default,
 		Description: pc.Description,
@@ -28,6 +29,7 @@ func fromClientPipelineParameter(pc *client.PipelineParameter) *pipelineParamete
 
 func toClientPipelineParameter(p *pipelineParameter) *client.PipelineParameter {
 	return &client.PipelineParameter{
+		ID:          p.ID,
 		Name:        p.Name,
 		Default:     p.Default,
 		Description: p.Description,
@@ -36,32 +38,6 @@ func toClientPipelineParameter(p *pipelineParameter) *client.PipelineParameter {
 		Options:     toClientPipelineParameterOptions(p.Options),
 		Required:    p.Required,
 	}
-}
-
-func toClientPipelineConfig(parameters *[]*pipelineParameter) *[]*client.PipelineParameter {
-	if parameters == nil {
-		return nil
-	}
-
-	config := []*client.PipelineParameter{}
-	for _, p := range *parameters {
-		config = append(config, toClientPipelineParameter(p))
-	}
-
-	return &config
-}
-
-func fromClientPipelineConfig(parameters *[]*client.PipelineParameter) *[]*pipelineParameter {
-	if parameters == nil {
-		return nil
-	}
-
-	config := []*pipelineParameter{}
-	for _, pc := range *parameters {
-		config = append(config, fromClientPipelineParameter(pc))
-	}
-
-	return &config
 }
 
 func (parameter *pipelineParameter) setResourceData(d *schema.ResourceData) error {

@@ -3,3 +3,4 @@ terraform-provider-spinnaker
 .sonar_token
 coverage.out
 report.json
+.envrc

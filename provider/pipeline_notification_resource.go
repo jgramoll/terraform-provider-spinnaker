@@ -17,6 +17,8 @@ var ErrNotificationNotFound = errors.New("Could not find notification")
 // PipelineKey key for pipeline in map
 const PipelineKey = "pipeline"
 
+var errInvalidNotificationImportKey = errors.New("Invalid import key, must be pipelineID_notificationID")
+
 func pipelineNotificationResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineNotificationCreate,
@@ -26,6 +28,9 @@ func pipelineNotificationResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				id := strings.Split(d.Id(), "_")
+				if len(id) != 2 {
+					return nil, errInvalidNotificationImportKey
+				}
 				d.Set(PipelineKey, id[0])
 				d.SetId(id[1])
 				return []*schema.ResourceData{d}, nil
@@ -72,7 +77,6 @@ func pipelineNotificationResource() *schema.Resource {
 				Required:    true,
 			},
 			"when": &schema.Schema{
-				// TODO validate more
 				Type:        schema.TypeList,
 				Description: "When to send notification (started, completed, failed)",
 				Required:    true,
@@ -80,15 +84,15 @@ func pipelineNotificationResource() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"complete": &schema.Schema{
-							Type:     schema.TypeString,
+							Type:     schema.TypeBool,
 							Optional: true,
 						},
 						"failed": &schema.Schema{
-							Type:     schema.TypeString,
+							Type:     schema.TypeBool,
 							Optional: true,
 						},
 						"starting": &schema.Schema{
-							Type:     schema.TypeString,
+							Type:     schema.TypeBool,
 							Optional: true,
 						},
 					},

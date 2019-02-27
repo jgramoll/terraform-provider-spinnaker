@@ -28,10 +28,10 @@ type serializablePipelineStage struct {
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	Application        string                `json:"application"`
-	Pipeline           string                `json:"pipeline"`
-	PipelineParameters *[]*PipelineParameter `json:"pipelineParameters"`
-	WaitForCompletion  bool                  `json:"waitForCompletion"`
+	Application        string                 `json:"application"`
+	Pipeline           string                 `json:"pipeline"`
+	PipelineParameters map[string]interface{} `json:"pipelineParameters"`
+	WaitForCompletion  bool                   `json:"waitForCompletion"`
 }
 
 // PipelineStage for pipeline

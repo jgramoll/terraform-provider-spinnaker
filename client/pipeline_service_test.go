@@ -14,34 +14,48 @@ var applicationName string
 func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	pipelineService = &PipelineService{newTestClient()}
-	applicationName = "career"
+	applicationName = "app"
+}
+
+func createPipeline(t *testing.T) *CreatePipelineRequest {
+	name := fmt.Sprintf("My Test Pipe %d", rand.Int())
+	pipeline := CreatePipelineRequest{
+		Name:        name,
+		Application: applicationName,
+	}
+	err := pipelineService.CreatePipeline(&pipeline)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &pipeline
 }
 
 func TestGetApplicationPipelines(t *testing.T) {
+	createPipeline(t)
+	createPipeline(t)
+
 	pipelines, err := pipelineService.GetApplicationPipelines(applicationName)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(*pipelines) == 0 {
-		t.Fatal("no pipelines")
+	if len(*pipelines) < 2 {
+		t.Fatalf("should be at least 2 pipelines not %v", len(*pipelines))
 	}
 }
 
 func TestGetPipeline(t *testing.T) {
-	pipelineName := "Bridge Nav Edge"
-	pipeline, err := pipelineService.GetPipeline(applicationName, pipelineName)
+	pipelineReq := createPipeline(t)
+	pipeline, err := pipelineService.GetPipeline(pipelineReq.Application, pipelineReq.Name)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if pipeline.Name != pipelineName {
-		t.Fatalf("should be pipeline %s, not %s", pipelineName, pipeline.Name)
+	if pipeline.Name != pipelineReq.Name {
+		t.Fatalf("should be pipeline %s, not %s", pipelineReq.Name, pipeline.Name)
 	}
-}
 
-func TestGetPipelineByID(t *testing.T) {
-	pipelineID := "13caa723-114a-4d05-94f0-7f786f981c10"
-	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
+	pipelineID := pipeline.ID
+	pipeline, err = pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,28 +63,21 @@ func TestGetPipelineByID(t *testing.T) {
 	if pipeline.ID != pipelineID {
 		t.Fatalf("should be pipeline id %s, not %s", pipelineID, pipeline.ID)
 	}
-	if pipeline.Name != "test" {
-		t.Fatalf("should be pipeline test, not %s", pipeline.Name)
+	if pipeline.Name != pipelineReq.Name {
+		t.Fatalf("should be pipeline %s, not %s", pipelineReq.Name, pipeline.Name)
 	}
 }
 
 func TestCreateUpdateDeletePipeline(t *testing.T) {
-	name := fmt.Sprintf("My Test Pipe %d", rand.Int())
-	err := pipelineService.CreatePipeline(&CreatePipelineRequest{
-		Name:        name,
-		Application: applicationName,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	pipelineReq := createPipeline(t)
 
 	var pipeline *Pipeline
-	pipeline, err = pipelineService.GetPipeline(applicationName, name)
+	pipeline, err := pipelineService.GetPipeline(pipelineReq.Application, pipelineReq.Name)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	newApp := "app"
+	newApp := "newApp"
 	newName := fmt.Sprintf("My New Name Pipe %d", rand.Int())
 	pipeline.Name = newName
 	pipeline.Application = newApp
@@ -86,7 +93,7 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 			Description: "Setting parameter via options.",
 			HasOptions:  true,
 			Label:       "mosdef label",
-			Options: []*PipelineParameterOption{
+			Options: &[]*PipelineParameterOption{
 				&PipelineParameterOption{Value: "something"},
 			},
 			Required: true,

@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
+
+var errInvalidParameterImportKey = errors.New("Invalid import key, must be pipelineID_parameterID")
 
 func pipelineParameterResource() *schema.Resource {
 	return &schema.Resource{
@@ -19,6 +22,9 @@ func pipelineParameterResource() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				id := strings.Split(d.Id(), "_")
+				if len(id) != 2 {
+					return nil, errInvalidParameterImportKey
+				}
 				d.Set(PipelineKey, id[0])
 				d.SetId(id[1])
 				return []*schema.ResourceData{d}, nil

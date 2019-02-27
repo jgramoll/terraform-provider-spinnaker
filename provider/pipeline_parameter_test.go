@@ -2,17 +2,22 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 func TestAccPipelineParameterBasic(t *testing.T) {
+	var pipelineRef client.Pipeline
+	var parameters []*client.PipelineParameter
+	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	parameter1 := "spinnaker_pipeline_parameter.1"
 	parameter2 := "spinnaker_pipeline_parameter.2"
-	pipeline := "spinnaker_pipeline.test"
+	pipelineResourceName := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,77 +25,108 @@ func TestAccPipelineParameterBasic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineParameterDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineParameterConfigBasic("name", 2),
+				Config: testAccPipelineParameterConfigBasic(pipeName, "name", 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(parameter1, "name", "name-1"),
 					resource.TestCheckResourceAttr(parameter2, "name", "name-2"),
-					testAccCheckPipelineParameters(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineParameters(pipelineResourceName, []string{
 						parameter1,
 						parameter2,
-					}),
+					}, &parameters),
 				),
 			},
 			{
-				ResourceName:      parameter1,
-				ImportState:       true,
+				ResourceName:  parameter1,
+				ImportStateId: "invalid",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(`Invalid import key, must be pipelineID_parameterID`),
+			},
+			{
+				ResourceName: parameter1,
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					if len(parameters) == 0 {
+						return "", fmt.Errorf("no parameters to import")
+					}
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, parameters[0].ID), nil
+				},
 				ImportStateVerify: true,
 			},
 			{
-				ResourceName:      parameter2,
-				ImportState:       true,
+				ResourceName: parameter2,
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					if len(parameters) < 2 {
+						return "", fmt.Errorf("no parameters to import")
+					}
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, parameters[1].ID), nil
+				},
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineParameterConfigBasic("new-name", 2),
+				Config: testAccPipelineParameterConfigBasic(pipeName, "new-name", 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(parameter1, "name", "new-name-1"),
 					resource.TestCheckResourceAttr(parameter2, "name", "new-name-2"),
-					testAccCheckPipelineParameters(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineParameters(pipelineResourceName, []string{
 						parameter1,
 						parameter2,
-					}),
+					}, &parameters),
 				),
 			},
 			{
-				Config: testAccPipelineParameterConfigBasic("name", 1),
+				Config: testAccPipelineParameterConfigBasic(pipeName, "name", 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(parameter1, "name", "name-1"),
-					testAccCheckPipelineParameters(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineParameters(pipelineResourceName, []string{
 						parameter1,
-					}),
+					}, &parameters),
 				),
 			},
 			{
-				Config: testAccPipelineParameterConfigBasic("name", 0),
+				Config: testAccPipelineParameterConfigBasic(pipeName, "name", 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineParameters(pipeline, []string{}),
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineParameters(pipelineResourceName, []string{}, &parameters),
 				),
 			},
 		},
 	})
 }
 
-func testAccPipelineParameterConfigBasic(name string, count int) string {
+func testAccPipelineParameterConfigBasic(pipeName string, name string, count int) string {
 	parameters := ""
 	for i := 1; i <= count; i++ {
 		parameters += fmt.Sprintf(`
 resource "spinnaker_pipeline_parameter" "%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
-	name = "%s-%s"
+	name = "%s-%v"
+	description = "Setting options"
+	default = "mosdef"
+	label   = "whatevs"
+
+	option {
+	  value = 1
+	}
+	option {
+	  value = "two"
+	}
 }`, i, name, i)
 	}
 
 	return fmt.Sprintf(`
 resource "spinnaker_pipeline" "test" {
 	application = "app"
-	name        = "pipe"
+	name        = "%s"
 	index       = 3
 }
-%s
-`, parameters)
+`, pipeName) + parameters
 }
 
-func testAccCheckPipelineParameters(resourceName string, expected []string) resource.TestCheckFunc {
+func testAccCheckPipelineParameters(resourceName string, expected []string, parameters *[]*client.PipelineParameter) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -111,27 +147,28 @@ func testAccCheckPipelineParameters(resourceName string, expected []string) reso
 		for _, parameterResourceName := range expected {
 			expectedResource, ok := s.RootModule().Resources[parameterResourceName]
 			if !ok {
-				return fmt.Errorf("Parameter not found: %s", resourceName)
+				return fmt.Errorf("Parameter not found in resources: %s", resourceName)
 			}
 
-			err = ensureParameter(pipeline.ParameterConfig, expectedResource)
+			parameter, err := ensureParameter(pipeline.ParameterConfig, expectedResource)
 			if err != nil {
 				return err
 			}
+			*parameters = append(*parameters, parameter)
 		}
 
 		return nil
 	}
 }
 
-func ensureParameter(parameters *[]*client.PipelineParameter, expected *terraform.ResourceState) error {
+func ensureParameter(parameters *[]*client.PipelineParameter, expected *terraform.ResourceState) (*client.PipelineParameter, error) {
 	expectedID := expected.Primary.Attributes["id"]
 	for _, parameter := range *parameters {
 		if parameter.ID == expectedID {
-			return nil
+			return parameter, nil
 		}
 	}
-	return fmt.Errorf("Parameter not found %s", expectedID)
+	return nil, fmt.Errorf("Parameter not found in pipeline %s", expectedID)
 }
 
 func testAccCheckPipelineParameterDestroy(s *terraform.State) error {

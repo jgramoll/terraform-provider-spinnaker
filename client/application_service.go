@@ -31,6 +31,21 @@ func (service *ApplicationService) GetApplications() (*[]*Application, error) {
 	return &apps, nil
 }
 
+func (service *ApplicationService) getApplicationByName(name string) (*Application, error) {
+	applications, err := service.GetApplications()
+	if err != nil {
+		return nil, err
+	}
+	if len(*applications) > 0 {
+		for _, app := range *applications {
+			if app.Name == name {
+				return app, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("Could not find application with name \"%s\"", name)
+}
+
 // CreateApplication create an application
 func (service *ApplicationService) CreateApplication(app *Application) error {
 	if strings.Contains(app.Name, " ") {

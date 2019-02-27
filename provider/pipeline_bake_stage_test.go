@@ -2,10 +2,12 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
@@ -14,10 +16,12 @@ func init() {
 }
 
 func TestAccPipelineBakeStageBasic(t *testing.T) {
+	var pipelineRef client.Pipeline
+	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	vmType := "hvm"
 	newVMType := "pv"
-	pipeline := "spinnaker_pipeline.test"
+	pipelineResourceName := "spinnaker_pipeline.test"
 	stage1 := "spinnaker_pipeline_bake_stage.1"
 	stage2 := "spinnaker_pipeline_bake_stage.2"
 
@@ -33,20 +37,39 @@ func TestAccPipelineBakeStageBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(stage1, "vm_type", vmType),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
 					resource.TestCheckResourceAttr(stage2, "vm_type", vmType),
-					testAccCheckPipelineStages(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
 						stage2,
-					}),
+					}, &stages),
 				),
 			},
 			{
-				ResourceName:      stage1,
-				ImportState:       true,
+				ResourceName:  stage1,
+				ImportStateId: "invalid",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(`Invalid import key, must be pipelineID_stageID`),
+			},
+			{
+				ResourceName: stage1,
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					if len(stages) == 0 {
+						return "", fmt.Errorf("no stages to import")
+					}
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, stages[0].GetRefID()), nil
+				},
 				ImportStateVerify: true,
 			},
 			{
-				ResourceName:      stage2,
-				ImportState:       true,
+				ResourceName: stage2,
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					if len(stages) < 2 {
+						return "", fmt.Errorf("no stages to import")
+					}
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, stages[1].GetRefID()), nil
+				},
 				ImportStateVerify: true,
 			},
 			{
@@ -56,10 +79,11 @@ func TestAccPipelineBakeStageBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(stage1, "vm_type", newVMType),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
 					resource.TestCheckResourceAttr(stage2, "vm_type", newVMType),
-					testAccCheckPipelineStages(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
 						stage2,
-					}),
+					}, &stages),
 				),
 			},
 			{
@@ -67,15 +91,17 @@ func TestAccPipelineBakeStageBasic(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "vm_type", vmType),
-					testAccCheckPipelineStages(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
-					}),
+					}, &stages),
 				),
 			},
 			{
 				Config: testAccPipelineBakeStageConfigBasic(pipeName, vmType, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineStages(pipeline, []string{}),
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
 				),
 			},
 		},

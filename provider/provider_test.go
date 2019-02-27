@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"os/user"
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform/config"
@@ -12,21 +12,12 @@ import (
 var (
 	testAccProviders map[string]terraform.ResourceProvider
 	testAccProvider  *schema.Provider
-	usr              *user.User
-	raw              map[string]interface{}
 )
 
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
 	testAccProviders = map[string]terraform.ResourceProvider{
 		"spinnaker": testAccProvider,
-	}
-	usr, _ = user.Current()
-
-	raw = map[string]interface{}{
-		"address":   "https://api.spinnaker.inseng.net",
-		"cert_path": usr.HomeDir + "/.spin/client.crt",
-		"key_path":  usr.HomeDir + "/.spin/client.key",
 	}
 }
 
@@ -37,8 +28,22 @@ func TestProvider(t *testing.T) {
 }
 
 func TestProviderConfigure(t *testing.T) {
-	testAccPreCheck(t)
-	config := testAccProvider.Meta().(*Services).config
+	raw := map[string]interface{}{
+		"address":   "#address",
+		"cert_path": os.Getenv("SPINNAKER_CERT"),
+		"key_path":  os.Getenv("SPINNAKER_KEY"),
+	}
+	rawConfig, configErr := config.NewRawConfig(raw)
+	if configErr != nil {
+		t.Fatal(configErr)
+	}
+	c := terraform.NewResourceConfig(rawConfig)
+	err := testAccProvider.Configure(c)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	config := testAccProvider.Meta().(*Services).Config
 	if config.Address != raw["address"] {
 		t.Fatalf("address should be %#v, not %#v", raw["address"], config.Address)
 	}
@@ -51,11 +56,7 @@ func TestProviderConfigure(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	rawConfig, configErr := config.NewRawConfig(raw)
-	if configErr != nil {
-		t.Fatal(configErr)
-	}
-	c := terraform.NewResourceConfig(rawConfig)
+	c := terraform.NewResourceConfig(nil)
 	err := testAccProvider.Configure(c)
 	if err != nil {
 		t.Fatal(err)

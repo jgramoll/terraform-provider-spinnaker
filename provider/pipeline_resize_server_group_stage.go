@@ -163,6 +163,14 @@ func (s *resizeServerGroupStage) SetResourceData(d *schema.ResourceData) error {
 	}
 	// End baseStage
 
+	err = d.Set("action", s.Action)
+	if err != nil {
+		return err
+	}
+	err = d.Set("capacity", s.Capacity)
+	if err != nil {
+		return err
+	}
 	err = d.Set("cloud_provider", s.CloudProvider)
 	if err != nil {
 		return err
@@ -187,7 +195,15 @@ func (s *resizeServerGroupStage) SetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-	return d.Set("target", s.Target)
+	err = d.Set("resize_type", s.ResizeType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("target", s.Target)
+	if err != nil {
+		return err
+	}
+	return d.Set("target_healthy_rollback_percentage", s.TargetHealthyRollbackPercentage)
 }
 
 func (s *resizeServerGroupStage) SetRefID(id string) {

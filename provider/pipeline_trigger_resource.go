@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
+
 func pipelineTriggerResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineTriggerCreate,
@@ -17,12 +20,7 @@ func pipelineTriggerResource() *schema.Resource {
 		Update: resourcePipelineTriggerUpdate,
 		Delete: resourcePipelineTriggerDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				id := strings.Split(d.Id(), "_")
-				d.Set(PipelineKey, id[0])
-				d.SetId(id[1])
-				return []*schema.ResourceData{d}, nil
-			},
+			State: resourceTriggerImporter,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -174,4 +172,16 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 
 	d.SetId("")
 	return nil
+}
+
+func resourceTriggerImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	log.Println("[INFO] Importing d: ", d.Get(""))
+	log.Println("[INFO] Importing id: ", d.Id())
+	id := strings.Split(d.Id(), "_")
+	if len(id) < 2 {
+		return nil, errInvalidTriggerImportKey
+	}
+	d.Set(PipelineKey, id[0])
+	d.SetId(id[1])
+	return []*schema.ResourceData{d}, nil
 }

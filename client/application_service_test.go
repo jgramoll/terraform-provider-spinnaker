@@ -3,7 +3,6 @@ package client
 import (
 	"fmt"
 	"math/rand"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -25,17 +24,6 @@ func TestCreateDeleteApplication(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	// TODO FRAGILE
-	// var savedApp *Application
-	// savedApp, err = applicationService.getApplicationByName(expectedName)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// err = savedApp.equals(app)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
 
 	err = applicationService.DeleteApplication(app)
 	if err != nil {
@@ -67,27 +55,4 @@ func TestApplicationCleanup(t *testing.T) {
 			applicationService.DeleteApplication(app)
 		}
 	}
-}
-
-// GetApplications get all applications
-func (service *ApplicationService) getApplicationByName(name string) (*Application, error) {
-	applications, err := service.GetApplications()
-	if err != nil {
-		return nil, err
-	}
-	if len(*applications) > 0 {
-		for _, app := range *applications {
-			if app.Name == name {
-				return app, nil
-			}
-		}
-	}
-	return nil, fmt.Errorf("Could not find application with name \"%s\"", name)
-}
-
-func (application *Application) equals(expectedApplication *Application) error {
-	if !reflect.DeepEqual(application, expectedApplication) {
-		return fmt.Errorf("Application %v does not match %v", application, expectedApplication)
-	}
-	return nil
 }

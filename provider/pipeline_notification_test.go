@@ -2,17 +2,22 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 func TestAccPipelineNotificationBasic(t *testing.T) {
+	var pipelineRef client.Pipeline
+	var notifications []*client.Notification
+	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	address := "bridge-career-deploys"
 	addressChanged := address + "-new"
-	pipeline := "spinnaker_pipeline.test"
+	pipelineResourceName := "spinnaker_pipeline.test"
 	notification1 := "spinnaker_pipeline_notification.1"
 	notification2 := "spinnaker_pipeline_notification.2"
 
@@ -22,62 +27,84 @@ func TestAccPipelineNotificationBasic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineNotificationDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineNotificationConfigBasic(address, 2),
+				Config: testAccPipelineNotificationConfigBasic(pipeName, address, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", address),
 					resource.TestCheckResourceAttr(notification1, "message.0.complete", "1 is done"),
 					resource.TestCheckResourceAttr(notification2, "address", address),
 					resource.TestCheckResourceAttr(notification2, "message.0.complete", "2 is done"),
-					testAccCheckPipelineNotifications(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineNotifications(pipelineResourceName, []string{
 						notification1,
 						notification2,
-					}),
+					}, &notifications),
 				),
 			},
 			{
-				ResourceName:      notification1,
-				ImportState:       true,
+				ResourceName:  notification1,
+				ImportStateId: "invalid",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(`Invalid import key, must be pipelineID_notificationID`),
+			},
+			{
+				ResourceName: notification1,
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					if len(notifications) == 0 {
+						return "", fmt.Errorf("no notifications to import")
+					}
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, notifications[0].ID), nil
+				},
 				ImportStateVerify: true,
 			},
 			{
-				ResourceName:      notification2,
-				ImportState:       true,
+				ResourceName: notification2,
+				ImportState:  true,
+				ImportStateIdFunc: func(*terraform.State) (string, error) {
+					if len(notifications) < 2 {
+						return "", fmt.Errorf("no notifications to import")
+					}
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, notifications[1].ID), nil
+				},
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineNotificationConfigBasic(addressChanged, 2),
+				Config: testAccPipelineNotificationConfigBasic(pipeName, addressChanged, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", addressChanged),
 					resource.TestCheckResourceAttr(notification1, "message.0.complete", "1 is done"),
 					resource.TestCheckResourceAttr(notification2, "address", addressChanged),
 					resource.TestCheckResourceAttr(notification2, "message.0.complete", "2 is done"),
-					testAccCheckPipelineNotifications(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineNotifications(pipelineResourceName, []string{
 						notification1,
 						notification2,
-					}),
+					}, &notifications),
 				),
 			},
 			{
-				Config: testAccPipelineNotificationConfigBasic(address, 1),
+				Config: testAccPipelineNotificationConfigBasic(pipeName, address, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(notification1, "address", address),
 					resource.TestCheckResourceAttr(notification1, "message.0.complete", "1 is done"),
-					testAccCheckPipelineNotifications(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineNotifications(pipelineResourceName, []string{
 						notification1,
-					}),
+					}, &notifications),
 				),
 			},
 			{
-				Config: testAccPipelineNotificationConfigBasic(address, 0),
+				Config: testAccPipelineNotificationConfigBasic(pipeName, address, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineTriggers(pipeline, []string{}),
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineNotifications(pipelineResourceName, []string{}, &notifications),
 				),
 			},
 		},
 	})
 }
 
-func testAccPipelineNotificationConfigBasic(address string, count int) string {
+func testAccPipelineNotificationConfigBasic(pipeName string, address string, count int) string {
 	notifications := ""
 	for i := 1; i <= count; i++ {
 		notifications += fmt.Sprintf(`
@@ -90,7 +117,7 @@ resource "spinnaker_pipeline_notification" "%v" {
 		starting = "%v is starting"
 	}
 	type = "slack"
-	when = {
+	when {
 		complete = true
 		starting = false
 		failed = true
@@ -98,14 +125,14 @@ resource "spinnaker_pipeline_notification" "%v" {
 }`, i, address, i, i, i)
 	}
 
-	return `
+	return fmt.Sprintf(`
 resource "spinnaker_pipeline" "test" {
 	application = "app"
-	name        = "not_pipe"
-}` + notifications
+	name        = "%s"
+}`, pipeName) + notifications
 }
 
-func testAccCheckPipelineNotifications(resourceName string, expected []string) resource.TestCheckFunc {
+func testAccCheckPipelineNotifications(resourceName string, expected []string, notifications *[]*client.Notification) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -129,28 +156,33 @@ func testAccCheckPipelineNotifications(resourceName string, expected []string) r
 				return fmt.Errorf("Notification not found: %s", resourceName)
 			}
 
-			err = ensureNotification(pipeline.Notifications, expectedResource)
+			notification, err := ensureNotification(pipeline.Notifications, expectedResource)
 			if err != nil {
 				return err
 			}
+			*notifications = append(*notifications, notification)
 		}
 
 		return nil
 	}
 }
 
-func ensureNotification(notifications *[]*client.Notification, expected *terraform.ResourceState) error {
+func ensureNotification(notifications *[]*client.Notification, expected *terraform.ResourceState) (*client.Notification, error) {
 	expectedID := expected.Primary.Attributes["id"]
 	for _, notification := range *notifications {
 		if notification.ID == expectedID {
 			err := ensureMessage(notification, expected)
 			if err != nil {
-				return err
+				return nil, err
 			}
-			return ensureWhen(notification, expected)
+			err = ensureWhen(notification, expected)
+			if err != nil {
+				return nil, err
+			}
+			return notification, nil
 		}
 	}
-	return fmt.Errorf("Notification not found %s", expectedID)
+	return nil, fmt.Errorf("Notification not found %s", expectedID)
 }
 
 func ensureMessage(notification *client.Notification, expected *terraform.ResourceState) error {
@@ -181,13 +213,13 @@ func ensureWhen(notification *client.Notification, expected *terraform.ResourceS
 		expectedPipeWhen := fmt.Sprintf("pipeline.%s", mode)
 		err := whenContainsState(notification.When, expectedPipeWhen)
 
-		if expectedWhen == "1" {
+		if expectedWhen == "true" {
 			if err != nil {
 				return err
 			}
 		} else {
 			if err == nil {
-				return fmt.Errorf("When contained %s, when it should not have", mode)
+				return fmt.Errorf("When contained %s, when it should not have. %v %v", mode, expectedWhen, notification.When)
 			}
 		}
 	}
