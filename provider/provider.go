@@ -29,23 +29,31 @@ func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_ADDRESS", nil),
+				Description: "Address of spinnaker api",
 			},
 
 			"cert_path": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
+				Description: "Path to cert to authenticate with spinnaker api",
 			},
 
 			"key_path": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
+				Description: "Path to key to authenticate with spinnaker api",
 			},
 
 			"user_email": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
+				Description: "Path to user_email to authenticate with spinnaker api",
 			},
 		},
 
@@ -58,9 +66,11 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_jenkins_stage":              pipelineJenkinsStageResource(),
 			"spinnaker_pipeline_notification":               pipelineNotificationResource(),
 			"spinnaker_pipeline_pipeline_stage":             pipelinePipelineResource(),
+			"spinnaker_pipeline_resize_server_group_stage":  pipelineResizeServerGroupStageResource(),
 			"spinnaker_pipeline_rollback_cluster_stage":     pipelineRollbackClusterStageResource(),
 
-			"spinnaker_pipeline_trigger": pipelineTriggerResource(),
+			"spinnaker_pipeline_parameter": pipelineParameterResource(),
+			"spinnaker_pipeline_trigger":   pipelineTriggerResource(),
 		},
 
 		ConfigureFunc: providerConfigure,

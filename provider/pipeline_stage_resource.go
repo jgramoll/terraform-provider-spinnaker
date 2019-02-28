@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -10,8 +11,13 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+var errInvalidStageImportKey = errors.New("Invalid import key, must be pipelineID_stageID")
+
 func resourcePipelineImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	id := strings.Split(d.Id(), "_")
+	if len(id) < 2 {
+		return nil, errInvalidStageImportKey
+	}
 	d.SetId(id[1])
 	err := d.Set(PipelineKey, id[0])
 	if err != nil {

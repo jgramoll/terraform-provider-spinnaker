@@ -6,13 +6,16 @@ import (
 
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 func TestAccPipelineNotificationStageBasic(t *testing.T) {
+	var pipelineRef client.Pipeline
+	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	completeText := "complete!"
 	newCompleteText := completeText + "-new"
-	pipeline := "spinnaker_pipeline.test"
+	pipelineResourceName := "spinnaker_pipeline.test"
 	stage1 := "spinnaker_pipeline_jenkins_stage.1"
 	stage2 := "spinnaker_pipeline_jenkins_stage.2"
 
@@ -28,10 +31,11 @@ func TestAccPipelineNotificationStageBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(stage1, "notification.0.message.0.complete", completeText),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
 					resource.TestCheckResourceAttr(stage2, "notification.0.message.0.complete", completeText),
-					testAccCheckPipelineStages(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
 						stage2,
-					}),
+					}, &stages),
 				),
 			},
 			{
@@ -41,10 +45,11 @@ func TestAccPipelineNotificationStageBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(stage1, "notification.0.message.0.complete", newCompleteText),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
 					resource.TestCheckResourceAttr(stage2, "notification.0.message.0.complete", newCompleteText),
-					testAccCheckPipelineStages(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
 						stage2,
-					}),
+					}, &stages),
 				),
 			},
 			{
@@ -52,15 +57,17 @@ func TestAccPipelineNotificationStageBasic(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "notification.0.message.0.complete", completeText),
-					testAccCheckPipelineStages(pipeline, []string{
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
-					}),
+					}, &stages),
 				),
 			},
 			{
 				Config: testAccPipelineNotificationStageConfigBasic(pipeName, completeText, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckPipelineStages(pipeline, []string{}),
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
 				),
 			},
 		},
@@ -83,8 +90,9 @@ resource "spinnaker_pipeline_jenkins_stage" "%v" {
 			complete = "%v"
 		}
 		type = "slack"
-		when = {
+		when {
 			complete = true
+			failed = false
 		}
 	}
 }`, i, i, completeText)

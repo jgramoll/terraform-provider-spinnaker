@@ -15,7 +15,6 @@ type pipeline struct {
 	LimitConcurrent      bool                   `mapstructure:"limit_concerrent"`
 	Name                 string                 `mapstructure:"name"`
 	Index                int                    `mapstructure:"index"`
-	ParameterConfig      *[]*pipelineParameter  `mapstructure:"parameter"`
 	Roles                *[]string              `mapstructure:"roles"`
 	ServiceAccount       string                 `mapstructure:"serviceAccount"`
 }
@@ -31,7 +30,6 @@ func (p *pipeline) toClientPipeline() *client.Pipeline {
 			LimitConcurrent:      p.LimitConcurrent,
 			Name:                 p.Name,
 			Index:                p.Index,
-			ParameterConfig:      toClientPipelineConfig(p.ParameterConfig),
 			Roles:                p.Roles,
 		},
 	}
@@ -47,7 +45,6 @@ func fromClientPipeline(p *client.Pipeline) *pipeline {
 		LimitConcurrent:      p.LimitConcurrent,
 		Name:                 p.Name,
 		Index:                p.Index,
-		ParameterConfig:      fromClientPipelineConfig(p.ParameterConfig),
 		Roles:                p.Roles,
 	}
 }
@@ -78,10 +75,6 @@ func (p *pipeline) setResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-	err = d.Set("parameter", p.ParameterConfig)
-	if err != nil {
-		return err
-	}
 	err = d.Set("roles", p.Roles)
 	if err != nil {
 		return err
@@ -101,7 +94,6 @@ func pipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData)
 	pipeline.Disabled = d.Get("disabled").(bool)
 	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
 	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
-	pipeline.ParameterConfig = pipelineParametersFromResourceData(d)
 	pipeline.Roles = pipelineRolesFromResourceData(d)
 
 	serviceAccount, ok := d.GetOk("service_account")

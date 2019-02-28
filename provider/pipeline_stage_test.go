@@ -10,7 +10,7 @@ import (
 
 var stageTypes = map[string]client.StageType{}
 
-func testAccCheckPipelineStages(resourceName string, expected []string) resource.TestCheckFunc {
+func testAccCheckPipelineStages(resourceName string, expected []string, stages *[]client.Stage) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -34,28 +34,29 @@ func testAccCheckPipelineStages(resourceName string, expected []string) resource
 				return fmt.Errorf("Stage not found: %s", resourceName)
 			}
 
-			err = ensureStage(pipeline, expectedResource)
+			stage, err := ensureStage(pipeline, expectedResource)
 			if err != nil {
 				return err
 			}
+			*stages = append(*stages, stage)
 		}
 
 		return nil
 	}
 }
 
-func ensureStage(pipeline *client.Pipeline, expected *terraform.ResourceState) error {
+func ensureStage(pipeline *client.Pipeline, expected *terraform.ResourceState) (client.Stage, error) {
 	stage, err := pipeline.GetStage(expected.Primary.Attributes["id"])
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var expectedType = stageTypes[expected.Type]
 	if expectedType != stage.GetType() {
-		return fmt.Errorf("Stage %s has expected type \"%s\", got type \"%s\"",
+		return nil, fmt.Errorf("Stage %s has expected type \"%s\", got type \"%s\"",
 			stage.GetRefID(), expectedType, stage.GetType())
 	}
-	return nil
+	return stage, nil
 }
 
 func testAccCheckPipelineStageDestroy(s *terraform.State) error {

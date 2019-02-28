@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
+
 func pipelineTriggerResource() *schema.Resource {
 	return &schema.Resource{
 		Create: resourcePipelineTriggerCreate,
@@ -17,12 +20,7 @@ func pipelineTriggerResource() *schema.Resource {
 		Update: resourcePipelineTriggerUpdate,
 		Delete: resourcePipelineTriggerDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				id := strings.Split(d.Id(), "_")
-				d.Set(PipelineKey, id[0])
-				d.SetId(id[1])
-				return []*schema.ResourceData{d}, nil
-			},
+			State: resourceTriggerImporter,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -66,9 +64,9 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var trigger Trigger
+	var t trigger
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &trigger); err != nil {
+	if err := mapstructure.Decode(configRaw, &t); err != nil {
 		return err
 	}
 
@@ -76,7 +74,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 	if err != nil {
 		return err
 	}
-	trigger.ID = id.String()
+	t.ID = id.String()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -84,7 +82,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	clientTrigger := client.Trigger(trigger)
+	clientTrigger := client.Trigger(t)
 	pipeline.AppendTrigger(&clientTrigger)
 
 	err = pipelineService.UpdatePipeline(pipeline)
@@ -107,18 +105,14 @@ func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	var trigger *client.Trigger
-	trigger, err = pipeline.GetTrigger(d.Id())
+	var clientTrigger *client.Trigger
+	clientTrigger, err = pipeline.GetTrigger(d.Id())
 	if err != nil {
 		log.Println("[WARN] No Pipeline Trigger found:", err)
 		d.SetId("")
 	} else {
-		d.SetId(trigger.ID)
-		d.Set("enabled", trigger.Enabled)
-		d.Set("job", trigger.Job)
-		d.Set("master", trigger.Master)
-		d.Set("property_file", trigger.PropertyFile)
-		d.Set("type", trigger.Type)
+		d.SetId(clientTrigger.ID)
+		fromClientTrigger(clientTrigger).setResourceData(d)
 	}
 
 	return nil
@@ -128,12 +122,12 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var trigger Trigger
+	var t trigger
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &trigger); err != nil {
+	if err := mapstructure.Decode(configRaw, &t); err != nil {
 		return err
 	}
-	trigger.ID = d.Id()
+	t.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -141,7 +135,7 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	clientTrigger := client.Trigger(trigger)
+	clientTrigger := client.Trigger(t)
 	err = pipeline.UpdateTrigger(&clientTrigger)
 	if err != nil {
 		return err
@@ -160,20 +154,13 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var trigger Trigger
-	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &trigger); err != nil {
-		return err
-	}
-	trigger.ID = d.Id()
-
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
 	if err != nil {
 		return err
 	}
 
-	err = pipeline.DeleteTrigger(trigger.ID)
+	err = pipeline.DeleteTrigger(d.Id())
 	if err != nil {
 		return err
 	}
@@ -185,4 +172,16 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 
 	d.SetId("")
 	return nil
+}
+
+func resourceTriggerImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	log.Println("[INFO] Importing d: ", d.Get(""))
+	log.Println("[INFO] Importing id: ", d.Id())
+	id := strings.Split(d.Id(), "_")
+	if len(id) < 2 {
+		return nil, errInvalidTriggerImportKey
+	}
+	d.Set(PipelineKey, id[0])
+	d.SetId(id[1])
+	return []*schema.ResourceData{d}, nil
 }

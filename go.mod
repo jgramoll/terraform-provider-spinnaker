@@ -3,6 +3,7 @@ module github.com/jgramoll/terraform-provider-spinnaker
 require (
 	github.com/apparentlymart/go-cidr v1.0.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/google/uuid v1.1.0
 	github.com/hashicorp/go-getter v1.0.1 // indirect
 	github.com/hashicorp/go-hclog v0.0.0-20190109152822-4783caec6f2e // indirect

@@ -23,6 +23,14 @@ ln -s ~/go/bin/terraform-provider-spinnaker ~/.terraform.d/plugins/$(uname | tr 
 ## Usage ##
 
 ```terraform
+provider "spinnaker" {
+  address = "${var.spinnaker_address}"
+
+  cert_path  = "${var.cert_path}"
+  key_path   = "${var.key_path}"
+  user_email = "${var.user_email}"
+}
+
 resource "spinnaker_pipeline" "edge" {
   application = "career"
   name        = "My New Pipeline"
@@ -191,6 +199,28 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
   target = "oldest_asg_dynamic"
 }
 
+resource "spinnaker_pipeline_resize_server_group_stage" "deploy" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Resize Server Group"
+
+  action              = "scale_exact"
+  cloud_provider      = "aws"
+  cloud_provider_type = "aws"
+  cluster             = "my-cluster"
+  credentials         = "my-creds"
+  moniker {
+    app     = "my-app"
+    cluster = "my-cluster"
+    detail  = "api"
+    stack   = "edge"
+  }
+  regions = [
+    "us-east-2"
+  ]
+  resize_type = "exact"
+  target = "oldest_asg_dynamic"
+}
+
 resource "spinnaker_pipeline_pipeline_stage" "main" {
   pipeline = "${spinnaker_pipeline.test.id}"
   name     = "Start prod deploy"
@@ -200,6 +230,11 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
   pipeline_parameters {
     version = "my-message"
   }
+}
+
+resource "spinnaker_pipeline_parameter" "version" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "version"
 }
 
 ```

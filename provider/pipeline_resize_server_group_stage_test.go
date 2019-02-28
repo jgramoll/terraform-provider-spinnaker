@@ -12,18 +12,18 @@ import (
 )
 
 func init() {
-	stageTypes["spinnaker_pipeline_jenkins_stage"] = client.JenkinsStageType
+	stageTypes["spinnaker_pipeline_resize_server_group_stage"] = client.ResizeServerGroupStageType
 }
 
-func TestAccPipelineJenkinsStageBasic(t *testing.T) {
+func TestAccPipelineResizeServerGroupStageBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	master := "inst-ci"
-	newMaster := master + "-new"
+	target := "my-target"
+	newTarget := "new-my-target"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_jenkins_stage.1"
-	stage2 := "spinnaker_pipeline_jenkins_stage.2"
+	stage1 := "spinnaker_pipeline_resize_server_group_stage.1"
+	stage2 := "spinnaker_pipeline_resize_server_group_stage.2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -31,12 +31,12 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineStageDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineJenkinsStageConfigBasic(pipeName, master, 2),
+				Config: testAccPipelineResizeServerGroupStageConfigBasic(pipeName, target, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "master", master),
+					resource.TestCheckResourceAttr(stage1, "target", target),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "master", master),
+					resource.TestCheckResourceAttr(stage2, "target", target),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -73,12 +73,14 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineJenkinsStageConfigBasic(pipeName, newMaster, 2),
+				Config: testAccPipelineResizeServerGroupStageConfigBasic(pipeName, newTarget, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "master", newMaster),
+					resource.TestCheckResourceAttr(stage1, "action", "scale_exact"),
+					resource.TestCheckResourceAttr(stage1, "target", newTarget),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "master", newMaster),
+					resource.TestCheckResourceAttr(stage2, "action", "scale_exact"),
+					resource.TestCheckResourceAttr(stage2, "target", newTarget),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -87,10 +89,11 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineJenkinsStageConfigBasic(pipeName, master, 1),
+				Config: testAccPipelineResizeServerGroupStageConfigBasic(pipeName, target, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "master", master),
+					resource.TestCheckResourceAttr(stage1, "action", "scale_exact"),
+					resource.TestCheckResourceAttr(stage1, "target", target),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -98,7 +101,7 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineJenkinsStageConfigBasic(pipeName, master, 0),
+				Config: testAccPipelineResizeServerGroupStageConfigBasic(pipeName, target, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
@@ -108,16 +111,17 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 	})
 }
 
-func testAccPipelineJenkinsStageConfigBasic(pipeName string, master string, count int) string {
+func testAccPipelineResizeServerGroupStageConfigBasic(pipeName string, target string, count int) string {
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_jenkins_stage" "%v" {
+resource "spinnaker_pipeline_resize_server_group_stage" "%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
-	master   = "%v"
-	job      = "jenkins/job"
-}`, i, i, master)
+	cluster  = "test_cluster"
+	target   = "%v"
+	action   = "scale_exact"
+}`, i, i, target)
 	}
 
 	return fmt.Sprintf(`

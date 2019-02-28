@@ -6,6 +6,7 @@ import (
 )
 
 type pipelineParameter struct {
+	ID          string                      `mapstructure:"id"`
 	Default     string                      `mapstructure:"default"`
 	Description string                      `mapstructure:"description"`
 	Label       string                      `mapstructure:"label"`
@@ -14,63 +15,51 @@ type pipelineParameter struct {
 	Required    bool                        `mapstructure:"required"`
 }
 
-func toClientPipelineConfig(parameters *[]*pipelineParameter) *[]*client.PipelineParameter {
-	if parameters == nil {
-		return nil
+func fromClientPipelineParameter(pc *client.PipelineParameter) *pipelineParameter {
+	return &pipelineParameter{
+		ID:          pc.ID,
+		Name:        pc.Name,
+		Default:     pc.Default,
+		Description: pc.Description,
+		Label:       pc.Label,
+		Options:     fromClientPipelineParameterOptions(pc.Options),
+		Required:    pc.Required,
 	}
-
-	config := []*client.PipelineParameter{}
-	for _, pc := range *parameters {
-		config = append(config, &client.PipelineParameter{
-			Name:        pc.Name,
-			Default:     pc.Default,
-			Description: pc.Description,
-			HasOptions:  pc.Options != nil && len(*pc.Options) > 0,
-			Label:       pc.Label,
-			Options:     toClientPipelineParameterOptions(pc.Options),
-			Required:    pc.Required,
-		})
-	}
-
-	return &config
 }
 
-func fromClientPipelineConfig(parameters *[]*client.PipelineParameter) *[]*pipelineParameter {
-	if parameters == nil {
-		return nil
+func toClientPipelineParameter(p *pipelineParameter) *client.PipelineParameter {
+	return &client.PipelineParameter{
+		ID:          p.ID,
+		Name:        p.Name,
+		Default:     p.Default,
+		Description: p.Description,
+		HasOptions:  p.Options != nil && len(*p.Options) > 0,
+		Label:       p.Label,
+		Options:     toClientPipelineParameterOptions(p.Options),
+		Required:    p.Required,
 	}
-
-	config := []*pipelineParameter{}
-	for _, pc := range *parameters {
-		config = append(config, &pipelineParameter{
-			Name:        pc.Name,
-			Default:     pc.Default,
-			Description: pc.Description,
-			Label:       pc.Label,
-			Options:     fromClientPipelineParameterOptions(pc.Options),
-			Required:    pc.Required,
-		})
-	}
-
-	return &config
 }
 
-func pipelineParametersFromResourceData(d *schema.ResourceData) *[]*client.PipelineParameter {
-	parameters := []*client.PipelineParameter{}
-	state := d.Get("parameter").([]interface{})
-	for _, paramInterface := range state {
-		param := paramInterface.(map[string]interface{})
-		options := pipelineParameterOptionFromMap(param["option"].([]interface{}))
-		parameters = append(parameters, &client.PipelineParameter{
-			Default:     param["default"].(string),
-			Description: param["description"].(string),
-			HasOptions:  len(*options) > 0,
-			Label:       param["label"].(string),
-			Name:        param["name"].(string),
-			Options:     options,
-			Required:    param["required"].(bool),
-		})
+func (parameter *pipelineParameter) setResourceData(d *schema.ResourceData) error {
+	err := d.Set("default", parameter.Default)
+	if err != nil {
+		return err
 	}
-
-	return &parameters
+	err = d.Set("description", parameter.Description)
+	if err != nil {
+		return err
+	}
+	err = d.Set("label", parameter.Label)
+	if err != nil {
+		return err
+	}
+	err = d.Set("name", parameter.Name)
+	if err != nil {
+		return err
+	}
+	err = d.Set("option", parameter.Options)
+	if err != nil {
+		return err
+	}
+	return d.Set("required", parameter.Required)
 }

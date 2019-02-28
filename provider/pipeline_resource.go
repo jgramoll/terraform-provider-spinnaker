@@ -65,50 +65,6 @@ func pipelineResource() *schema.Resource {
 				Optional:    true,
 				Default:     0,
 			},
-			"parameter": &schema.Schema{
-				Type:        schema.TypeList,
-				Description: "Pipeline parameters",
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"default": &schema.Schema{
-							Type:        schema.TypeString,
-							Description: "Default value",
-							Optional:    true,
-						},
-						"description": &schema.Schema{
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"label": &schema.Schema{
-							Type:        schema.TypeString,
-							Description: "A label to display when users are triggering the pipeline manually",
-							Optional:    true,
-						},
-						"name": &schema.Schema{
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"option": &schema.Schema{
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"value": &schema.Schema{
-										Type:     schema.TypeString,
-										Required: true,
-									},
-								},
-							},
-						},
-						"required": &schema.Schema{
-							Type:     schema.TypeBool,
-							Optional: true,
-							Default:  false,
-						},
-					},
-				},
-			},
 			"roles": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "When the pipeline is triggered using an automated trigger, these roles will be used to decide if the pipeline has permissions to access a protected application or account.\n\nTo read from a protected application or account, the pipeline must have at least one role that has read access to the application or account.\nTo write to a protected application or account, the pipeline must have at least one role that has write access to the application or account.\nNote: To prevent privilege escalation vulnerabilities, a user must be a member of all of the groups specified here in order to modify, and execute the pipeline.",

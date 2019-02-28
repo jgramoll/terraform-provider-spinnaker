@@ -4,26 +4,18 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type deployStageClusterCapacity struct {
-	Desired int `mapstructure:"desired"`
-	Max     int `mapstructure:"max"`
-	Min     int `mapstructure:"min"`
-}
-
-// newCluster.Capacity = fromClientClusterCapacity(c.Capacity)
-
-func fromClientClusterCapacity(clientCapacity *client.DeployStageClusterCapacity) *[]*deployStageClusterCapacity {
+func fromClientCapacity(clientCapacity *client.Capacity) *[]*capacity {
 	if clientCapacity == nil {
 		return nil
 	}
-	newCapacity := deployStageClusterCapacity(*clientCapacity)
-	return &[]*deployStageClusterCapacity{&newCapacity}
+	newCapacity := capacity(*clientCapacity)
+	return &[]*capacity{&newCapacity}
 }
 
-func toClientClusterCapacity(capacity *[]*deployStageClusterCapacity) *client.DeployStageClusterCapacity {
-	if capacity != nil {
-		for _, c := range *capacity {
-			newCapacity := client.DeployStageClusterCapacity(*c)
+func toClientCapacity(c *[]*capacity) *client.Capacity {
+	if c != nil {
+		for _, c := range *c {
+			newCapacity := client.Capacity(*c)
 			return &newCapacity
 		}
 	}

@@ -5,55 +5,58 @@ import (
 )
 
 type when struct {
-	Complete string `mapstructure:"complete"`
-	Starting string `mapstructure:"starting"`
-	Failed   string `mapstructure:"failed"`
+	Complete bool `mapstructure:"complete"`
+	Starting bool `mapstructure:"starting"`
+	Failed   bool `mapstructure:"failed"`
+}
+
+func newWhen() *when {
+	return &when{}
 }
 
 func toClientWhen(level client.NotificationLevel, w *when) *[]string {
 	clientWhen := []string{}
-	// TODO
 	if level == client.NotificationLevelPipeline {
-		if w.Complete == "1" {
+		if w.Complete {
 			clientWhen = append(clientWhen, client.PipelineCompleteKey)
 		}
-		if w.Failed == "1" {
+		if w.Failed {
 			clientWhen = append(clientWhen, client.PipelineFailedKey)
 		}
-		if w.Starting == "1" {
+		if w.Starting {
 			clientWhen = append(clientWhen, client.PipelineStartingKey)
 		}
 	} else if level == client.NotificationLevelStage {
-		if w.Complete == "1" {
+		if w.Complete {
 			clientWhen = append(clientWhen, client.StageCompleteKey)
 		}
-		if w.Failed == "1" {
+		if w.Failed {
 			clientWhen = append(clientWhen, client.StageFailedKey)
 		}
-		if w.Starting == "1" {
+		if w.Starting {
 			clientWhen = append(clientWhen, client.StageStartingKey)
 		}
 	}
 	return &clientWhen
 }
 
-func (w *when) fromClientWhen(cn *client.Notification) *when {
-	newWhen := when{}
+func fromClientWhen(cn *client.Notification) *when {
+	w := newWhen()
 	for _, cw := range cn.When {
 		switch cw {
 		case client.StageCompleteKey:
-			newWhen.Complete = "1"
+			w.Complete = true
 		case client.PipelineCompleteKey:
-			newWhen.Complete = "1"
+			w.Complete = true
 		case client.StageFailedKey:
-			newWhen.Failed = "1"
+			w.Failed = true
 		case client.PipelineFailedKey:
-			newWhen.Failed = "1"
+			w.Failed = true
 		case client.StageStartingKey:
-			newWhen.Starting = "1"
+			w.Starting = true
 		case client.PipelineStartingKey:
-			newWhen.Starting = "1"
+			w.Starting = true
 		}
 	}
-	return &newWhen
+	return w
 }

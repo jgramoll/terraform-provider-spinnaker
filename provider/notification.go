@@ -62,7 +62,7 @@ func fromClientNotification(cn *client.Notification) *notification {
 		Address: cn.Address,
 		Message: &[]*message{fromClientMessage(cn.Message)},
 		Type:    cn.Type,
-		When:    &[]*when{(&when{}).fromClientWhen(cn)},
+		When:    &[]*when{fromClientWhen(cn)},
 	}
 }
 

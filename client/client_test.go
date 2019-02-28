@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"os/user"
 	"testing"
 )
@@ -74,11 +75,24 @@ func newTestClient() *Client {
 		log.Println("[Error] unable to get current user: ", err)
 	}
 
+	address := os.Getenv("SPINNAKER_ADDRESS")
+	if address == "" {
+		log.Println("[Error] SPINNAKER_ADDRESS not defined")
+	}
+	certPath := os.Getenv("SPINNAKER_CERT")
+	if certPath == "" {
+		log.Println("[Error] SPINNAKER_CERT not defined")
+	}
+	keyPath := os.Getenv("SPINNAKER_KEY")
+	if keyPath == "" {
+		log.Println("[Error] SPINNAKER_KEY not defined")
+	}
+
 	c := Config{
-		Address:   "https://api.spinnaker.inseng.net",
-		CertPath:  usr.HomeDir + "/.spin/client.crt",
-		KeyPath:   usr.HomeDir + "/.spin/client.key",
-		UserEmail: fmt.Sprintf("%s@instructure.com", usr.Username),
+		Address:   address,
+		CertPath:  certPath,
+		KeyPath:   keyPath,
+		UserEmail: fmt.Sprintf("%s", usr.Username),
 	}
 	return NewClient(c)
 }

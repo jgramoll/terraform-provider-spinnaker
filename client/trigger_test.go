@@ -34,7 +34,7 @@ func TestUpdateTrigger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if (*pipeline.Triggers)[0].Master != updateTrigger.Master {
+	if (pipeline.Triggers)[0].Master != updateTrigger.Master {
 		t.Fatal("Pipeline Trigger was not updated")
 	}
 }
@@ -45,7 +45,7 @@ func TestDeleteTrigger(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(*pipeline.Triggers) != 0 {
+	if len(pipeline.Triggers) != 0 {
 		t.Fatal("Pipeline Trigger was not deleted")
 	}
 }

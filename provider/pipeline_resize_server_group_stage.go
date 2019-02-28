@@ -5,7 +5,7 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type pipelineStage struct {
+type resizeServerGroupStage struct {
 	// baseStage
 	Name                              string                   `mapstructure:"name"`
 	RefID                             string                   `mapstructure:"ref_id"`
@@ -22,27 +22,35 @@ type pipelineStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	Application        string                 `mapstructure:"application"`
-	Pipeline           string                 `mapstructure:"target_pipeline"`
-	PipelineParameters map[string]interface{} `mapstructure:"pipeline_parameters"`
-	WaitForCompletion  bool                   `mapstructure:"wait_for_completion"`
+	Action            string       `mapstructure:"action"`
+	Capacity          *[]*capacity `mapstructure:"capacity"`
+	CloudProvider     string       `mapstructure:"cloud_provider"`
+	CloudProviderType string       `mapstructure:"cloud_provider_type"`
+	Cluster           string       `mapstructure:"cluster"`
+	Credentials       string       `mapstructure:"credentials"`
+	Moniker           *[]*moniker  `mapstructure:"moniker"`
+	Regions           []string     `mapstructure:"regions"`
+	ResizeType        string       `mapstructure:"resize_type"`
+	Target            string       `mapstructure:"target"`
+
+	TargetHealthyRollbackPercentage int `mapstructure:"target_healthy_rollback_percentage"`
 }
 
-func newPipelineStage() *pipelineStage {
-	return &pipelineStage{
-		Type:         client.PipelineStageType,
+func newResizeServerGroupStage() *resizeServerGroupStage {
+	return &resizeServerGroupStage{
+		Type:         client.ResizeServerGroupStageType,
 		FailPipeline: true,
 	}
 }
 
-func (s *pipelineStage) toClientStage(config *client.Config) (client.Stage, error) {
+func (s *resizeServerGroupStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
 		return nil, err
 	}
 
-	cs := client.NewPipelineStage()
+	cs := client.NewResizeServerGroupStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
@@ -58,17 +66,24 @@ func (s *pipelineStage) toClientStage(config *client.Config) (client.Stage, erro
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
 	// End baseStage
 
-	cs.Application = s.Application
-	cs.Pipeline = s.Pipeline
-	cs.PipelineParameters = s.PipelineParameters
-	cs.WaitForCompletion = s.WaitForCompletion
+	cs.Action = s.Action
+	cs.Capacity = toClientCapacity(s.Capacity)
+	cs.CloudProvider = s.CloudProvider
+	cs.CloudProviderType = s.CloudProviderType
+	cs.Cluster = s.Cluster
+	cs.Credentials = s.Credentials
+	cs.Moniker = toClientMoniker(s.Moniker)
+	cs.Regions = s.Regions
+	cs.ResizeType = s.ResizeType
+	cs.Target = s.Target
+	cs.TargetHealthyRollbackPercentage = s.TargetHealthyRollbackPercentage
 
 	return cs, nil
 }
 
-func (s *pipelineStage) fromClientStage(cs client.Stage) stage {
-	clientStage := cs.(*client.PipelineStage)
-	newStage := newPipelineStage()
+func (s *resizeServerGroupStage) fromClientStage(cs client.Stage) stage {
+	clientStage := cs.(*client.ResizeServerGroupStage)
+	newStage := newResizeServerGroupStage()
 
 	// baseStage
 	newStage.Name = clientStage.Name
@@ -85,15 +100,22 @@ func (s *pipelineStage) fromClientStage(cs client.Stage) stage {
 	newStage.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
 	// end baseStage
 
-	newStage.Application = clientStage.Application
-	newStage.Pipeline = clientStage.Pipeline
-	newStage.PipelineParameters = clientStage.PipelineParameters
-	newStage.WaitForCompletion = clientStage.WaitForCompletion
+	newStage.Action = clientStage.Action
+	newStage.Capacity = fromClientCapacity(clientStage.Capacity)
+	newStage.CloudProvider = clientStage.CloudProvider
+	newStage.CloudProviderType = clientStage.CloudProviderType
+	newStage.Cluster = clientStage.Cluster
+	newStage.Credentials = clientStage.Credentials
+	newStage.Moniker = fromClientMoniker(clientStage.Moniker)
+	newStage.Regions = clientStage.Regions
+	newStage.ResizeType = clientStage.ResizeType
+	newStage.Target = clientStage.Target
+	newStage.TargetHealthyRollbackPercentage = clientStage.TargetHealthyRollbackPercentage
 
 	return newStage
 }
 
-func (s *pipelineStage) SetResourceData(d *schema.ResourceData) error {
+func (s *resizeServerGroupStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
 	err := d.Set("name", s.Name)
 	if err != nil {
@@ -141,25 +163,53 @@ func (s *pipelineStage) SetResourceData(d *schema.ResourceData) error {
 	}
 	// End baseStage
 
-	err = d.Set("application", s.Application)
+	err = d.Set("action", s.Action)
 	if err != nil {
 		return err
 	}
-	err = d.Set("target_pipeline", s.Pipeline)
+	err = d.Set("capacity", s.Capacity)
 	if err != nil {
 		return err
 	}
-	err = d.Set("pipeline_parameters", s.PipelineParameters)
+	err = d.Set("cloud_provider", s.CloudProvider)
 	if err != nil {
 		return err
 	}
-	return d.Set("wait_for_completion", s.WaitForCompletion)
+	err = d.Set("cloud_provider_type", s.CloudProviderType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("cluster", s.Cluster)
+	if err != nil {
+		return err
+	}
+	err = d.Set("credentials", s.Credentials)
+	if err != nil {
+		return err
+	}
+	err = d.Set("moniker", s.Moniker)
+	if err != nil {
+		return err
+	}
+	err = d.Set("regions", s.Regions)
+	if err != nil {
+		return err
+	}
+	err = d.Set("resize_type", s.ResizeType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("target", s.Target)
+	if err != nil {
+		return err
+	}
+	return d.Set("target_healthy_rollback_percentage", s.TargetHealthyRollbackPercentage)
 }
 
-func (s *pipelineStage) SetRefID(id string) {
+func (s *resizeServerGroupStage) SetRefID(id string) {
 	s.RefID = id
 }
 
-func (s *pipelineStage) GetRefID() string {
+func (s *resizeServerGroupStage) GetRefID() string {
 	return s.RefID
 }
