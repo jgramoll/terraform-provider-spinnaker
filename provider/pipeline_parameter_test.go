@@ -15,8 +15,8 @@ func TestAccPipelineParameterBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var parameters []*client.PipelineParameter
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	parameter1 := "spinnaker_pipeline_parameter.1"
-	parameter2 := "spinnaker_pipeline_parameter.2"
+	parameter1 := "spinnaker_pipeline_parameter.stage-1"
+	parameter2 := "spinnaker_pipeline_parameter.stage-2"
 	pipelineResourceName := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
@@ -101,7 +101,7 @@ func testAccPipelineParameterConfigBasic(pipeName string, name string, count int
 	parameters := ""
 	for i := 1; i <= count; i++ {
 		parameters += fmt.Sprintf(`
-resource "spinnaker_pipeline_parameter" "%v" {
+resource "spinnaker_pipeline_parameter" "stage-%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name = "%s-%v"
 	description = "Setting options"

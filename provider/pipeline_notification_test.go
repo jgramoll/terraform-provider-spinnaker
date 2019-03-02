@@ -18,8 +18,8 @@ func TestAccPipelineNotificationBasic(t *testing.T) {
 	address := "bridge-career-deploys"
 	addressChanged := address + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	notification1 := "spinnaker_pipeline_notification.1"
-	notification2 := "spinnaker_pipeline_notification.2"
+	notification1 := "spinnaker_pipeline_notification.stage-1"
+	notification2 := "spinnaker_pipeline_notification.stage-2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -108,10 +108,10 @@ func testAccPipelineNotificationConfigBasic(pipeName string, address string, cou
 	notifications := ""
 	for i := 1; i <= count; i++ {
 		notifications += fmt.Sprintf(`
-resource "spinnaker_pipeline_notification" "%v" {
+resource "spinnaker_pipeline_notification" "stage-%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	address = "%v"
-	message = {
+	message {
 		complete = "%v is done"
 		failed = "%v is failed"
 		starting = "%v is starting"

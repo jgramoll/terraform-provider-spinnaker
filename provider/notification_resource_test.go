@@ -16,8 +16,8 @@ func TestAccPipelineNotificationStageBasic(t *testing.T) {
 	completeText := "complete!"
 	newCompleteText := completeText + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_jenkins_stage.1"
-	stage2 := "spinnaker_pipeline_jenkins_stage.2"
+	stage1 := "spinnaker_pipeline_jenkins_stage.stage-1"
+	stage2 := "spinnaker_pipeline_jenkins_stage.stage-2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -78,7 +78,7 @@ func testAccPipelineNotificationStageConfigBasic(pipeName string, completeText s
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_jenkins_stage" "%v" {
+resource "spinnaker_pipeline_jenkins_stage" "stage-%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	master   = "master"
@@ -86,7 +86,7 @@ resource "spinnaker_pipeline_jenkins_stage" "%v" {
 
 	notification {
 		address = "#slack-channel"
-		message = {
+		message {
 			complete = "%v"
 		}
 		type = "slack"

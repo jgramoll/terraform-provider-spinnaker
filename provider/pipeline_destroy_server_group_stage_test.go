@@ -22,8 +22,8 @@ func TestAccPipelineDestroyServerGroupStageBasic(t *testing.T) {
 	target := "my-target"
 	newTarget := "new-my-target"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_destroy_server_group_stage.1"
-	stage2 := "spinnaker_pipeline_destroy_server_group_stage.2"
+	stage1 := "spinnaker_pipeline_destroy_server_group_stage.stage-1"
+	stage2 := "spinnaker_pipeline_destroy_server_group_stage.stage-2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -112,7 +112,7 @@ func testAccPipelineDestroyServerGroupStageConfigBasic(pipeName string, target s
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_destroy_server_group_stage" "%v" {
+resource "spinnaker_pipeline_destroy_server_group_stage" "stage-%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	cluster  = "test_cluster"
