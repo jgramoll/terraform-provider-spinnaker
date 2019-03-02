@@ -3,6 +3,10 @@ Terraform Provider to manage spinnaker pipelines
 
 ## Build and install ##
 
+```sh
+go get github.com/jgramoll/terraform-provider-spinnaker
+```
+
 ### Dependencies ###
 
 You should have a working Go environment setup.  If not check out the Go [getting started](http://golang.org/doc/install) guide.
