@@ -24,6 +24,7 @@ type deployStageCluster struct {
 	InstanceMonitoring                  bool                   `mapstructure:"instance_monitoring"`
 	InstanceType                        string                 `mapstructure:"instance_type"`
 	KeyPair                             string                 `mapstructure:"key_pair"`
+	MaxRemainingAsgs                    int                    `mapstructure:"max_remaining_asgs"`
 	LoadBalancers                       []string               `mapstructure:"load_balancers"`
 	Moniker                             *[]*moniker            `mapstructure:"moniker"`
 	Provider                            string                 `mapstructure:"provider"`
@@ -86,6 +87,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	clientCluster.InstanceMonitoring = c.InstanceMonitoring
 	clientCluster.InstanceType = c.InstanceType
 	clientCluster.KeyPair = c.KeyPair
+	clientCluster.MaxRemainingAsgs = c.MaxRemainingAsgs
 	clientCluster.LoadBalancers = c.LoadBalancers
 	clientCluster.Moniker = toClientMoniker(c.Moniker)
 	clientCluster.Provider = c.Provider
@@ -135,6 +137,7 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 		InstanceMonitoring:     c.InstanceMonitoring,
 		InstanceType:           c.InstanceType,
 		KeyPair:                c.KeyPair,
+		MaxRemainingAsgs:       c.MaxRemainingAsgs,
 		LoadBalancers:          c.LoadBalancers,
 		Provider:               c.Provider,
 		SecurityGroups:         c.SecurityGroups,

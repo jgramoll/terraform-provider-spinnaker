@@ -121,6 +121,12 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Key pair name for cluster",
 				Required:    true,
 			},
+			"max_remaining_asgs": &schema.Schema{
+				Type:        schema.TypeInt,
+				Description: "Max amount of asgs to run",
+				Optional:    true,
+				Default:     2,
+			},
 			"load_balancers": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Load balancer to attach to cluster",
