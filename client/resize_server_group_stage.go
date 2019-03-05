@@ -40,7 +40,7 @@ type serializableResizeServerGroupStage struct {
 	ResizeType        string    `json:"resizeType"`
 	Target            string    `json:"target"`
 
-	TargetHealthyRollbackPercentage int `json:"targetHealthyRollbackPercentage"`
+	TargetHealthyDeployPercentage int `json:"targetHealthyDeployPercentage"`
 }
 
 // ResizeServerGroupStage for pipeline
