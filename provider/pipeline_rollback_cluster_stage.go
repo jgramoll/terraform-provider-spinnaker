@@ -29,7 +29,6 @@ type rollbackClusterStage struct {
 	Moniker           *[]*moniker `mapstructure:"moniker"`
 	Regions           []string    `mapstructure:"regions"`
 
-	TargetHealthyDeployPercentage   int `mapstructure:"target_healthy_deploy_percentage"`
 	TargetHealthyRollbackPercentage int `mapstructure:"target_healthy_rollback_percentage"`
 }
 
@@ -69,7 +68,6 @@ func (s *rollbackClusterStage) toClientStage(config *client.Config) (client.Stag
 	cs.Credentials = s.Credentials
 	cs.Moniker = toClientMoniker(s.Moniker)
 	cs.Regions = s.Regions
-	cs.TargetHealthyDeployPercentage = s.TargetHealthyDeployPercentage
 	cs.TargetHealthyRollbackPercentage = s.TargetHealthyRollbackPercentage
 
 	return cs, nil
@@ -100,7 +98,6 @@ func (s *rollbackClusterStage) fromClientStage(cs client.Stage) stage {
 	newStage.Credentials = clientStage.Credentials
 	newStage.Moniker = fromClientMoniker(clientStage.Moniker)
 	newStage.Regions = clientStage.Regions
-	newStage.TargetHealthyDeployPercentage = clientStage.TargetHealthyDeployPercentage
 	newStage.TargetHealthyRollbackPercentage = clientStage.TargetHealthyRollbackPercentage
 
 	return newStage
@@ -175,10 +172,6 @@ func (s *rollbackClusterStage) SetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("regions", s.Regions)
-	if err != nil {
-		return err
-	}
-	err = d.Set("target_healthy_deploy_percentage", s.TargetHealthyDeployPercentage)
 	if err != nil {
 		return err
 	}

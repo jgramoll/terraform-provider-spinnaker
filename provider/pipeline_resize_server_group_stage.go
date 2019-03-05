@@ -33,6 +33,7 @@ type resizeServerGroupStage struct {
 	ResizeType        string       `mapstructure:"resize_type"`
 	Target            string       `mapstructure:"target"`
 
+	TargetHealthyDeployPercentage   int `mapstructure:"target_healthy_deploy_percentage"`
 	TargetHealthyRollbackPercentage int `mapstructure:"target_healthy_rollback_percentage"`
 }
 
@@ -76,6 +77,7 @@ func (s *resizeServerGroupStage) toClientStage(config *client.Config) (client.St
 	cs.Regions = s.Regions
 	cs.ResizeType = s.ResizeType
 	cs.Target = s.Target
+	cs.TargetHealthyDeployPercentage = s.TargetHealthyDeployPercentage
 	cs.TargetHealthyRollbackPercentage = s.TargetHealthyRollbackPercentage
 
 	return cs, nil
@@ -110,6 +112,7 @@ func (s *resizeServerGroupStage) fromClientStage(cs client.Stage) stage {
 	newStage.Regions = clientStage.Regions
 	newStage.ResizeType = clientStage.ResizeType
 	newStage.Target = clientStage.Target
+	newStage.TargetHealthyDeployPercentage = clientStage.TargetHealthyDeployPercentage
 	newStage.TargetHealthyRollbackPercentage = clientStage.TargetHealthyRollbackPercentage
 
 	return newStage
@@ -200,6 +203,10 @@ func (s *resizeServerGroupStage) SetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("target", s.Target)
+	if err != nil {
+		return err
+	}
+	err = d.Set("target_healthy_deploy_percentage", s.TargetHealthyDeployPercentage)
 	if err != nil {
 		return err
 	}

@@ -219,6 +219,12 @@ func pipelineResizeServerGroupStageResource() *schema.Resource {
 				Description: "Which server group to resize (ancestor_asg_dynamic, current_asg_dynamic, oldest_asg_dynamic)",
 				Optional:    true,
 			},
+			"target_healthy_deploy_percentage": &schema.Schema{
+				Type:        schema.TypeInt,
+				Description: "Consider deploy successful when percent of instances are healthy",
+				Optional:    true,
+				Default:     100,
+			},
 			"target_healthy_rollback_percentage": &schema.Schema{
 				Type:        schema.TypeInt,
 				Description: "Consider resize successful when percent of instances are healthy",
