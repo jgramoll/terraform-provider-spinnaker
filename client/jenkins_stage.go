@@ -28,11 +28,11 @@ type serializableJenkinsStage struct {
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	Job                      string            `json:"job"`
-	MarkUnstableAsSuccessful bool              `json:"markUnstableAsSuccessful"`
-	Master                   string            `json:"master"`
-	Parameters               map[string]string `json:"parameters,omitempty"`
-	PropertyFile             string            `json:"propertyFile,omitempty"`
+	Job                      string                 `json:"job"`
+	MarkUnstableAsSuccessful bool                   `json:"markUnstableAsSuccessful"`
+	Master                   string                 `json:"master"`
+	Parameters               map[string]interface{} `json:"parameters,omitempty"`
+	PropertyFile             string                 `json:"propertyFile,omitempty"`
 }
 
 // JenkinsStage for pipeline
