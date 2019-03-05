@@ -195,6 +195,12 @@ func pipelineRollbackClusterStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"target_healthy_deploy_percentage": &schema.Schema{
+				Type:        schema.TypeInt,
+				Description: "Consider deploy successful when percent of instances are healthy",
+				Optional:    true,
+				Default:     100,
+			},
 			"target_healthy_rollback_percentage": &schema.Schema{
 				Type:        schema.TypeInt,
 				Description: "Consider rollback successful when percent of instances are healthy",
