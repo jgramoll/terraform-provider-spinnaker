@@ -225,12 +225,6 @@ func pipelineResizeServerGroupStageResource() *schema.Resource {
 				Optional:    true,
 				Default:     100,
 			},
-			"target_healthy_rollback_percentage": &schema.Schema{
-				Type:        schema.TypeInt,
-				Description: "Consider resize successful when percent of instances are healthy",
-				Optional:    true,
-				Default:     100,
-			},
 		},
 	}
 }
