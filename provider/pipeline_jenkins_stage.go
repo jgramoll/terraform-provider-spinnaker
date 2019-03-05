@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"strconv"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
@@ -22,11 +24,11 @@ type jenkinsStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	Job                      string            `mapstructure:"job"`
-	MarkUnstableAsSuccessful bool              `mapstructure:"mark_unstable_as_successful"`
-	Master                   string            `mapstructure:"master"`
-	Parameters               map[string]string `mapstructure:"parameters"`
-	PropertyFile             string            `mapstructure:"property_file"`
+	Job                      string                 `mapstructure:"job"`
+	MarkUnstableAsSuccessful bool                   `mapstructure:"mark_unstable_as_successful"`
+	Master                   string                 `mapstructure:"master"`
+	Parameters               map[string]interface{} `mapstructure:"parameters"`
+	PropertyFile             string                 `mapstructure:"property_file"`
 }
 
 func newJenkinsStage() *jenkinsStage {
@@ -65,6 +67,17 @@ func (s *jenkinsStage) toClientStage(config *client.Config) (client.Stage, error
 	cs.Parameters = s.Parameters
 	cs.PropertyFile = s.PropertyFile
 
+	// hack around terraform not supporting booleans
+	for key, value := range cs.Parameters {
+		if v, ok := value.(string); ok {
+			if v == "true" {
+				cs.Parameters[key] = true
+			} else if v == "false" {
+				cs.Parameters[key] = false
+			}
+		}
+	}
+
 	return cs, nil
 }
 
@@ -92,6 +105,13 @@ func (s *jenkinsStage) fromClientStage(cs client.Stage) stage {
 	newStage.Master = clientStage.Master
 	newStage.Parameters = clientStage.Parameters
 	newStage.PropertyFile = clientStage.PropertyFile
+
+	// hack around terraform not supporting booleans
+	for key, value := range newStage.Parameters {
+		if v, ok := value.(bool); ok {
+			newStage.Parameters[key] = strconv.FormatBool(v)
+		}
+	}
 
 	return newStage
 }
