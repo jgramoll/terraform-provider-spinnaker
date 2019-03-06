@@ -202,6 +202,11 @@ func pipelineBakeStageResource() *schema.Resource {
 				Description: "Extra attributes to give the packer template",
 				Optional:    true,
 			},
+			"package": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "The name of the package you want installed (without any version identifiers).\nIf your build produces a deb file named \"myapp_1.27-h343\", you would want to enter \"myapp\" here.\nIf there are multiple packages (space separated), then they will be installed in the order they are entered.",
+				Optional:    true,
+			},
 			"rebake": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "Rebake image without regard to the status of any existing bake",

@@ -36,6 +36,7 @@ type serializableBakeStage struct {
 	BaseOS             string            `json:"baseOs"`
 	CloudProviderType  string            `json:"cloudProviderType"`
 	ExtendedAttributes map[string]string `json:"extendedAttributes"`
+	Package            string            `json:"package"`
 	Rebake             bool              `json:"rebake"`
 	Region             string            `json:"region"`
 	Regions            []string          `json:"regions,omitempty"`
