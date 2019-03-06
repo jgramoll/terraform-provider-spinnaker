@@ -30,6 +30,7 @@ type bakeStage struct {
 	BaseOS             string            `mapstructure:"base_os"`
 	CloudProviderType  string            `mapstructure:"cloud_provider_type"`
 	ExtendedAttributes map[string]string `mapstructure:"extended_attributes"`
+	Package            string            `mapstructure:"package"`
 	Rebake             bool              `mapstructure:"rebake"`
 	Region             string            `mapstructure:"region"`
 	Regions            []string          `mapstructure:"regions"`
@@ -78,6 +79,7 @@ func (s *bakeStage) toClientStage(config *client.Config) (client.Stage, error) {
 	cs.BaseOS = s.BaseOS
 	cs.CloudProviderType = s.CloudProviderType
 	cs.ExtendedAttributes = s.ExtendedAttributes
+	cs.Package = s.Package
 	cs.Rebake = s.Rebake
 	if s.Region == "" && len(s.Regions) == 1 {
 		cs.Region = s.Regions[0]
@@ -125,6 +127,7 @@ func (s *bakeStage) fromClientStage(cs client.Stage) stage {
 	newStage.BaseOS = clientStage.BaseOS
 	newStage.CloudProviderType = clientStage.CloudProviderType
 	newStage.ExtendedAttributes = clientStage.ExtendedAttributes
+	newStage.Package = clientStage.Package
 	newStage.Rebake = clientStage.Rebake
 	newStage.Region = clientStage.Region
 	newStage.Regions = clientStage.Regions
@@ -214,6 +217,10 @@ func (s *bakeStage) SetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("extended_attributes", s.ExtendedAttributes)
+	if err != nil {
+		return err
+	}
+	err = d.Set("package", s.Package)
 	if err != nil {
 		return err
 	}
