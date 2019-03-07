@@ -21,10 +21,8 @@ if [ -z ${url} ]; then
   exit 1
 fi
 
-curl $url -L --remote-name
-
-pattern="terraform-provider-spinnaker_*"
-files=( $pattern )
+dest_file="terraform-provider-spinnaker_$version"
+# curl $url -L -o $dest_file
 
 mkdir -p $terraform_plugins
-mv ${files[0]} $terraform_plugins/terraform-provider-spinnaker_$version
+mv $dest_file $terraform_plugins/
