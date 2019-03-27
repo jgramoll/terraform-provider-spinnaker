@@ -1,8 +1,4 @@
 arch=$(uname -m)
-if [ $arch != "x86_64" ] && [ $arch != "i386" ]; then
-  echo "no build for this architecture: $arch"
-  exit 1
-fi
 case $arch in
 x86_64)
   ARCH=amd64
@@ -11,8 +7,8 @@ i386)
   ARCH=386
   ;;
 *)
-  ARCH=arm
-  ;;
+  echo "no build for this architecture: $arch"
+  exit 1
 esac
 
 kernel=$(uname -s)
