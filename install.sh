@@ -1,5 +1,3 @@
-terraform_plugins=~/.terraform.d/plugins/darwin_amd64/
-
 arch=$(uname -m)
 if [ $arch != "x86_64" ] && [ $arch != "i386" ]; then
   echo "no build for this architecture: $arch"
@@ -11,6 +9,9 @@ if [ $kernel != "Darwin" ] && [ $kernel != "Linux" ]; then
   echo "no build for this kernel: $kernel"
   exit 1
 fi
+
+kernel_lower=$(echo $kernel | tr "[:upper:]" "[:lower:]")
+terraform_plugins="~/.terraform.d/plugins/${kernel_lower}_amd64)/"
 
 # IFS= preserve newlines
 IFS= manifest=$(curl -s https://api.github.com/repos/jgramoll/terraform-provider-spinnaker/releases/latest)
