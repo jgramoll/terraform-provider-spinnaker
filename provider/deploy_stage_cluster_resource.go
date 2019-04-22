@@ -22,7 +22,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Availability zones to deploy cluster",
 				MaxItems:    1,
 				Required:    true,
-
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"us_east_1": &schema.Schema{
