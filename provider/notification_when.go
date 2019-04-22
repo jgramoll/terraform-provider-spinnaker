@@ -16,6 +16,9 @@ func newWhen() *when {
 
 func toClientWhen(level client.NotificationLevel, w *when) *[]string {
 	clientWhen := []string{}
+	if w == nil {
+		return &clientWhen
+	}
 	if level == client.NotificationLevelPipeline {
 		if w.Complete {
 			clientWhen = append(clientWhen, client.PipelineCompleteKey)
