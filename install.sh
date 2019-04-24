@@ -18,7 +18,7 @@ if [ $kernel != "Darwin" ] && [ $kernel != "Linux" ]; then
 fi
 
 kernel_lower=$(echo $kernel | tr "[:upper:]" "[:lower:]")
-terraform_plugins="~/.terraform.d/plugins/${kernel_lower}_$ARCH/"
+terraform_plugins="$HOME/.terraform.d/plugins/${kernel_lower}_$ARCH/"
 
 # IFS= preserve newlines
 IFS= manifest=$(curl -s https://api.github.com/repos/jgramoll/terraform-provider-spinnaker/releases/latest)
