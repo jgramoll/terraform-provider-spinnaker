@@ -89,10 +89,13 @@ func newTestClient() *Client {
 	}
 
 	c := Config{
-		Address:   address,
-		CertPath:  certPath,
-		KeyPath:   keyPath,
-		UserEmail: fmt.Sprintf("%s", usr.Username),
+		Address: address,
+		Auth: Auth{
+			Enabled:   false,
+			CertPath:  certPath,
+			KeyPath:   keyPath,
+			UserEmail: fmt.Sprintf("%s", usr.Username),
+		},
 	}
 	return NewClient(c)
 }

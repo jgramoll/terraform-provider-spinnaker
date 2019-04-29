@@ -19,7 +19,7 @@ func TestCreateDeleteApplication(t *testing.T) {
 	expectedName := fmt.Sprintf("mytestapp%d", rand.Int())
 	app := NewApplication()
 	app.Name = expectedName
-	app.Email = applicationService.Config.UserEmail
+	app.Email = applicationService.Config.Auth.UserEmail
 	err := applicationService.CreateApplication(app)
 	if err != nil {
 		t.Fatal(err)

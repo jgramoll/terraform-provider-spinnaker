@@ -17,7 +17,13 @@ var ErrInvalidDecodeResponseParameter = errors.New("nil interface provided to de
 
 // Config for Client
 type Config struct {
-	Address   string
+	Address string
+	Auth    Auth
+}
+
+// Auth for login on spinnaker
+type Auth struct {
+	Enabled   bool
 	CertPath  string
 	KeyPath   string
 	UserEmail string
@@ -31,18 +37,21 @@ type Client struct {
 
 // NewClient Return a new client with loaded configuration
 func NewClient(config Config) *Client {
-	cert, err := tls.LoadX509KeyPair(config.CertPath, config.KeyPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	httpClient := http.DefaultClient
+	if config.Auth.Enabled {
+		cert, err := tls.LoadX509KeyPair(config.Auth.CertPath, config.Auth.KeyPath)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	tlsConfig := &tls.Config{
-		Certificates:       []tls.Certificate{cert},
-		InsecureSkipVerify: true,
+		tlsConfig := &tls.Config{
+			Certificates:       []tls.Certificate{cert},
+			InsecureSkipVerify: true,
+		}
+		tlsConfig.BuildNameToCertificate()
+		transport := &http.Transport{TLSClientConfig: tlsConfig}
+		httpClient = &http.Client{Transport: transport}
 	}
-	tlsConfig.BuildNameToCertificate()
-	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	httpClient := &http.Client{Transport: transport}
 
 	return &Client{
 		Config: config,

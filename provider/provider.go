@@ -18,7 +18,13 @@ type Services struct {
 
 // Config for provider
 type Config struct {
-	Address   string
+	Address string
+	Auth    Auth
+}
+
+// Auth for provider
+type Auth struct {
+	Enabled   bool
 	CertPath  string `mapstructure:"cert_path"`
 	KeyPath   string `mapstructure:"key_path"`
 	UserEmail string `mapstructure:"user_email"`
@@ -35,25 +41,40 @@ func Provider() terraform.ResourceProvider {
 				Description: "Address of spinnaker api",
 			},
 
-			"cert_path": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
-				Description: "Path to cert to authenticate with spinnaker api",
-			},
+			"auth": &schema.Schema{
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": &schema.Schema{
+							Type:        schema.TypeBool,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
+							Description: "Path to cert to authenticate with spinnaker api",
+						},
 
-			"key_path": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
-				Description: "Path to key to authenticate with spinnaker api",
-			},
+						"cert_path": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
+							Description: "Path to cert to authenticate with spinnaker api",
+						},
 
-			"user_email": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
-				Description: "Path to user_email to authenticate with spinnaker api",
+						"key_path": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
+							Description: "Path to key to authenticate with spinnaker api",
+						},
+
+						"user_email": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
+							Description: "Path to user_email to authenticate with spinnaker api",
+						},
+					},
+				},
 			},
 		},
 
@@ -78,6 +99,9 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+
+	log.Printf("%+v", d)
+
 	var config Config
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &config); err != nil {
@@ -86,7 +110,15 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	log.Println("[INFO] Initializing Spinnaker client")
 
-	clientConfig := client.Config(config)
+	clientConfig := client.Config{
+		Address: config.Address,
+		Auth: client.Auth{
+			Enabled:   config.Auth.Enabled,
+			CertPath:  config.Auth.CertPath,
+			KeyPath:   config.Auth.KeyPath,
+			UserEmail: config.Auth.UserEmail,
+		},
+	}
 	c := client.NewClient(clientConfig)
 	return &Services{
 		Config:             clientConfig,
