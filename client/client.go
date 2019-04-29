@@ -39,7 +39,7 @@ type Client struct {
 // NewClient Return a new client with loaded configuration
 func NewClient(config *Config) *Client {
 
-	var httpClient *http.Client
+	httpClient := http.DefaultClient
 	if config.Auth.Enabled {
 		httpClient = newTLSHTTPClient(config)
 	} else {
