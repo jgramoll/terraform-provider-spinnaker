@@ -29,9 +29,11 @@ func TestProvider(t *testing.T) {
 
 func TestProviderConfigure(t *testing.T) {
 	raw := map[string]interface{}{
-		"address":   "#address",
-		"cert_path": os.Getenv("SPINNAKER_CERT"),
-		"key_path":  os.Getenv("SPINNAKER_KEY"),
+		"address": "#address",
+		"auth": map[string]interface{}{
+			"cert_path": os.Getenv("SPINNAKER_CERT"),
+			"key_path":  os.Getenv("SPINNAKER_KEY"),
+		},
 	}
 	rawConfig, configErr := config.NewRawConfig(raw)
 	if configErr != nil {
@@ -47,11 +49,17 @@ func TestProviderConfigure(t *testing.T) {
 	if config.Address != raw["address"] {
 		t.Fatalf("address should be %#v, not %#v", raw["address"], config.Address)
 	}
-	if config.CertPath != raw["cert_path"] {
-		t.Fatalf("certPath should be %#v, not %#v", raw["cert_path"], config.CertPath)
+
+	auth, ok := raw["auth"].(map[string]interface{})
+	if !ok {
+		t.Fatal("auth is not present")
 	}
-	if config.KeyPath != raw["key_path"] {
-		t.Fatalf("keyPath should be %#v, not %#v", raw["key_path"], config.KeyPath)
+
+	if config.Auth.CertPath != auth["cert_path"] {
+		t.Fatalf("certPath should be %#v, not %#v", auth["cert_path"], config.Auth.CertPath)
+	}
+	if config.Auth.KeyPath != auth["key_path"] {
+		t.Fatalf("keyPath should be %#v, not %#v", auth["key_path"], config.Auth.KeyPath)
 	}
 }
 

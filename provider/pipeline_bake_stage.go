@@ -90,7 +90,7 @@ func (s *bakeStage) toClientStage(config *client.Config) (client.Stage, error) {
 	cs.StoreType = s.StoreType
 	cs.TemplateFileName = s.TemplateFileName
 	if s.User == "" {
-		cs.User = config.UserEmail
+		cs.User = config.Auth.UserEmail
 	} else {
 		cs.User = s.User
 	}

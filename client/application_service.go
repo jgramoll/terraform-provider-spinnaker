@@ -69,7 +69,7 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 			&Job{
 				Type:        jobType,
 				Application: app,
-				User:        service.Config.UserEmail,
+				User:        service.Config.Auth.UserEmail,
 			},
 		},
 		Application: app.Name,
