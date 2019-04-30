@@ -41,6 +41,7 @@ type DeployStageCluster struct {
 	TerminationPolicies                 []string               `json:"terminationPolicies"`
 	UseAmiBlockDeviceMappings           bool                   `json:"useAmiBlockDeviceMappings"`
 	UseSourceCapacity                   bool                   `json:"useSourceCapacity"`
+	UserData                            string                 `json:"base64UserData"`
 }
 
 func NewDeployStageCluster() *DeployStageCluster {

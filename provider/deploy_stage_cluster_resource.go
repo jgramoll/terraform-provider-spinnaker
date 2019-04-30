@@ -371,6 +371,11 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"user_data": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "UserData is a base64 encoded string.",
+				Optional:    true,
+			},
 		},
 	}
 }
