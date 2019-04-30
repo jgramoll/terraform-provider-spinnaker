@@ -99,9 +99,6 @@ func Provider() terraform.ResourceProvider {
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-
-	log.Printf("%+v", d)
-
 	var config Config
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &config); err != nil {
