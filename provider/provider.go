@@ -49,7 +49,6 @@ func Provider() terraform.ResourceProvider {
 						"enabled": &schema.Schema{
 							Type:        schema.TypeBool,
 							Required:    false,
-							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
 							Description: "Path to cert to authenticate with spinnaker api",
 						},
 
@@ -79,9 +78,10 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"spinnaker_pipeline":              pipelineResource(),
-			"spinnaker_pipeline_bake_stage":   pipelineBakeStageResource(),
-			"spinnaker_pipeline_deploy_stage": pipelineDeployStageResource(),
+			"spinnaker_pipeline":                  pipelineResource(),
+			"spinnaker_pipeline_bake_stage":       pipelineBakeStageResource(),
+			"spinnaker_pipeline_find_image_stage": pipelineFindImageStageResource(),
+			"spinnaker_pipeline_deploy_stage":     pipelineDeployStageResource(),
 
 			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),
 			"spinnaker_pipeline_jenkins_stage":              pipelineJenkinsStageResource(),
