@@ -1,4 +1,6 @@
- package client
+// +build integration
+
+package client
 
 import (
 	"fmt"
