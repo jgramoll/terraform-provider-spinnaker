@@ -162,12 +162,12 @@ func pipelineFindImageFromTagsStageResource() *schema.Resource {
 			},
 			"cloud_provider": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Name of the ami output. Default = $package-$arch-$ami_suffix-$store_type",
+				Description: "Cloud provider to use (aws)",
 				Required:    true,
 			},
 			"cloud_provider_type": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Suffix of the ami output. String of date in format YYYYMMDDHHmm, default is calculated from timestamp",
+				Description: "Cloud provider to use (aws)",
 				Required:    true,
 			},
 			"package_name": &schema.Schema{
@@ -177,7 +177,7 @@ func pipelineFindImageFromTagsStageResource() *schema.Resource {
 			},
 			"regions": &schema.Schema{
 				Type:        schema.TypeList,
-				Description: "Label for the base ami (release)",
+				Description: "regions to target (us-east-1)",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -185,7 +185,7 @@ func pipelineFindImageFromTagsStageResource() *schema.Resource {
 			},
 			"tags": &schema.Schema{
 				Type:        schema.TypeMap,
-				Description: "Name of the base ami to use",
+				Description: "Tags of base ami to use.",
 				Optional:    true,
 			},
 		},
