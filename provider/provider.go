@@ -93,6 +93,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_find_artifacts_from_resource_stage": pipelineFindArtifactsFromResourceStageResource(),
 
 			"spinnaker_pipeline_find_image_from_tags_stage":  pipelineFindImageFromTagsStageResource(),
+			"spinnaker_pipeline_find_image_stage":            pipelineFindImageStageResource(),
 			"spinnaker_pipeline_jenkins_stage":               pipelineJenkinsStageResource(),
 			"spinnaker_pipeline_manual_judgment_stage":       pipelineManualJudgementStageResource(),
 			"spinnaker_pipeline_notification":                pipelineNotificationResource(),
