@@ -5,7 +5,7 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type findImageStage struct {
+type findImageFromTagsStage struct {
 	// baseStage
 	Name                              string                   `mapstructure:"name"`
 	RefID                             string                   `mapstructure:"ref_id"`
@@ -29,14 +29,14 @@ type findImageStage struct {
 	Tags              map[string]string `mapstructure:"tags"`
 }
 
-func newFindImageStage() *findImageStage {
-	return &findImageStage{
-		Type:         client.FindImageStageType,
+func newFindImageFromTagsStage() *findImageFromTagsStage {
+	return &findImageFromTagsStage{
+		Type:         client.FindImageFromTagsStageType,
 		FailPipeline: true,
 	}
 }
 
-func (s *findImageStage) toClientStage(config *client.Config) (client.Stage, error) {
+func (s *findImageFromTagsStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
@@ -68,9 +68,9 @@ func (s *findImageStage) toClientStage(config *client.Config) (client.Stage, err
 	return cs, nil
 }
 
-func (s *findImageStage) fromClientStage(cs client.Stage) stage {
-	clientStage := cs.(*client.FindImageStage)
-	newStage := newFindImageStage()
+func (s *findImageFromTagsStage) fromClientStage(cs client.Stage) stage {
+	clientStage := cs.(*client.FindImageFromTagsStage)
+	newStage := newFindImageFromTagsStage()
 
 	// baseStage
 	newStage.Name = clientStage.Name
@@ -96,7 +96,7 @@ func (s *findImageStage) fromClientStage(cs client.Stage) stage {
 	return newStage
 }
 
-func (s *findImageStage) SetResourceData(d *schema.ResourceData) error {
+func (s *findImageFromTagsStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
 	err := d.Set("name", s.Name)
 	if err != nil {
@@ -164,10 +164,10 @@ func (s *findImageStage) SetResourceData(d *schema.ResourceData) error {
 
 }
 
-func (s *findImageStage) SetRefID(id string) {
+func (s *findImageFromTagsStage) SetRefID(id string) {
 	s.RefID = id
 }
 
-func (s *findImageStage) GetRefID() string {
+func (s *findImageFromTagsStage) GetRefID() string {
 	return s.RefID
 }

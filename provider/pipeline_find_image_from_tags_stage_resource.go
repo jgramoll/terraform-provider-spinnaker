@@ -4,22 +4,22 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func pipelineFindImageStageResource() *schema.Resource {
-	newFindImageStageInterface := func() stage {
-		return newFindImageStage()
+func pipelineFindImageFromTagsStageResource() *schema.Resource {
+	newFindImageFromTagsStageInterface := func() stage {
+		return newFindImageFromTagsStage()
 	}
 	return &schema.Resource{
 		Create: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageCreate(d, m, newFindImageStageInterface)
+			return resourcePipelineStageCreate(d, m, newFindImageFromTagsStageInterface)
 		},
 		Read: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageRead(d, m, newFindImageStageInterface)
+			return resourcePipelineStageRead(d, m, newFindImageFromTagsStageInterface)
 		},
 		Update: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageUpdate(d, m, newFindImageStageInterface)
+			return resourcePipelineStageUpdate(d, m, newFindImageFromTagsStageInterface)
 		},
 		Delete: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageDelete(d, m, newFindImageStageInterface)
+			return resourcePipelineStageDelete(d, m, newFindImageFromTagsStageInterface)
 		},
 		Importer: &schema.ResourceImporter{
 			State: resourcePipelineImporter,
@@ -163,12 +163,12 @@ func pipelineFindImageStageResource() *schema.Resource {
 			"cloud_provider": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of the ami output. Default = $package-$arch-$ami_suffix-$store_type",
-				Optional:    true,
+				Required:    true,
 			},
 			"cloud_provider_type": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Suffix of the ami output. String of date in format YYYYMMDDHHmm, default is calculated from timestamp",
-				Optional:    true,
+				Required:    true,
 			},
 			"package_name": &schema.Schema{
 				Type:        schema.TypeString,

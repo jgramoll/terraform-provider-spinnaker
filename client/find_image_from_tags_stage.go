@@ -4,14 +4,14 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// FindImageStageType bake stage
-var FindImageStageType StageType = "findImageFromTags"
+// FindImageFromTagsStageType bake stage
+var FindImageFromTagsStageType StageType = "findImageFromTags"
 
 func init() {
-	stageFactories[FindImageStageType] = parseFindImageStage
+	stageFactories[FindImageFromTagsStageType] = parseFindImageStage
 }
 
-type serializableFindImageStage struct {
+type serializableFindImageFromTagsStage struct {
 	// BaseStage
 	Name                              string                `json:"name"`
 	RefID                             string                `json:"refId"`
@@ -35,39 +35,39 @@ type serializableFindImageStage struct {
 	Tags              map[string]string `json:"tags"`
 }
 
-// FindImageStage for pipeline
-type FindImageStage struct {
-	*serializableFindImageStage
+// FindImageFromTagsStage for pipeline
+type FindImageFromTagsStage struct {
+	*serializableFindImageFromTagsStage
 	Notifications *[]*Notification `json:"notifications"`
 }
 
-func newserializableFindImageStage() *serializableFindImageStage {
-	return &serializableFindImageStage{
-		Type:                 FindImageStageType,
+func newserializableFindImageStage() *serializableFindImageFromTagsStage {
+	return &serializableFindImageFromTagsStage{
+		Type:                 FindImageFromTagsStageType,
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
 	}
 }
 
 // NewFindImageStage for pipeline
-func NewFindImageStage() *FindImageStage {
-	return &FindImageStage{
-		serializableFindImageStage: newserializableFindImageStage(),
+func NewFindImageStage() *FindImageFromTagsStage {
+	return &FindImageFromTagsStage{
+		serializableFindImageFromTagsStage: newserializableFindImageStage(),
 	}
 }
 
 // GetName for Stage interface
-func (s *FindImageStage) GetName() string {
+func (s *FindImageFromTagsStage) GetName() string {
 	return s.Name
 }
 
 // GetType for Stage interface
-func (s *FindImageStage) GetType() StageType {
+func (s *FindImageFromTagsStage) GetType() StageType {
 	return s.Type
 }
 
 // GetRefID for Stage interface
-func (s *FindImageStage) GetRefID() string {
+func (s *FindImageFromTagsStage) GetRefID() string {
 	return s.RefID
 }
 
@@ -81,8 +81,8 @@ func parseFindImageStage(stageMap map[string]interface{}) (Stage, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &FindImageStage{
-		serializableFindImageStage: stage,
-		Notifications:              notifications,
+	return &FindImageFromTagsStage{
+		serializableFindImageFromTagsStage: stage,
+		Notifications:                      notifications,
 	}, nil
 }
