@@ -78,6 +78,7 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
+			"spinnaker_application":                         applicationResource(),
 			"spinnaker_pipeline":                            pipelineResource(),
 			"spinnaker_pipeline_bake_stage":                 pipelineBakeStageResource(),
 			"spinnaker_pipeline_find_image_from_tags_stage": pipelineFindImageFromTagsStageResource(),

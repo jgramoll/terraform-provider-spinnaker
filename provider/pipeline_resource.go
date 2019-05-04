@@ -10,15 +10,20 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-const ApplicationKey = "application"
+const (
+	// PipelineKey key for pipeline in map
+	PipelineKey = "pipeline"
+)
 
-var pipelineLock sync.Mutex
+var (
+	pipelineLock sync.Mutex
 
-// ErrMissingPipelineName missing pipeline name
-var ErrMissingPipelineName = errors.New("pipeline name must be provided")
+	// ErrMissingPipelineName missing pipeline name
+	ErrMissingPipelineName = errors.New("pipeline name must be provided")
 
-// ErrMissingPipelineApplication missing pipeline application
-var ErrMissingPipelineApplication = errors.New("pipeline application must be provided")
+	// ErrMissingPipelineApplication missing pipeline application
+	ErrMissingPipelineApplication = errors.New("pipeline application must be provided")
+)
 
 func pipelineResource() *schema.Resource {
 	return &schema.Resource{
