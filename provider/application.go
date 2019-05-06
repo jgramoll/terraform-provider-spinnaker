@@ -12,23 +12,23 @@ type awsProviderSettings struct {
 }
 
 type providerSettings struct {
-	AWS *[]*awsProviderSettings `mapstructure:"aws`
+	AWS *[]awsProviderSettings `mapstructure:"aws`
 }
 
 // Application deploy application in application
 type application struct {
-	ID                             string               `mapstructure:"id"`
-	Name                           string               `mapstructure:"name"`
-	Email                          string               `mapstructure:"email"`
-	RepoType                       string               `mapstructure:"repo_type"`
-	RepoProjectKey                 string               `mapstructure:"repo_project_key"`
-	RepoSlug                       string               `mapstructure:"repo_slug"`
-	CloudProviders                 []string             `mapstructure:"cloud_providers"`
-	ProviderSettings               *[]*providerSettings `mapstructure:"provider_settings"`
-	InstancePort                   int                  `mapstructure:"instance_port"`
-	PlatformHealthOnly             bool                 `mapstructure:"platform_health_only"`
-	PlatformHealthOnlyShowOverride bool                 `mapstructure:"platform_health_only_show_override"`
-	EnableRestartRunningExecutions bool                 `mapstructure:"enable_restart_running_executions"`
+	ID                             string              `mapstructure:"id"`
+	Name                           string              `mapstructure:"name"`
+	Email                          string              `mapstructure:"email"`
+	RepoType                       string              `mapstructure:"repo_type"`
+	RepoProjectKey                 string              `mapstructure:"repo_project_key"`
+	RepoSlug                       string              `mapstructure:"repo_slug"`
+	CloudProviders                 []string            `mapstructure:"cloud_providers"`
+	ProviderSettings               *[]providerSettings `mapstructure:"provider_settings"`
+	InstancePort                   int                 `mapstructure:"instance_port"`
+	PlatformHealthOnly             bool                `mapstructure:"platform_health_only"`
+	PlatformHealthOnlyShowOverride bool                `mapstructure:"platform_health_only_show_override"`
+	EnableRestartRunningExecutions bool                `mapstructure:"enable_restart_running_executions"`
 }
 
 func (a *application) toClientApplication() *client.Application {
@@ -47,7 +47,7 @@ func (a *application) toClientApplication() *client.Application {
 	}
 }
 
-func (a *application) toClientProviderSettigns(settings *[]*providerSettings) *client.ProviderSettings {
+func (a *application) toClientProviderSettigns(settings *[]providerSettings) *client.ProviderSettings {
 	if settings != nil || len(*settings) > 0 {
 		for _, setting := range *settings {
 			if setting.AWS != nil && len(*setting.AWS) > 0 {
@@ -82,14 +82,14 @@ func fromClientApplication(a *client.Application) *application {
 	}
 }
 
-func fromClientProviderSettings(settings *client.ProviderSettings) *[]*providerSettings {
+func fromClientProviderSettings(settings *client.ProviderSettings) *[]providerSettings {
 	if settings == nil || settings.AWS == nil {
 		return nil
 	}
 
-	return &[]*providerSettings{
-		&providerSettings{
-			AWS: &[]*awsProviderSettings{
+	return &[]providerSettings{
+		providerSettings{
+			AWS: &[]awsProviderSettings{
 				{UseAmiBlockDeviceMappings: settings.AWS.UseAmiBlockDeviceMappings},
 			},
 		},
