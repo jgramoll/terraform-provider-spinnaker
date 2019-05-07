@@ -31,19 +31,21 @@ func (service *ApplicationService) GetApplications() (*[]*Application, error) {
 	return &apps, nil
 }
 
-func (service *ApplicationService) getApplicationByName(name string) (*Application, error) {
-	applications, err := service.GetApplications()
+// GetApplicationByName return the application given a name
+func (service *ApplicationService) GetApplicationByName(name string) (*Application, error) {
+	path := fmt.Sprintf("/applications/%s", name)
+	req, err := service.NewRequest("GET", path)
 	if err != nil {
 		return nil, err
 	}
-	if len(*applications) > 0 {
-		for _, app := range *applications {
-			if app.Name == name {
-				return app, nil
-			}
-		}
+
+	var attributes ApplicationAttributes
+	_, err = service.DoWithResponse(req, &attributes)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("Could not find application with name \"%s\"", name)
+
+	return attributes.Application, nil
 }
 
 // CreateApplication create an application
@@ -53,6 +55,13 @@ func (service *ApplicationService) CreateApplication(app *Application) error {
 	}
 	jobType := "createApplication"
 	taskDescription := fmt.Sprintf("Create Application: %s", app.Name)
+	return service.sendTask(app, jobType, taskDescription)
+}
+
+// UpdateApplication update an application
+func (service *ApplicationService) UpdateApplication(app *Application) error {
+	jobType := "updateApplication"
+	taskDescription := fmt.Sprintf("Updating Application: %s", app.Name)
 	return service.sendTask(app, jobType, taskDescription)
 }
 
@@ -82,6 +91,6 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 		return err
 	}
 
-	_, respErr := service.Do(req)
-	return respErr
+	_, err = service.Do(req)
+	return err
 }
