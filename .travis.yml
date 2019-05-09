@@ -17,7 +17,7 @@ cache:
 
 before_script:
   - wget -q -O /tmp/upx-3.95-amd64_linux.tar.xz https://github.com/upx/upx/releases/download/v3.95/upx-3.95-amd64_linux.tar.xz 
-  - tar -Jxf upx-3.95-amd64_linux.tar.xz -C /tmp
+  - tar -Jxf /tmp/upx-3.95-amd64_linux.tar.xz -C /tmp/
   - export PATH=$PATH:/tmp/upx-3.95-amd64_linux/
 
 after_success:
