@@ -3,7 +3,6 @@ language: go
 sudo: required
 
 go:
-- 1.11.x
 - 1.12.x
 
 env:
@@ -15,6 +14,11 @@ cache:
   directories:
     - $HOME/.cache/go-build
     - $HOME/gopath/pkg/mod
+
+before_script:
+  - wget -q -O /tmp/upx-3.95-amd64_linux.tar.xz https://github.com/upx/upx/releases/download/v3.95/upx-3.95-amd64_linux.tar.xz 
+  - tar -Jxf /tmp/upx-3.95-amd64_linux.tar.xz -C /tmp/
+  - export PATH=$PATH:/tmp/upx-3.95-amd64_linux/
 
 after_success:
   - go test -v --cover ./...

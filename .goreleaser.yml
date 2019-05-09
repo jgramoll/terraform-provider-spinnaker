@@ -9,26 +9,29 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    ldflags:
+      - -s -w
     goos:
       - darwin
       - linux
       - windows
+    # hooks:
+    #   post: /bin/sh .travis/post-hook.sh
 
-archive:
-  name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+archives:
+  - name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
 
-  replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
-
-  format: binary
-  files:
-    - LICENSE*
-    - README*
-    - CHANGELOG*
+    format: binary
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG*
 
 checksum:
   name_template: "checksums.txt"
@@ -46,3 +49,4 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+      - "^Merge"
