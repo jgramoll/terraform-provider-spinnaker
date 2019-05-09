@@ -15,8 +15,8 @@ builds:
       - darwin
       - linux
       - windows
-    hooks:
-      post: /bin/sh .travis/post-hook.sh
+    # hooks:
+    #   post: /bin/sh .travis/post-hook.sh
 
 archives:
   - name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
