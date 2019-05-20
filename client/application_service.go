@@ -3,7 +3,9 @@ package client
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
+	"time"
 )
 
 // ErrInvalidApplicationName invalid application name
@@ -91,6 +93,47 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 		return err
 	}
 
-	_, err = service.Do(req)
+	var taskResp TaskResponse
+	_, err = service.DoWithResponse(req, taskResp)
+	if err != nil {
+		return err
+	}
+
+	req, err = service.NewRequest("GET", taskResp.Ref)
+	if err != nil {
+		return err
+	}
+
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+	done := make(chan bool)
+
+	go func() {
+		var execution TaskExecution
+		_, err = service.DoWithResponse(req, execution)
+		if err != nil {
+			log.Printf("[ERROR] Error on execute request to check task status. %s", err)
+			done <- true
+		}
+
+		if execution.Status == "ERROR" {
+			err = errors.New("Error on execute tasks")
+			done <- true
+		}
+
+		if execution.Status == "SUCCEEDED" {
+			done <- true
+		}
+	}()
+
+	for {
+		select {
+		case <-done:
+			return nil
+		case <-ticker.C:
+			continue
+		}
+	}
+
 	return err
 }

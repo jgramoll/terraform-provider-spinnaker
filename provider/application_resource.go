@@ -3,8 +3,6 @@ package provider
 import (
 	"log"
 
-	"time"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
@@ -125,12 +123,6 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(application.Name)
-
-	// TODO
-	// The process to create application is asynchronous
-	// Need to update CreateApplication method to waiting/checking task before return
-	time.Sleep(5 * time.Second)
-
 	return resourceApplicationRead(d, m)
 }
 
