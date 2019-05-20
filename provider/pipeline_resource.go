@@ -117,8 +117,13 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	pipelineService := m.(*Services).PipelineService
 	p, err := pipelineService.GetPipelineByID(d.Id())
 	if err != nil {
-		log.Println("[WARN] No Pipeline found:", d.Id())
-		d.SetId("")
+		if serr, ok := err.(*client.SpinnakerError); ok {
+			if serr.Status == 404 {
+				d.SetId("")
+				return nil
+			}
+		}
+
 		return err
 	}
 
@@ -133,8 +138,16 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Id())
 	if err != nil {
+		if serr, ok := err.(*client.SpinnakerError); ok {
+			if serr.Status == 404 {
+				d.SetId("")
+				return nil
+			}
+		}
+
 		return err
 	}
+
 	pipelineFromResourceData(pipeline, d)
 
 	err = pipelineService.UpdatePipeline(pipeline)
@@ -161,7 +174,6 @@ func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Println("[DEBUG] Deleting pipeline:", d.Id())
-	d.SetId("")
 	pipelineService := m.(*Services).PipelineService
 	return pipelineService.DeletePipeline(p.toClientPipeline())
 }

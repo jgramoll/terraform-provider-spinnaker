@@ -80,14 +80,14 @@ func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStag
 	if err != nil {
 		log.Println("[WARN] No Pipeline Stage found:", err)
 		d.SetId("")
-	} else {
-		s := createStage().(stage)
-		s = s.fromClientStage(cStage)
-		log.Println("[INFO] Updating from stage", cStage)
-		err = s.SetResourceData(d)
+		return err
 	}
 
-	return err
+	s := createStage().(stage)
+	s = s.fromClientStage(cStage)
+	log.Println("[INFO] Updating from stage", cStage)
+	return s.SetResourceData(d)
+
 }
 
 func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createStage func() stage) error {

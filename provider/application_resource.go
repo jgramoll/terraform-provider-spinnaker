@@ -3,7 +3,10 @@ package provider
 import (
 	"log"
 
+	"time"
+
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -122,6 +125,12 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	d.SetId(application.Name)
+
+	// TODO
+	// The process to create application is asynchronous
+	// Need to update CreateApplication method to waiting/checking task before return
+	time.Sleep(5 * time.Second)
+
 	return resourceApplicationRead(d, m)
 }
 
@@ -129,10 +138,16 @@ func resourceApplicationRead(d *schema.ResourceData, m interface{}) error {
 	applicationService := m.(*Services).ApplicationService
 	a, err := applicationService.GetApplicationByName(d.Id())
 	if err != nil {
-		log.Println("[DEBUG] No application found:", d.Id())
-		d.SetId("")
+		if serr, ok := err.(*client.SpinnakerError); ok {
+			if serr.Status == 404 {
+				d.SetId("")
+				return nil
+			}
+		}
+
 		return err
 	}
+
 	log.Printf("[DEBUG] Got application %s", a.Name)
 	return fromClientApplication(a).setResourceData(d)
 }
@@ -163,7 +178,6 @@ func resourceApplicationDelete(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Println("[DEBUG] Deleting application:", d.Id())
-	d.SetId("")
 	applicationService := m.(*Services).ApplicationService
 	return applicationService.DeleteApplication(a.toClientApplication())
 }

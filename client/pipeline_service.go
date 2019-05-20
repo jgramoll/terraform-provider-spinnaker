@@ -61,9 +61,9 @@ func (service *PipelineService) GetPipeline(applicationName string, pipelineName
 	}
 
 	var pipelineHash map[string]interface{}
-	_, respErr := service.DoWithResponse(req, &pipelineHash)
-	if respErr != nil {
-		return nil, respErr
+	_, err = service.DoWithResponse(req, &pipelineHash)
+	if err != nil {
+		return nil, err
 	}
 
 	return parsePipeline(pipelineHash)
@@ -77,8 +77,8 @@ func (service *PipelineService) CreatePipeline(pipeline *CreatePipelineRequest) 
 		return err
 	}
 
-	_, respErr := service.Do(req)
-	return respErr
+	_, err = service.Do(req)
+	return err
 }
 
 // UpdatePipeline in application
@@ -86,10 +86,10 @@ func (service *PipelineService) UpdatePipeline(pipeline *Pipeline) error {
 	path := "/pipelines"
 	// Hack around async updates to the pipeline
 	// If we don't do this we get periodic 400s
-	_, respErr := service.DoWithRetry(func() (*http.Request, error) {
+	_, err := service.DoWithRetry(func() (*http.Request, error) {
 		return service.NewRequestWithBody("POST", path, pipeline)
 	})
-	return respErr
+	return err
 }
 
 // DeletePipeline in application
@@ -100,15 +100,15 @@ func (service *PipelineService) DeletePipeline(pipeline *Pipeline) error {
 		return err
 	}
 
-	_, respErr := service.Do(req)
-	return respErr
+	_, err = service.Do(req)
+	return err
 }
 
 func (service *PipelineService) parsePipelinesRequest(req *http.Request) (*[]*Pipeline, error) {
 	var pipelinesHash []map[string]interface{}
-	_, respErr := service.DoWithResponse(req, &pipelinesHash)
-	if respErr != nil {
-		return nil, respErr
+	_, err := service.DoWithResponse(req, &pipelinesHash)
+	if err != nil {
+		return nil, err
 	}
 
 	var pipelines []*Pipeline
