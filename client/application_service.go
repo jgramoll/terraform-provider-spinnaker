@@ -94,46 +94,61 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 	}
 
 	var taskResp TaskResponse
-	_, err = service.DoWithResponse(req, taskResp)
+	_, err = service.DoWithResponse(req, &taskResp)
 	if err != nil {
 		return err
 	}
 
+	log.Printf("[DEBUG] Checking  job %s task %s execution", jobType, taskResp.Ref)
 	req, err = service.NewRequest("GET", taskResp.Ref)
 	if err != nil {
 		return err
 	}
 
-	ticker := time.NewTicker(3 * time.Second)
+	// Execute every 2 seconds
+	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
-	done := make(chan bool)
 
-	go func() {
+	done := make(chan bool)
+	errChan := make(chan error)
+
+	f := func() {
 		var execution TaskExecution
-		_, err = service.DoWithResponse(req, execution)
+		_, err := service.DoWithResponse(req, &execution)
 		if err != nil {
 			log.Printf("[ERROR] Error on execute request to check task status. %s", err)
-			done <- true
+			return
 		}
 
+		log.Printf("[DEBUG] Task %s current status %s", jobType, execution.Status)
 		if execution.Status == "ERROR" {
-			err = errors.New("Error on execute tasks")
-			done <- true
+			errChan <- fmt.Errorf("Error on execute job %s task id %s", jobType, taskResp.Ref)
 		}
 
 		if execution.Status == "SUCCEEDED" {
+			log.Printf("[DEBUG] Task %s finished with success", jobType)
 			done <- true
 		}
+	}
+
+	// Wait for 5 minutes before failing execution
+	go func() {
+		time.Sleep(5 * time.Minute)
+		errChan <- fmt.Errorf("Execution timeout on %s task id %s", jobType, taskResp.Ref)
 	}()
 
 	for {
+		go f()
+
 		select {
 		case <-done:
 			return nil
+		case err := <-errChan:
+			return err
 		case <-ticker.C:
 			continue
 		}
 	}
 
-	return err
+	return nil
 }
