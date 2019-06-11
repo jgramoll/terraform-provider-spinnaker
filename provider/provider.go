@@ -92,8 +92,9 @@ func Provider() terraform.ResourceProvider {
 
 			"spinnaker_pipeline_notification": pipelineNotificationResource(),
 
-			"spinnaker_pipeline_parameter": pipelineParameterResource(),
-			"spinnaker_pipeline_trigger":   pipelineTriggerResource(),
+			"spinnaker_pipeline_parameter":     pipelineParameterResource(),
+			"spinnaker_pipeline_trigger":       pipelineTriggerResource(),
+			"spinnaker_pipeline_webhook_stage": pipelineWebhookStageResource(),
 		},
 
 		ConfigureFunc: providerConfigure,
