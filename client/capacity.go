@@ -2,7 +2,7 @@ package client
 
 //Capacity capacity for cluster
 type Capacity struct {
-	Desired int `json:"desired"`
-	Max     int `json:"max"`
-	Min     int `json:"min"`
+	Desired string `json:"desired"`
+	Max     string `json:"max"`
+	Min     string `json:"min"`
 }
