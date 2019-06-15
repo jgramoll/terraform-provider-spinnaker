@@ -28,19 +28,19 @@ type serializableWebhookStage struct {
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	CanceledStatuses    string            `mapstructure:"canceled_statuses"`
-	CustomHeaders       map[string]string `mapstructure:"custom_headers"`
-	FailFastStatusCodes []string          `mapstructure:"fail_fast_status_codes"`
-	Method              string            `mapstructure:"method"`
-	Payload             string            `mapstructure:"payload"`
-	ProgressJSONPath    string            `mapstructure:"progress_json_path"`
-	StatusJSONPath      string            `mapstructure:"status_json_path"`
-	StatusURLJSONPath   string            `mapstructure:"status_url_json_path"`
-	StatusURLResolution string            `mapstructure:"status_url_resolution"`
-	SuccessStatuses     string            `mapstructure:"success_statuses"`
-	TerminalStatuses    string            `mapstructure:"terminal_statuses"`
-	URL                 string            `mapstructure:"url"`
-	WaitForCompletion   bool              `mapstructure:"wait_for_completion"`
+	CanceledStatuses    string            `json:"canceled_statuses"`
+	CustomHeaders       map[string]string `json:"custom_headers"`
+	FailFastStatusCodes []string          `json:"fail_fast_status_codes"`
+	Method              string            `json:"method"`
+	Payload             string            `json:"payload"`
+	ProgressJSONPath    string            `json:"progress_json_path"`
+	StatusJSONPath      string            `json:"status_json_path"`
+	StatusURLJSONPath   string            `json:"status_url_json_path"`
+	StatusURLResolution string            `json:"status_url_resolution"`
+	SuccessStatuses     string            `json:"success_statuses"`
+	TerminalStatuses    string            `json:"terminal_statuses"`
+	URL                 string            `json:"url"`
+	WaitForCompletion   bool              `json:"wait_for_completion"`
 }
 
 // WebhookStage for pipeline
@@ -91,6 +91,6 @@ func parseWebhookStage(stageMap map[string]interface{}) (Stage, error) {
 	}
 	return &WebhookStage{
 		serializableWebhookStage: stage,
-		Notifications:                      notifications,
+		Notifications:            notifications,
 	}, nil
 }
