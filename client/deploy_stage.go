@@ -75,7 +75,7 @@ func (s *DeployStage) GetRefID() string {
 
 func parseDeployStage(stageMap map[string]interface{}) (Stage, error) {
 	stage := newSerializableDeployStage()
-	if err := mapstructure.Decode(stageMap, stage); err != nil {
+	if err := mapstructure.WeakDecode(stageMap, stage); err != nil {
 		return nil, err
 	}
 
