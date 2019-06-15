@@ -50,6 +50,11 @@ func pipelineWebhookStageResource() *schema.Resource {
 				Optional:    true,
 				Default:     "GET",
 			},
+			"payload": {
+				Type:        schema.TypeMap,
+				Description: "JSON payload to be added to the webhook call.",
+				Optional:    true,
+			},
 			"payload_string": {
 				Type:        schema.TypeString,
 				Description: "JSON payload to be added to the webhook call.",
