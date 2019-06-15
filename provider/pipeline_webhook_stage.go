@@ -1,6 +1,9 @@
 package provider
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
@@ -26,7 +29,7 @@ type webhookStage struct {
 	CustomHeaders       map[string]string `mapstructure:"custom_headers"`
 	FailFastStatusCodes []string          `mapstructure:"fail_fast_status_codes"`
 	Method              string            `mapstructure:"method"`
-	Payload             map[string]string `mapstructure:"payload"`
+	Payload             string            `mapstructure:"payload_string"`
 	ProgressJSONPath    string            `mapstructure:"progress_json_path"`
 	StatusJSONPath      string            `mapstructure:"status_json_path"`
 	StatusURLJSONPath   string            `mapstructure:"status_url_json_path"`
@@ -70,7 +73,12 @@ func (s *webhookStage) toClientStage(config *client.Config) (client.Stage, error
 	cs.CustomHeaders = s.CustomHeaders
 	cs.FailFastStatusCodes = s.FailFastStatusCodes
 	cs.Method = s.Method
-	cs.Payload = s.Payload
+	var definedPayload map[string]interface{}
+	err = json.Unmarshal([]byte(s.Payload), &definedPayload)
+	if err != nil {
+		return nil, err
+	}
+	cs.Payload = definedPayload
 	cs.ProgressJSONPath = s.ProgressJSONPath
 	cs.StatusJSONPath = s.StatusJSONPath
 	cs.StatusURLJSONPath = s.StatusURLJSONPath
@@ -106,7 +114,12 @@ func (s *webhookStage) fromClientStage(cs client.Stage) stage {
 	newStage.CustomHeaders = clientStage.CustomHeaders
 	newStage.FailFastStatusCodes = clientStage.FailFastStatusCodes
 	newStage.Method = clientStage.Method
-	newStage.Payload = clientStage.Payload
+
+	out, err := json.Marshal(clientStage.Payload)
+	if err != nil {
+		log.Println("[WARN]: Failed to unmarshal payload into string")
+	}
+	newStage.Payload = string(out)
 	newStage.ProgressJSONPath = clientStage.ProgressJSONPath
 	newStage.StatusJSONPath = clientStage.StatusJSONPath
 	newStage.StatusURLJSONPath = clientStage.StatusURLJSONPath
@@ -182,7 +195,7 @@ func (s *webhookStage) SetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-	err = d.Set("payload", s.Payload)
+	err = d.Set("payload_string", s.Payload)
 	if err != nil {
 		return err
 	}

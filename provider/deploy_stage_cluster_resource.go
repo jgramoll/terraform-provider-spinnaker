@@ -288,6 +288,11 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"security_groups_expression": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Security Group expression -- will override other sg inputs",
+				Optional:    true,
+			},
 			"spel_load_balancers": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "spel load balancers to attach to cluster",
