@@ -27,7 +27,7 @@ type DeployStageCluster struct {
 	Provider                            string                 `json:"provider"`
 	Rollback                            *Rollback              `json:"rollback"`
 	ScaleDown                           bool                   `json:"scaleDown"`
-	SecurityGroups                      []string               `json:"securityGroups"`
+	SecurityGroups                      interface{}            `json:"securityGroups"`
 	SpelLoadBalancers                   []string               `json:"spelLoadBalancers"`
 	SpelTargetGroups                    []string               `json:"spelTargetGroups"`
 	SpotPrice                           string                 `json:"spotPrice"`

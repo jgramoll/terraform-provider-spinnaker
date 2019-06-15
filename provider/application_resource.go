@@ -1,7 +1,9 @@
 package provider
 
 import (
+	"errors"
 	"log"
+	"regexp"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
@@ -11,6 +13,10 @@ import (
 const (
 	// ApplicationKey key for application in map
 	ApplicationKey = "application"
+)
+
+var (
+	ApplicationNameRegex = regexp.MustCompile("^[a-zA-Z_0-9.]*$")
 )
 
 func applicationResource() *schema.Resource {
@@ -116,6 +122,9 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	log.Println("[DEBUG] Creating application:", application.Name)
+	if !ApplicationNameRegex.MatchString(application.Name) || len(application.Name) > 249 {
+		return errors.New("application name can't have special characters or spaces and must be shorter than 250 characters")
+	}
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.CreateApplication(application.toClientApplication())
 	if err != nil {
