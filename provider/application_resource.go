@@ -178,7 +178,10 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Creating application", application.Name)
+	log.Println("[DEBUG] Creating application:", application.Name)
+	if !ApplicationNameRegex.MatchString(application.Name) || len(application.Name) > 249 {
+		return errors.New("application name can't have special characters or spaces and must be shorter than 250 characters")
+	}
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.CreateApplication(application.toClientApplication())
 	if err != nil {
