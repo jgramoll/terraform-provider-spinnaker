@@ -32,7 +32,7 @@ type serializableWebhookStage struct {
 	CustomHeaders       map[string]string `json:"customHeaders"`
 	FailFastStatusCodes []string          `json:"failFastStatusCodes"`
 	Method              string            `json:"method"`
-	Payload             string            `json:"payload"`
+	Payload             map[string]string `json:"payload"`
 	ProgressJSONPath    string            `json:"progressJsonPath"`
 	StatusJSONPath      string            `json:"statusJsonPath"`
 	StatusURLJSONPath   string            `json:"statusUrlJsonPath"`

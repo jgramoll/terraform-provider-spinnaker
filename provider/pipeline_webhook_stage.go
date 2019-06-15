@@ -26,7 +26,7 @@ type webhookStage struct {
 	CustomHeaders       map[string]string `mapstructure:"custom_headers"`
 	FailFastStatusCodes []string          `mapstructure:"fail_fast_status_codes"`
 	Method              string            `mapstructure:"method"`
-	Payload             string            `mapstructure:"payload"`
+	Payload             map[string]string `mapstructure:"payload"`
 	ProgressJSONPath    string            `mapstructure:"progress_json_path"`
 	StatusJSONPath      string            `mapstructure:"status_json_path"`
 	StatusURLJSONPath   string            `mapstructure:"status_url_json_path"`
