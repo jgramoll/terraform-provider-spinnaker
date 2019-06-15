@@ -28,19 +28,19 @@ type serializableWebhookStage struct {
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	CanceledStatuses    string            `json:"canceled_statuses"`
-	CustomHeaders       map[string]string `json:"custom_headers"`
-	FailFastStatusCodes []string          `json:"fail_fast_status_codes"`
+	CanceledStatuses    string            `json:"canceledStatuses"`
+	CustomHeaders       map[string]string `json:"customHeaders"`
+	FailFastStatusCodes []string          `json:"failFastStatusCodes"`
 	Method              string            `json:"method"`
 	Payload             string            `json:"payload"`
-	ProgressJSONPath    string            `json:"progress_json_path"`
-	StatusJSONPath      string            `json:"status_json_path"`
-	StatusURLJSONPath   string            `json:"status_url_json_path"`
-	StatusURLResolution string            `json:"status_url_resolution"`
-	SuccessStatuses     string            `json:"success_statuses"`
-	TerminalStatuses    string            `json:"terminal_statuses"`
+	ProgressJSONPath    string            `json:"progressJsonPath"`
+	StatusJSONPath      string            `json:"statusJsonPath"`
+	StatusURLJSONPath   string            `json:"statusUrlJsonPath"`
+	StatusURLResolution string            `json:"statusUrlResolution"`
+	SuccessStatuses     string            `json:"successStatuses"`
+	TerminalStatuses    string            `json:"terminalStatuses"`
 	URL                 string            `json:"url"`
-	WaitForCompletion   bool              `json:"wait_for_completion"`
+	WaitForCompletion   bool              `json:"waitForCompletion"`
 }
 
 // WebhookStage for pipeline
