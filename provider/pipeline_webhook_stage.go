@@ -82,7 +82,11 @@ func (s *webhookStage) toClientStage(config *client.Config) (client.Stage, error
 	cs.ProgressJSONPath = s.ProgressJSONPath
 	cs.StatusJSONPath = s.StatusJSONPath
 	cs.StatusURLJSONPath = s.StatusURLJSONPath
-	cs.StatusURLResolution = s.StatusURLResolution
+	statusResolution := s.StatusURLResolution
+	if s.StatusURLResolution == "" {
+		statusResolution = "getMethod"
+	}
+	cs.StatusURLResolution = statusResolution
 	cs.SuccessStatuses = s.SuccessStatuses
 	cs.TerminalStatuses = s.TerminalStatuses
 	cs.URL = s.URL
@@ -123,7 +127,11 @@ func (s *webhookStage) fromClientStage(cs client.Stage) stage {
 	newStage.ProgressJSONPath = clientStage.ProgressJSONPath
 	newStage.StatusJSONPath = clientStage.StatusJSONPath
 	newStage.StatusURLJSONPath = clientStage.StatusURLJSONPath
-	newStage.StatusURLResolution = clientStage.StatusURLResolution
+	statusResolution := clientStage.StatusURLResolution
+	if !clientStage.WaitForCompletion {
+		statusResolution = ""
+	}
+	newStage.StatusURLResolution = statusResolution
 	newStage.SuccessStatuses = clientStage.SuccessStatuses
 	newStage.TerminalStatuses = clientStage.TerminalStatuses
 	newStage.URL = clientStage.URL
