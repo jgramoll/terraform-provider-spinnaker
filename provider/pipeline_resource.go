@@ -140,11 +140,11 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 
 	pipelineWithID, err := pipelineService.GetPipeline(pipeline.Application, pipeline.Name)
 	if err != nil {
-		log.Println("[WARN] No Pipeline found:", err)
+		log.Printf("[WARN] No Pipeline found: %s\n", err)
 		return err
 	}
 
-	log.Println("[DEBUG] New pipeline ID", pipelineWithID.ID)
+	log.Printf("[DEBUG] New pipeline ID %s\n", pipelineWithID.ID)
 	d.SetId(pipelineWithID.ID)
 	// create can't update index...
 	return resourcePipelineUpdate(d, m)
@@ -192,7 +192,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Updated pipeline:", d.Id())
+	log.Printf("[DEBUG] Updated pipeline: %s\n", d.Id())
 	return resourcePipelineRead(d, m)
 }
 
@@ -210,7 +210,7 @@ func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
 		return ErrMissingPipelineApplication
 	}
 
-	log.Println("[DEBUG] Deleting pipeline:", d.Id())
+	log.Printf("[DEBUG] Deleting pipeline: %s\n", d.Id())
 	pipelineService := m.(*Services).PipelineService
 	return pipelineService.DeletePipeline(p.toClientPipeline())
 }

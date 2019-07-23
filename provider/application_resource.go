@@ -235,7 +235,7 @@ func resourceApplicationUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Updated application", d.Id())
+	log.Printf("[DEBUG] Updated application %s\n", d.Id())
 	return resourceApplicationRead(d, m)
 }
 
