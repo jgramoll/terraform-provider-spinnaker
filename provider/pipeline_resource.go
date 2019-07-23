@@ -3,6 +3,7 @@ package provider
 import (
 	"errors"
 	"log"
+	"regexp"
 	"sync"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -17,6 +18,8 @@ const (
 
 var (
 	pipelineLock sync.Mutex
+
+	pipelineNameRegex = regexp.MustCompile("^[a-zA-Z_0-9.][^\\?/%#]*$")
 
 	// ErrMissingPipelineName missing pipeline name
 	ErrMissingPipelineName = errors.New("pipeline name must be provided")
@@ -63,6 +66,13 @@ func pipelineResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the pipeline",
 				Required:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(string)
+					if !pipelineNameRegex.MatchString(v) {
+						errs = append(errs, errors.New("Pipeline name cannot contain any of the following characters: / \\ ? % #"))
+					}
+					return
+				},
 			},
 			"index": &schema.Schema{
 				Type:        schema.TypeInt,
@@ -94,7 +104,7 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Creating pipeline:", pipeline.Application, pipeline.Name)
+	log.Printf("[DEBUG] Creating pipeline %s on application %s", pipeline.Name, pipeline.Application)
 	pipelineService := m.(*Services).PipelineService
 	err := pipelineService.CreatePipeline(&pipeline)
 	if err != nil {
@@ -103,11 +113,11 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 
 	pipelineWithID, err := pipelineService.GetPipeline(pipeline.Application, pipeline.Name)
 	if err != nil {
-		log.Println("[WARN] No Pipeline found:", err)
+		log.Printf("[WARN] No Pipeline found: %s", err)
 		return err
 	}
 
-	log.Println("[DEBUG] New pipeline ID", pipelineWithID.ID)
+	log.Printf("[DEBUG] New pipeline ID %s", pipelineWithID.ID)
 	d.SetId(pipelineWithID.ID)
 	// create can't update index...
 	return resourcePipelineUpdate(d, m)
@@ -155,7 +165,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Updated pipeline:", d.Id())
+	log.Printf("[DEBUG] Updated pipeline: %s", d.Id())
 	return resourcePipelineRead(d, m)
 }
 
@@ -173,7 +183,7 @@ func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
 		return ErrMissingPipelineApplication
 	}
 
-	log.Println("[DEBUG] Deleting pipeline:", d.Id())
+	log.Printf("[DEBUG] Deleting pipeline: %s", d.Id())
 	pipelineService := m.(*Services).PipelineService
 	return pipelineService.DeletePipeline(p.toClientPipeline())
 }

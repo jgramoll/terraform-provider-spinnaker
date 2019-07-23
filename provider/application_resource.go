@@ -16,7 +16,8 @@ const (
 )
 
 var (
-	ApplicationNameRegex = regexp.MustCompile("^[a-zA-Z_0-9.]*$")
+	applicationNameRegex = regexp.MustCompile("^[a-zA-Z_0-9.]*$")
+	emailRegex           = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 )
 
 func applicationResource() *schema.Resource {
@@ -35,25 +36,43 @@ func applicationResource() *schema.Resource {
 				Description: "Application Name",
 				Required:    true,
 				ForceNew:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(string)
+					if len(v) > 249 {
+						errs = append(errs, errors.New("applicaiton name must be shorter than 250 characters"))
+					}
+
+					if !applicationNameRegex.MatchString(v) {
+						errs = append(errs, errors.New("application name can't have special characters or spaces"))
+					}
+					return
+				},
 			},
 			"email": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Email Address",
 				Required:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(string)
+					if !emailRegex.MatchString(v) {
+						errs = append(errs, errors.New("a valid email address is required"))
+					}
+					return
+				},
 			},
 			"repo_type": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Email Address",
+				Description: "Repository type",
 				Optional:    true,
 			},
 			"repo_project_key": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Email Address",
+				Description: "Repository project key",
 				Optional:    true,
 			},
 			"repo_slug": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Email Address",
+				Description: "Repository slug",
 				Optional:    true,
 			},
 			"cloud_providers": &schema.Schema{
@@ -121,10 +140,7 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Creating application:", application.Name)
-	if !ApplicationNameRegex.MatchString(application.Name) || len(application.Name) > 249 {
-		return errors.New("application name can't have special characters or spaces and must be shorter than 250 characters")
-	}
+	log.Printf("[DEBUG] Creating application %s", application.Name)
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.CreateApplication(application.toClientApplication())
 	if err != nil {
@@ -167,7 +183,7 @@ func resourceApplicationUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Updated application:", d.Id())
+	log.Printf("[DEBUG] Updated application %s", d.Id())
 	return resourceApplicationRead(d, m)
 }
 
@@ -178,7 +194,7 @@ func resourceApplicationDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Deleting application:", d.Id())
+	log.Printf("[DEBUG] Deleting application %s", d.Id())
 	applicationService := m.(*Services).ApplicationService
 	return applicationService.DeleteApplication(a.toClientApplication())
 }

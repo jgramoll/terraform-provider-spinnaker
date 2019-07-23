@@ -34,9 +34,7 @@ func TestAccPipelineManualJudgmentStageBasic(t *testing.T) {
 				Config: testAccPipelineManualJudgmentStageConfigBasic(pipeName, master, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "master", master),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "master", master),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -76,9 +74,7 @@ func TestAccPipelineManualJudgmentStageBasic(t *testing.T) {
 				Config: testAccPipelineManualJudgmentStageConfigBasic(pipeName, newMaster, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "master", newMaster),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "master", newMaster),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -90,7 +86,6 @@ func TestAccPipelineManualJudgmentStageBasic(t *testing.T) {
 				Config: testAccPipelineManualJudgmentStageConfigBasic(pipeName, master, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "master", master),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -115,14 +110,13 @@ func testAccPipelineManualJudgmentStageConfigBasic(pipeName string, master strin
 resource "spinnaker_pipeline_manual_judgment_stage" "%v" {
 	pipeline 	 = "${spinnaker_pipeline.test.id}"
 	name     	 = "Stage %v"
-	master       = "%v"
 	instructions = "Manual Judgment Instructions"
 
 	judgment_inputs = [
     	"commit",
     	"rollback",
   	]
-}`, i, i, master)
+}`, i, i)
 	}
 
 	return fmt.Sprintf(`

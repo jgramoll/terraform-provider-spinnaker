@@ -19,8 +19,8 @@ func TestAccPipelineWebhookStageBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	webhookUrl := "http://old/url"
-	newWebhookUrl := "http://new/url"
+	webhookURL := "http://old/url"
+	newWebhookURL := "http://new/url"
 	pipelineResourceName := "spinnaker_pipeline.test"
 	stage1 := "spinnaker_pipeline_webhook_stage.1"
 	stage2 := "spinnaker_pipeline_webhook_stage.2"
@@ -31,12 +31,12 @@ func TestAccPipelineWebhookStageBasic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineStageDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineWebhookStageConfigBasic(pipeName, webhookUrl, 2),
+				Config: testAccPipelineWebhookStageConfigBasic(pipeName, webhookURL, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "url", webhookUrl),
+					resource.TestCheckResourceAttr(stage1, "url", webhookURL),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "url", webhookUrl),
+					resource.TestCheckResourceAttr(stage2, "url", webhookURL),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -73,12 +73,12 @@ func TestAccPipelineWebhookStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineWebhookStageConfigBasic(pipeName, newWebhookUrl, 2),
+				Config: testAccPipelineWebhookStageConfigBasic(pipeName, newWebhookURL, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "url", newWebhookUrl),
+					resource.TestCheckResourceAttr(stage1, "url", newWebhookURL),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "url", newWebhookUrl),
+					resource.TestCheckResourceAttr(stage2, "url", newWebhookURL),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -87,10 +87,10 @@ func TestAccPipelineWebhookStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineWebhookStageConfigBasic(pipeName, newWebhookUrl, 1),
+				Config: testAccPipelineWebhookStageConfigBasic(pipeName, newWebhookURL, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "url", newWebhookUrl),
+					resource.TestCheckResourceAttr(stage1, "url", newWebhookURL),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -98,7 +98,7 @@ func TestAccPipelineWebhookStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineWebhookStageConfigBasic(pipeName, newWebhookUrl, 0),
+				Config: testAccPipelineWebhookStageConfigBasic(pipeName, newWebhookURL, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
@@ -112,10 +112,10 @@ func testAccPipelineWebhookStageConfigBasic(pipeName string, url string, count i
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_webhook_stage" "%v" {
+resource "spinnaker_pipeline_webhook_stage" "%d" {
 	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Stage %v"
-	url  = "%v"
+	name     = "Stage %d"
+	url  	 = "%s"
 }`, i, i, url)
 	}
 
