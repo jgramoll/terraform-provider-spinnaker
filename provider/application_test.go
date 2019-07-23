@@ -12,15 +12,14 @@ import (
 
 func TestAccApplicationBasic(t *testing.T) {
 	var applicationRef client.Application
-	name := fmt.Sprintf("tf-acc-test-%s",
-		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	newName := name + "-changed"
+	name := acctest.RandStringFromCharSet(50, acctest.CharSetAlphaNum)
+	newName := name + "_changed"
 	resourceName := "spinnaker_application.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineDestroy,
+		CheckDestroy: testAccCheckApplicationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccApplicationConfigBasic(name),
@@ -42,53 +41,61 @@ func TestAccApplicationBasic(t *testing.T) {
 
 func TestAccApplicationTrigger(t *testing.T) {
 	var applicationRef client.Application
-	app := "app"
-	name := fmt.Sprintf("tf-acc-test-%s",
-		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	newName := name + "-changed"
+	name := acctest.RandStringFromCharSet(50, acctest.CharSetAlphaNum)
+	newName := name + "_changed"
 	resourceName := "spinnaker_application.test"
 	pipeline := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineDestroy,
+		CheckDestroy: testAccCheckApplicationDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineConfigTrigger(app, name),
+				Config: testAccApplicationConfigTrigger(name),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckApplicationExists(resourceName, &applicationRef),
 					resource.TestCheckResourceAttr(resourceName, "name", name),
 					resource.TestCheckResourceAttr(pipeline, "application", name),
-					resource.TestCheckResourceAttr(pipeline, "name", fmt.Sprintf("%s-pipe", name)),
+					resource.TestCheckResourceAttr(pipeline, "name", fmt.Sprintf("%s-pipeline", name)),
 				),
 			},
 			{
-				Config: testAccPipelineConfigTrigger(app, newName),
+				Config: testAccApplicationConfigTrigger(newName),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckApplicationExists(resourceName, &applicationRef),
 					resource.TestCheckResourceAttr(resourceName, "name", newName),
 					resource.TestCheckResourceAttr(pipeline, "application", newName),
-					resource.TestCheckResourceAttr(pipeline, "name", fmt.Sprintf("%s-pipe", newName)),
+					resource.TestCheckResourceAttr(pipeline, "name", fmt.Sprintf("%s-pipeline", newName)),
 				),
 			},
 		},
 	})
 }
 
-func testAccApplicationConfigBasic(app string) string {
+func testAccApplicationConfigBasic(name string) string {
 	return fmt.Sprintf(`
 resource "spinnaker_application" "test" {
-  name  = "%s"
-  email = "%s@%s.com
-}`, app, app, app)
+  name  		 = "%s"
+  email 		 = "%s@spin.com"
+  instance_port  = "8080"
+  
+  cloud_providers = [
+	  "aws"
+  ]
+}`, name, name)
 }
 
-func testAccApplicationConfigTrigger(app string, name string) string {
+func testAccApplicationConfigTrigger(name string) string {
 	return fmt.Sprintf(`
 resource "spinnaker_application" "test" {
-  name  = "%s"
-  email = "%s@%s.com
+  name  		 = "%s"
+  email 		 = "%s@spin.com"
+  instance_port  = "8080"
+
+  cloud_providers = [
+	  "aws"
+  ]
 }
 
 resource "spinnaker_pipeline" "test" {
@@ -97,7 +104,7 @@ resource "spinnaker_pipeline" "test" {
 	index       = 2
 }
 
-`, app, app, app, app, name)
+`, name, name, name, name)
 }
 
 func testAccCheckApplicationExists(resourceName string, a *client.Application) resource.TestCheckFunc {
@@ -108,7 +115,7 @@ func testAccCheckApplicationExists(resourceName string, a *client.Application) r
 		}
 
 		applicationService := testAccProvider.Meta().(*Services).ApplicationService
-		app, err := applicationService.GetApplicationByName(rs.Primary.Attributes["application"])
+		app, err := applicationService.GetApplicationByName(rs.Primary.Attributes["name"])
 		if err != nil {
 			return err
 		}
@@ -122,7 +129,7 @@ func testAccCheckApplicationDestroy(s *terraform.State) error {
 	applicationService := testAccProvider.Meta().(*Services).ApplicationService
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type == "spinnaker_application" {
-			_, err := applicationService.GetApplicationByName(rs.Primary.Attributes["application"])
+			_, err := applicationService.GetApplicationByName(rs.Primary.Attributes["name"])
 			if err == nil {
 				return fmt.Errorf("Application still exists: %s", rs.Primary.ID)
 			}

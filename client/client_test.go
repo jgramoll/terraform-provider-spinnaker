@@ -74,20 +74,20 @@ func TestClientErrorResponse(t *testing.T) {
 func newTestClient() *Client {
 	usr, err := user.Current()
 	if err != nil {
-		log.Println("[Error] unable to get current user: ", err)
+		log.Println("[ERROR] unable to get current user: ", err)
 	}
 
 	address := os.Getenv("SPINNAKER_ADDRESS")
 	if address == "" {
-		log.Println("[Error] SPINNAKER_ADDRESS not defined")
+		log.Println("[ERROR] SPINNAKER_ADDRESS not defined")
 	}
 	certPath := os.Getenv("SPINNAKER_CERT")
 	if certPath == "" {
-		log.Println("[Error] SPINNAKER_CERT not defined")
+		log.Println("[ERROR] SPINNAKER_CERT not defined")
 	}
 	keyPath := os.Getenv("SPINNAKER_KEY")
 	if keyPath == "" {
-		log.Println("[Error] SPINNAKER_KEY not defined")
+		log.Println("[ERROR] SPINNAKER_KEY not defined")
 	}
 
 	c := Config{

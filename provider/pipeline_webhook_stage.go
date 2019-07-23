@@ -73,12 +73,15 @@ func (s *webhookStage) toClientStage(config *client.Config) (client.Stage, error
 	cs.CustomHeaders = s.CustomHeaders
 	cs.FailFastStatusCodes = s.FailFastStatusCodes
 	cs.Method = s.Method
+
 	var definedPayload map[string]interface{}
-	err = json.Unmarshal([]byte(s.Payload), &definedPayload)
-	if err != nil {
-		return nil, err
+	if len(s.Payload) > 0 {
+		if err = json.Unmarshal([]byte(s.Payload), &definedPayload); err != nil {
+			return nil, err
+		}
 	}
 	cs.Payload = definedPayload
+
 	cs.ProgressJSONPath = s.ProgressJSONPath
 	cs.StatusJSONPath = s.StatusJSONPath
 	cs.StatusURLJSONPath = s.StatusURLJSONPath
@@ -119,11 +122,14 @@ func (s *webhookStage) fromClientStage(cs client.Stage) stage {
 	newStage.FailFastStatusCodes = clientStage.FailFastStatusCodes
 	newStage.Method = clientStage.Method
 
-	out, err := json.Marshal(clientStage.Payload)
-	if err != nil {
-		log.Println("[WARN]: Failed to unmarshal payload into string")
+	if clientStage.Payload != nil && len(clientStage.Payload) > 0 {
+		out, err := json.Marshal(clientStage.Payload)
+		if err != nil {
+			log.Println("[WARN]: Failed to unmarshal payload into string")
+		}
+		newStage.Payload = string(out)
 	}
-	newStage.Payload = string(out)
+
 	newStage.ProgressJSONPath = clientStage.ProgressJSONPath
 	newStage.StatusJSONPath = clientStage.StatusJSONPath
 	newStage.StatusURLJSONPath = clientStage.StatusURLJSONPath

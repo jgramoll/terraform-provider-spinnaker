@@ -113,9 +113,12 @@ func testAccPipelineFindImageFromTagsStageConfigBasic(pipeName string, packageNa
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
 resource "spinnaker_pipeline_find_image_from_tags_stage" "%v" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Stage %v"
+	pipeline 	  = "${spinnaker_pipeline.test.id}"
+	name     	  = "Stage %v"
 	package_name  = "%v"
+
+	cloud_provider      = "aws"
+	cloud_provider_type = "aws"
 }`, i, i, packageName)
 	}
 
