@@ -114,7 +114,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		log.Println("[WARN] No Pipeline found:", d.Id())
 		d.SetId("")
-		return err
+		return nil
 	}
 
 	log.Printf("[INFO] Got Pipeline %s", p.ID)
