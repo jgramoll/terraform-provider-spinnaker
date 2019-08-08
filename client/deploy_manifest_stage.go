@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/mitchellh/mapstructure"
 )
@@ -72,7 +71,6 @@ func parseDeployManifestStage(stageMap map[string]interface{}) (Stage, error) {
 	stage := NewDeployManifestStage()
 	manifestInterface, ok := stageMap["manifests"].([]interface{})
 	if !ok {
-		println(reflect.TypeOf(stageMap["manifests"]).String())
 		return nil, fmt.Errorf("Could not parse deploy manifest manifests: %v", stageMap["manifests"])
 	}
 	sourceString, ok := stageMap["source"].(string)
@@ -80,10 +78,10 @@ func parseDeployManifestStage(stageMap map[string]interface{}) (Stage, error) {
 		return nil, fmt.Errorf("Could not parse deploy manifest source: %v", stageMap["source"])
 	}
 
+	// Have to parse these seperate
 	delete(stageMap, "manifests")
 	delete(stageMap, "source")
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
-		println("ASJdf")
 		return nil, err
 	}
 
