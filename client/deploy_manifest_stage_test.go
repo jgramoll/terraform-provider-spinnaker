@@ -16,19 +16,19 @@ func init() {
 }
 
 func TestDeployManifestStageGetName(t *testing.T) {
-	name := "New Destroy Server Group"
+	name := "New Deploy Manifest"
 	deployManifestStage.Name = name
 	if deployManifestStage.GetName() != name {
-		t.Fatalf("Destroy Server Group stage GetName() should be %s, not \"%s\"", name, deployManifestStage.GetName())
+		t.Fatalf("Destroy Deploy Manifest stage GetName() should be %s, not \"%s\"", name, deployManifestStage.GetName())
 	}
 }
 
 func TestDeployManifestStageGetType(t *testing.T) {
 	if deployManifestStage.GetType() != DeployManifestStageType {
-		t.Fatalf("Destroy Server Group stage GetType() should be %s, not \"%s\"", DeployManifestStageType, destroyServerGroupStage.GetType())
+		t.Fatalf("Destroy Deploy Manifest stage GetType() should be %s, not \"%s\"", DeployManifestStageType, deployManifestStage.GetType())
 	}
 	if deployManifestStage.Type != DeployManifestStageType {
-		t.Fatalf("Destroy Server Group stage Type should be %s, not \"%s\"", DeployManifestStageType, destroyServerGroupStage.Type)
+		t.Fatalf("Destroy Deploy Manifest stage Type should be %s, not \"%s\"", DeployManifestStageType, deployManifestStage.Type)
 	}
 }
 
