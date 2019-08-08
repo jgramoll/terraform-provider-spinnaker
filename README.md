@@ -1,18 +1,7 @@
 # terraform-provider-spinnaker
 Terraform Provider to manage spinnaker pipelines
 
-## Build and install ##
-
-### Dependencies ###
-
-You should have a working Go environment setup.  If not check out the Go [getting started](http://golang.org/doc/install) guide.
-
-[Go modules](https://github.com/golang/go/wiki/Modules) are used for dependency management.  To install all dependencies run the following:
-
-`export GO111MODULE=on`
-`go mod vendor`
-
-### Install ###
+## Install ##
 
 You will need to install the binary as a [terraform third party plugin](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).  Terraform will then pick up the binary from the local filesystem when you run `terraform init`.
 
@@ -21,6 +10,15 @@ curl -s https://raw.githubusercontent.com/jgramoll/terraform-provider-spinnaker/
 ```
 
 ## Usage ##
+
+### Credentials ###
+
+```sh
+export SPINNAKER_ADDRESS=https://your.spinnaker.server
+export SPINNAKER_CERT=/path/to/spinnaker/cert
+export SPINNAKER_KEY=/path/to/spinnaker/key
+export SPINNAKER_EMAIL=your@email.org
+```
 
 ```terraform
 provider "spinnaker" {
@@ -87,7 +85,7 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
   pipeline = "${spinnaker_pipeline.test.id}"
   name     = "Stage Jenkins"
 
-  requisite_stage_ref_ids = ["${spinnaker_pipeline_bake_stage.id}"]
+  requisite_stage_ref_ids = ["${spinnaker_pipeline_bake_stage.bake.id}"]
 
   notification {
     address = "#my-slack-channel"
@@ -243,10 +241,10 @@ resource "spinnaker_pipeline_delete_manifest_stage" "main" {
 	account  = "account"
 	app      = "app"
 
-	cloud_provider = "provider"
+	cloud_provider = "kubernetes"
 	location       = "location"
 	manifest_name  = "manifest name"
-	mode           = "mode"
+	mode           = "static"
 }
 
 resource "spinnaker_pipeline_deploy_manifest_stage" "main" {
@@ -254,13 +252,13 @@ resource "spinnaker_pipeline_deploy_manifest_stage" "main" {
 	name     = "Deploy Manifest"
 	account  = "account"
 
-	cloud_provider            = "provider"
+	cloud_provider            = "kubernetes"
 	source                    = "text"
-	manifest_artifact_account = "manifest_artifact_account"
+	manifest_artifact_account = "docker-registry"
 
 	relationships {}
 	traffic_management {
-		options: {}
+		options {}
 	}
 
 	manifests = [
@@ -274,4 +272,26 @@ EOT
 	]
 }
 
+```
+
+## Local Dev ##
+
+### Depenedencies ###
+
+You should have a working Go environment setup.  If not check out the Go [getting started](http://golang.org/doc/install) guide.
+
+[Go modules](https://github.com/golang/go/wiki/Modules) are used for dependency management.  To install all dependencies run the following:
+
+```sh
+export GO111MODULE=on
+go mod vendor
+```
+
+### Link ###
+
+```sh
+go clean
+go build
+rm ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_v1.2.0
+ln  ./terraform-provider-spinnaker ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_v1.2.0
 ```

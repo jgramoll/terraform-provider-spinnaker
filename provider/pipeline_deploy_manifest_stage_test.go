@@ -119,7 +119,6 @@ resource "spinnaker_pipeline_deploy_manifest_stage" "%v" {
 
 	cloud_provider            = "provider"
 	source                    = "text"
-	manifest_artifact_account = "manifest_artifact_account"
 
 	relationships {}
 	traffic_management {

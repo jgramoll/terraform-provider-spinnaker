@@ -35,10 +35,11 @@ type deployManifestStage struct {
 
 func newDeployManifestStage() *deployManifestStage {
 	return &deployManifestStage{
-		Type:              client.DeployManifestStageType,
-		FailPipeline:      true,
-		Relationships:     &[]*relationships{},
-		TrafficManagement: &[]*trafficManagement{},
+		Type:                    client.DeployManifestStageType,
+		FailPipeline:            true,
+		ManifestArtifactAccount: "docker-registry",
+		Relationships:           &[]*relationships{},
+		TrafficManagement:       &[]*trafficManagement{},
 	}
 }
 

@@ -10,7 +10,7 @@ type SpinnakerError struct {
 	Exception string `json:"exception"`
 	Message   string `json:"message"`
 	Status    int    `json:"status"`
-	Timestamp int64  `json:"timestamp"`
+	Timestamp string `json:"timestamp"`
 	Body      string `json:"body"`
 }
 
