@@ -257,9 +257,20 @@ resource "spinnaker_pipeline_deploy_manifest_stage" "main" {
 	cloud_provider            = "provider"
 	source                    = "text"
 	manifest_artifact_account = "manifest_artifact_account"
+
+	relationships {}
+	traffic_management {
+		options: {}
+	}
+
 	manifests = [
-		"first",
-		"second"
+		<<EOT
+first: 1
+EOT
+,
+<<EOT
+second: 2
+EOT
 	]
 }
 

@@ -16,7 +16,7 @@ func (t DeployManifestSource) String() string {
 func ParseDeployManifestSource(s string) (DeployManifestSource, error) {
 	switch s {
 	default:
-		log.Println("Unknown deploy manifest source:", s)
+		log.Println("[WARN] Unknown deploy manifest source:", s)
 		return DeployManifestSourceUnknown, nil
 	case "text":
 		return DeployManifestSourceText, nil

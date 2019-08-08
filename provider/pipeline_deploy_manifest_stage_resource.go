@@ -195,7 +195,7 @@ func pipelineDeployManifestStageResource() *schema.Resource {
 			"relationships": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "relationships",
-				Optional:    true,
+				Required:    true,
 				MaxItems:    1,
 				Elem:        relationshipsResource(),
 			},
@@ -213,7 +213,7 @@ func pipelineDeployManifestStageResource() *schema.Resource {
 			"traffic_management": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "The manifest artifact account",
-				Optional:    true,
+				Required:    true,
 				MaxItems:    1,
 				Elem:        trafficManagementResource(),
 			},

@@ -3,23 +3,23 @@ package provider
 import "github.com/jgramoll/terraform-provider-spinnaker/client"
 
 type trafficManagement struct {
-	Enabled bool                      `mapstructure:"enabled"`
-	Options *trafficManagementOptions `mapstructure:"options"`
+	Enabled bool                         `mapstructure:"enabled"`
+	Options *[]*trafficManagementOptions `mapstructure:"options"`
 }
 
 func newTrafficManagement() *trafficManagement {
 	return &trafficManagement{
 		Enabled: false,
-		Options: newTrafficManagementOptions(),
+		Options: &[]*trafficManagementOptions{},
 	}
 }
 
-func toClientTrafficManagement(m *[]*trafficManagement) *client.TrafficManagement {
-	if m != nil {
-		for _, t := range *m {
+func toClientTrafficManagement(trafficeManagement *[]*trafficManagement) *client.TrafficManagement {
+	if trafficeManagement != nil {
+		for _, t := range *trafficeManagement {
 			newTM := client.NewTrafficManagement()
 			newTM.Enabled = t.Enabled
-			*newTM.Options = client.TrafficManagementOptions(*t.Options)
+			newTM.Options = toClientTrafficManagementOptions(t.Options)
 			return newTM
 		}
 	}
@@ -32,7 +32,7 @@ func fromClientTrafficManagement(clientTrafficManagement *client.TrafficManageme
 	}
 	t := newTrafficManagement()
 	t.Enabled = clientTrafficManagement.Enabled
-	*t.Options = trafficManagementOptions(*clientTrafficManagement.Options)
+	t.Options = fromClientTrafficManagementOptions(clientTrafficManagement.Options)
 	newArray := []*trafficManagement{t}
 	return &newArray
 }

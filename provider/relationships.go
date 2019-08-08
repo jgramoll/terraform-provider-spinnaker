@@ -17,8 +17,10 @@ func newRelationships() *relationships {
 func toClientRelationships(relationships *[]*relationships) *client.Relationships {
 	if relationships != nil {
 		for _, r := range *relationships {
-			newRelationships := client.Relationships(*r)
-			return &newRelationships
+			if r != nil {
+				newRelationships := client.Relationships(*r)
+				return &newRelationships
+			}
 		}
 	}
 	return nil
