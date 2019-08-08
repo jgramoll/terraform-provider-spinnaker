@@ -25,11 +25,11 @@ func ParseDeployManifestSource(s string) (DeployManifestSource, error) {
 	}
 }
 
-func (t DeployManifestSource) MarshalJSON() ([]byte, error) {
+func (t DeployManifestSource) MarshalText() ([]byte, error) {
 	return []byte(t.String()), nil
 }
 
-func (t *DeployManifestSource) UnmarshalJSON(text []byte) error {
+func (t *DeployManifestSource) UnmarshalText(text []byte) error {
 	source, err := ParseDeployManifestSource(string(text))
 	if err != nil {
 		return err

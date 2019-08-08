@@ -66,7 +66,7 @@ func TestDeployManifestStageDeserialize(t *testing.T) {
 	if manifestString != deployManifestYaml {
 		dmp := diffmatchpatch.New()
 		diffs := dmp.DiffMain(deployManifestYaml, manifestString, true)
-		t.Fatalf("job definition not expected: %s", dmp.DiffPrettyText(diffs))
+		t.Fatalf("manifest not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
 }
 
