@@ -1,6 +1,9 @@
 package client
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/ghodss/yaml"
 )
 
@@ -11,15 +14,16 @@ func NewDeployManifests() *DeployManifests {
 }
 
 func (s DeployManifests) MarshalJSON() ([]byte, error) {
-	jsonManifests := "["
+	var jsonManifests []string
 	for _, manifest := range s {
 		json, err := yaml.YAMLToJSON([]byte(manifest))
 		if err != nil {
 			return nil, err
 		}
-		jsonManifests += string(json)
+		jsonManifests = append(jsonManifests, string(json))
 	}
-	return []byte(jsonManifests + "]"), nil
+	jsonManifestsString := strings.Join(jsonManifests, ",")
+	return []byte(fmt.Sprintf("[%s]", jsonManifestsString)), nil
 }
 
 func ParseDeployManifests(manifestInterface []interface{}) (*DeployManifests, error) {

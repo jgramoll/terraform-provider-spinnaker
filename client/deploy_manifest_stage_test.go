@@ -11,16 +11,10 @@ var deployManifestStage DeployManifestStage
 
 func init() {
 	deployManifestStage = *NewDeployManifestStage()
+	deployManifestStage.Name = "New Deploy Manifest"
 	deployManifestStage.Source = DeployManifestSourceText
 	*deployManifestStage.Manifests = append(*deployManifestStage.Manifests, deployManifestYaml)
-}
-
-func TestDeployManifestStageGetName(t *testing.T) {
-	name := "New Deploy Manifest"
-	deployManifestStage.Name = name
-	if deployManifestStage.GetName() != name {
-		t.Fatalf("Deploy Manifest stage GetName() should be %s, not \"%s\"", name, deployManifestStage.GetName())
-	}
+	*deployManifestStage.Manifests = append(*deployManifestStage.Manifests, anotherManifestYaml)
 }
 
 func TestDeployManifestStageGetType(t *testing.T) {
@@ -68,6 +62,12 @@ func TestDeployManifestStageDeserialize(t *testing.T) {
 		diffs := dmp.DiffMain(deployManifestYaml, manifestString, true)
 		t.Fatalf("manifest not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
+	manifestString = (*stage.Manifests)[1]
+	if manifestString != anotherManifestYaml {
+		dmp := diffmatchpatch.New()
+		diffs := dmp.DiffMain(anotherManifestYaml, manifestString, true)
+		t.Fatalf("manifest not as expected: %s", dmp.DiffPrettyText(diffs))
+	}
 }
 
 var deployManifestYaml = `apiVersion: batch/v1
@@ -85,6 +85,9 @@ spec:
         name: halyard
 `
 
+var anotherManifestYaml = `another: 1
+`
+
 var deployManifestJson = `{
 	"name": "New Deploy Manifest",
 	"refId": "",
@@ -99,6 +102,7 @@ var deployManifestJson = `{
 	"overrideTimeout": false,
 	"restrictExecutionDuringTimeWindow": false,
 	"restrictedExecutionWindow": null,
+	"notifications": null,
 	"account": "",
 	"cloudProvider": "",
 	"manifestArtifactAccount": "",
@@ -125,6 +129,9 @@ var deployManifestJson = `{
 					}
 				}
 			}
+		},
+		{
+			"another": 1
 		}
 	],
 	"moniker": null,

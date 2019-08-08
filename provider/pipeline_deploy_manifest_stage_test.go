@@ -12,18 +12,18 @@ import (
 )
 
 func init() {
-	stageTypes["spinnaker_pipeline_delete_manifest_stage"] = client.DeleteManifestStageType
+	stageTypes["spinnaker_pipeline_deploy_manifest_stage"] = client.DeployManifestStageType
 }
 
-func TestAccPipelineDeleteManifestStageBasic(t *testing.T) {
+func TestAccPipelineDeployManifestStageBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	accountName := "my-account"
 	newAccountName := accountName + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_delete_manifest_stage.1"
-	stage2 := "spinnaker_pipeline_delete_manifest_stage.2"
+	stage1 := "spinnaker_pipeline_deploy_manifest_stage.1"
+	stage2 := "spinnaker_pipeline_deploy_manifest_stage.2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -31,7 +31,7 @@ func TestAccPipelineDeleteManifestStageBasic(t *testing.T) {
 		CheckDestroy: testAccCheckPipelineStageDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineDeleteManifestStageConfigBasic(pipeName, accountName, 2),
+				Config: testAccPipelineDeployManifestStageConfigBasic(pipeName, accountName, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "account", accountName),
@@ -73,7 +73,7 @@ func TestAccPipelineDeleteManifestStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineDeleteManifestStageConfigBasic(pipeName, newAccountName, 2),
+				Config: testAccPipelineDeployManifestStageConfigBasic(pipeName, newAccountName, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "account", newAccountName),
@@ -87,7 +87,7 @@ func TestAccPipelineDeleteManifestStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineDeleteManifestStageConfigBasic(pipeName, accountName, 1),
+				Config: testAccPipelineDeployManifestStageConfigBasic(pipeName, accountName, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "account", accountName),
@@ -98,7 +98,7 @@ func TestAccPipelineDeleteManifestStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineDeleteManifestStageConfigBasic(pipeName, accountName, 0),
+				Config: testAccPipelineDeployManifestStageConfigBasic(pipeName, accountName, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
@@ -108,20 +108,27 @@ func TestAccPipelineDeleteManifestStageBasic(t *testing.T) {
 	})
 }
 
-func testAccPipelineDeleteManifestStageConfigBasic(pipeName string, accountName string, count int) string {
+func testAccPipelineDeployManifestStageConfigBasic(pipeName string, accountName string, count int) string {
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_delete_manifest_stage" "%v" {
+resource "spinnaker_pipeline_deploy_manifest_stage" "%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	account  = "%v"
-	app      = "app"
 
-	cloud_provider = "provider"
-	location       = "location"
-	manifest_name  = "manifest name"
-	mode           = "static"
+	cloud_provider            = "provider"
+	source                    = "text"
+	manifest_artifact_account = "manifest_artifact_account"
+	manifests = [
+		<<EOT
+first: 1
+EOT
+,
+<<EOT
+second: 2
+EOT
+	]
 }`, i, i, accountName)
 	}
 

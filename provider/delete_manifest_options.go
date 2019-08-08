@@ -14,14 +14,23 @@ func newDeleteManifestOptions() *deleteManifestOptions {
 	}
 }
 
-func (o *deleteManifestOptions) toClientOptions() *client.DeleteManifestOptions {
-	newOptions := client.NewDeleteManifestOptions()
-	newOptions.Cascading = o.Cascading
-	return newOptions
+func toClientOptions(options *[]*deleteManifestOptions) *client.DeleteManifestOptions {
+	if options != nil {
+		for _, o := range *options {
+			newOptions := client.NewDeleteManifestOptions()
+			newOptions.Cascading = o.Cascading
+			return newOptions
+		}
+	}
+	return nil
 }
 
-func fromClientDeleteManifestOptions(o *client.DeleteManifestOptions) *deleteManifestOptions {
+func fromClientDeleteManifestOptions(o *client.DeleteManifestOptions) *[]*deleteManifestOptions {
+	if o == nil {
+		return nil
+	}
 	newOptions := newDeleteManifestOptions()
 	newOptions.Cascading = o.Cascading
-	return newOptions
+	array := []*deleteManifestOptions{newOptions}
+	return &array
 }

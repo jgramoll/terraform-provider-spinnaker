@@ -5,7 +5,7 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type deleteManifestStage struct {
+type deployManifestStage struct {
 	// baseStage
 	Name                              string                   `mapstructure:"name"`
 	RefID                             string                   `mapstructure:"ref_id"`
@@ -22,31 +22,32 @@ type deleteManifestStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	Account       string                    `mapstructure:"account"`
-	App           string                    `mapstructure:"app"`
-	CloudProvider string                    `mapstructure:"cloud_provider"`
-	Location      string                    `mapstructure:"location"`
-	ManifestName  string                    `mapstructure:"manifest_name"`
-	Mode          string                    `mapstructure:"mode"`
-	Options       *[]*deleteManifestOptions `mapstructure:"options"`
+	Account                  string                `mapstructure:"account"`
+	CloudProvider            string                `mapstructure:"cloud_provider"`
+	ManifestArtifactAccount  string                `mapstructure:"manifest_artifact_account"`
+	Manifests                *deployManifests      `mapstructure:"manifests"`
+	Moniker                  *[]*moniker           `mapstructure:"moniker"`
+	Relationships            *[]*relationships     `mapstructure:"relationships"`
+	SkipExpressionEvaluation bool                  `mapstructure:"skip_expression_evaluation"`
+	Source                   string                `mapstructure:"source"`
+	TrafficManagement        *[]*trafficManagement `mapstructure:"traffic_management"`
 }
 
-func newDeleteManifestStage() *deleteManifestStage {
-	return &deleteManifestStage{
-		Type:         client.DeleteManifestStageType,
+func newDeployManifestStage() *deployManifestStage {
+	return &deployManifestStage{
+		Type:         client.DeployManifestStageType,
 		FailPipeline: true,
-		Options:      &[]*deleteManifestOptions{},
 	}
 }
 
-func (s *deleteManifestStage) toClientStage(config *client.Config) (client.Stage, error) {
+func (s *deployManifestStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
 		return nil, err
 	}
 
-	cs := client.NewDeleteManifestStage()
+	cs := client.NewDeployManifestStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
@@ -63,23 +64,25 @@ func (s *deleteManifestStage) toClientStage(config *client.Config) (client.Stage
 	// End baseStage
 
 	cs.Account = s.Account
-	cs.App = s.App
 	cs.CloudProvider = s.CloudProvider
-	cs.Location = s.Location
-	cs.ManifestName = s.ManifestName
-	mode, err := client.ParseDeleteManifestMode(s.Mode)
+	cs.ManifestArtifactAccount = s.ManifestArtifactAccount
+	cs.Manifests = s.Manifests.toClientDeployManifests()
+	cs.Moniker = toClientMoniker(s.Moniker)
+	cs.Relationships = toClientRelationships(s.Relationships)
+	cs.SkipExpressionEvaluation = s.SkipExpressionEvaluation
+	source, err := client.ParseDeployManifestSource(s.Source)
 	if err != nil {
 		return nil, err
 	}
-	cs.Mode = mode
-	cs.Options = toClientOptions(s.Options)
+	cs.Source = source
+	cs.TrafficManagement = toClientTrafficManagement(s.TrafficManagement)
 
 	return cs, nil
 }
 
-func (s *deleteManifestStage) fromClientStage(cs client.Stage) stage {
-	clientStage := cs.(*client.DeleteManifestStage)
-	newStage := newDeleteManifestStage()
+func (s *deployManifestStage) fromClientStage(cs client.Stage) stage {
+	clientStage := cs.(*client.DeployManifestStage)
+	newStage := newDeployManifestStage()
 
 	// baseStage
 	newStage.Name = clientStage.Name
@@ -97,17 +100,19 @@ func (s *deleteManifestStage) fromClientStage(cs client.Stage) stage {
 	// end baseStage
 
 	newStage.Account = clientStage.Account
-	newStage.App = clientStage.App
 	newStage.CloudProvider = clientStage.CloudProvider
-	newStage.Location = clientStage.Location
-	newStage.ManifestName = clientStage.ManifestName
-	newStage.Mode = clientStage.Mode.String()
-	newStage.Options = fromClientDeleteManifestOptions(clientStage.Options)
+	newStage.ManifestArtifactAccount = clientStage.ManifestArtifactAccount
+	newStage.Manifests = fromClientDeployManifests(clientStage.Manifests)
+	newStage.Moniker = fromClientMoniker(clientStage.Moniker)
+	newStage.Relationships = fromClientRelationships(clientStage.Relationships)
+	newStage.SkipExpressionEvaluation = clientStage.SkipExpressionEvaluation
+	newStage.Source = clientStage.Source.String()
+	newStage.TrafficManagement = fromClientTrafficManagement(clientStage.TrafficManagement)
 
 	return newStage
 }
 
-func (s *deleteManifestStage) SetResourceData(d *schema.ResourceData) error {
+func (s *deployManifestStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
 	err := d.Set("name", s.Name)
 	if err != nil {
@@ -159,33 +164,41 @@ func (s *deleteManifestStage) SetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-	err = d.Set("app", s.App)
-	if err != nil {
-		return err
-	}
 	err = d.Set("cloud_provider", s.CloudProvider)
 	if err != nil {
 		return err
 	}
-	err = d.Set("location", s.Location)
+	err = d.Set("manifest_artifact_account", s.ManifestArtifactAccount)
 	if err != nil {
 		return err
 	}
-	err = d.Set("manifest_name", s.ManifestName)
+	err = d.Set("manifests", s.Manifests)
 	if err != nil {
 		return err
 	}
-	err = d.Set("mode", s.Mode)
+	err = d.Set("moniker", s.Moniker)
 	if err != nil {
 		return err
 	}
-	return d.Set("options", s.Options)
+	err = d.Set("relationships", s.Relationships)
+	if err != nil {
+		return err
+	}
+	err = d.Set("skip_expression_evaluation", s.SkipExpressionEvaluation)
+	if err != nil {
+		return err
+	}
+	err = d.Set("source", s.Source)
+	if err != nil {
+		return err
+	}
+	return d.Set("traffic_management", s.TrafficManagement)
 }
 
-func (s *deleteManifestStage) SetRefID(id string) {
+func (s *deployManifestStage) SetRefID(id string) {
 	s.RefID = id
 }
 
-func (s *deleteManifestStage) GetRefID() string {
+func (s *deployManifestStage) GetRefID() string {
 	return s.RefID
 }

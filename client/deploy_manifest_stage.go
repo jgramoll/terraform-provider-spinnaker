@@ -28,6 +28,7 @@ type DeployManifestStage struct {
 	OverrideTimeout                   bool                  `json:"overrideTimeout"`
 	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
+	Notifications                     *[]*Notification      `json:"notifications"`
 	// End BaseStage
 
 	Account                  string               `json:"account"`
@@ -37,7 +38,7 @@ type DeployManifestStage struct {
 	Moniker                  *Moniker             `json:"moniker"`
 	Relationships            *Relationships       `json:"relationships"`
 	SkipExpressionEvaluation bool                 `json:"skipExpressionEvaluation"`
-	Source                   DeployManifestSource `json:"source"` // TODO enum
+	Source                   DeployManifestSource `json:"source"`
 	TrafficManagement        *TrafficManagement   `json:"trafficManagement"`
 }
 
@@ -77,8 +78,13 @@ func parseDeployManifestStage(stageMap map[string]interface{}) (Stage, error) {
 	if !ok {
 		return nil, fmt.Errorf("Could not parse deploy manifest source: %v", stageMap["source"])
 	}
+	notifications, err := parseNotifications(stageMap["notifications"])
+	if err != nil {
+		return nil, err
+	}
 
 	// Have to parse these seperate
+	delete(stageMap, "notifications")
 	delete(stageMap, "manifests")
 	delete(stageMap, "source")
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
@@ -96,6 +102,7 @@ func parseDeployManifestStage(stageMap map[string]interface{}) (Stage, error) {
 		return nil, err
 	}
 	stage.Manifests = manifests
+	stage.Notifications = notifications
 
 	return stage, nil
 }

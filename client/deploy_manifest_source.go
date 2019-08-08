@@ -1,9 +1,6 @@
 package client
 
-import (
-	"errors"
-	"fmt"
-)
+import "log"
 
 type DeployManifestSource int
 
@@ -19,7 +16,8 @@ func (t DeployManifestSource) String() string {
 func ParseDeployManifestSource(s string) (DeployManifestSource, error) {
 	switch s {
 	default:
-		return DeployManifestSourceUnknown, errors.New(fmt.Sprintf("Unknown Source %s", s))
+		log.Println("Unknown deploy manifest source:", s)
+		return DeployManifestSourceUnknown, nil
 	case "text":
 		return DeployManifestSourceText, nil
 	}

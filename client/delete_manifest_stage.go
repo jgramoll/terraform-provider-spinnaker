@@ -1,6 +1,8 @@
 package client
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -34,7 +36,7 @@ type DeleteManifestStage struct {
 	CloudProvider string                 `json:"cloudProvider"`
 	Location      string                 `json:"location"`
 	ManifestName  string                 `json:"manifestName"`
-	Mode          string                 `json:"mode"`
+	Mode          DeleteManifestMode     `json:"mode"`
 	Options       *DeleteManifestOptions `json:"options"`
 }
 
@@ -43,7 +45,6 @@ func NewDeleteManifestStage() *DeleteManifestStage {
 		Type:                 DeleteManifestStageType,
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
-		Mode:                 "static", // TODO enum
 	}
 }
 
@@ -67,12 +68,23 @@ func parseDeleteManifestStage(stageMap map[string]interface{}) (Stage, error) {
 	if err != nil {
 		return nil, err
 	}
-	delete(stageMap, "notifications")
+	modeString, ok := stageMap["mode"].(string)
+	if !ok {
+		return nil, fmt.Errorf("Could not parse delete manifest mode %v", stageMap["mode"])
+	}
 
+	delete(stageMap, "notifications")
+	delete(stageMap, "mode")
 	stage := NewDeleteManifestStage()
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err
 	}
+
+	mode, err := ParseDeleteManifestMode(modeString)
+	if err != nil {
+		return nil, err
+	}
+	stage.Mode = mode
 	stage.Notifications = notifications
 
 	return stage, nil

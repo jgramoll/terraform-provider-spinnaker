@@ -61,6 +61,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline":                       pipelineResource(),
 			"spinnaker_pipeline_bake_stage":            pipelineBakeStageResource(),
 			"spinnaker_pipeline_delete_manifest_stage": pipelineDeleteManifestStageResource(),
+			"spinnaker_pipeline_deploy_manifest_stage": pipelineDeployManifestStageResource(),
 			"spinnaker_pipeline_deploy_stage":          pipelineDeployStageResource(),
 
 			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),

@@ -237,4 +237,30 @@ resource "spinnaker_pipeline_parameter" "version" {
 	name     = "version"
 }
 
+resource "spinnaker_pipeline_delete_manifest_stage" "main" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Delete manifest"
+	account  = "account"
+	app      = "app"
+
+	cloud_provider = "provider"
+	location       = "location"
+	manifest_name  = "manifest name"
+	mode           = "mode"
+}
+
+resource "spinnaker_pipeline_deploy_manifest_stage" "main" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Deploy Manifest"
+	account  = "account"
+
+	cloud_provider            = "provider"
+	source                    = "text"
+	manifest_artifact_account = "manifest_artifact_account"
+	manifests = [
+		"first",
+		"second"
+	]
+}
+
 ```
