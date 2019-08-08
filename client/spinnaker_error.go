@@ -10,8 +10,8 @@ type SpinnakerError struct {
 	Exception string `json:"exception"`
 	Message   string `json:"message"`
 	Status    int    `json:"status"`
-	Timestamp int64  `json:"timestamp"`
-	Body      string `json:"body"`
+	// Timestamp int64  `json:"timestamp"` // HACK - this is breaking application_resource
+	Body string `json:"body"`
 }
 
 // For error interface
