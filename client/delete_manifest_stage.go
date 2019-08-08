@@ -26,6 +26,7 @@ type DeleteManifestStage struct {
 	OverrideTimeout                   bool                  `json:"overrideTimeout"`
 	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
+	Notifications                     *[]*Notification      `json:"notifications"`
 	// End BaseStage
 
 	Account       string                 `json:"account"`
@@ -43,7 +44,6 @@ func NewDeleteManifestStage() *DeleteManifestStage {
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
 		Mode:                 "static", // TODO enum
-		Options:              NewDeleteManifestOptions(),
 	}
 }
 
@@ -63,10 +63,17 @@ func (s *DeleteManifestStage) GetRefID() string {
 }
 
 func parseDeleteManifestStage(stageMap map[string]interface{}) (Stage, error) {
+	notifications, err := parseNotifications(stageMap["notifications"])
+	if err != nil {
+		return nil, err
+	}
+	delete(stageMap, "notifications")
+
 	stage := NewDeleteManifestStage()
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err
 	}
+	stage.Notifications = notifications
 
 	return stage, nil
 }

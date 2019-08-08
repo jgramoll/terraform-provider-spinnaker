@@ -19,16 +19,16 @@ func TestDeployManifestStageGetName(t *testing.T) {
 	name := "New Deploy Manifest"
 	deployManifestStage.Name = name
 	if deployManifestStage.GetName() != name {
-		t.Fatalf("Destroy Deploy Manifest stage GetName() should be %s, not \"%s\"", name, deployManifestStage.GetName())
+		t.Fatalf("Deploy Manifest stage GetName() should be %s, not \"%s\"", name, deployManifestStage.GetName())
 	}
 }
 
 func TestDeployManifestStageGetType(t *testing.T) {
 	if deployManifestStage.GetType() != DeployManifestStageType {
-		t.Fatalf("Destroy Deploy Manifest stage GetType() should be %s, not \"%s\"", DeployManifestStageType, deployManifestStage.GetType())
+		t.Fatalf("Deploy Manifest stage GetType() should be %s, not \"%s\"", DeployManifestStageType, deployManifestStage.GetType())
 	}
 	if deployManifestStage.Type != DeployManifestStageType {
-		t.Fatalf("Destroy Deploy Manifest stage Type should be %s, not \"%s\"", DeployManifestStageType, deployManifestStage.Type)
+		t.Fatalf("Deploy Manifest stage Type should be %s, not \"%s\"", DeployManifestStageType, deployManifestStage.Type)
 	}
 }
 
@@ -41,7 +41,7 @@ func TestDeployManifestStageSerialize(t *testing.T) {
 	if result != deployManifestJson {
 		dmp := diffmatchpatch.New()
 		diffs := dmp.DiffMain(deployManifestJson, result, true)
-		t.Fatalf("job definition not expected: %s", dmp.DiffPrettyText(diffs))
+		t.Fatalf("Deploy Manifest not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
 }
 
@@ -86,7 +86,7 @@ spec:
 `
 
 var deployManifestJson = `{
-	"name": "",
+	"name": "New Deploy Manifest",
 	"refId": "",
 	"type": "deployManifest",
 	"requisiteStageRefIds": [],
