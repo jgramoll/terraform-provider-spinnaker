@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -21,6 +23,13 @@ type Config struct {
 	CertPath  string
 	KeyPath   string
 	UserEmail string
+	Insecure  bool
+}
+
+func NewConfig() *Config {
+	return &Config{
+		Insecure: false,
+	}
 }
 
 // Client to talk to Spinnaker
@@ -31,14 +40,20 @@ type Client struct {
 
 // NewClient Return a new client with loaded configuration
 func NewClient(config Config) *Client {
-	cert, err := tls.LoadX509KeyPair(config.CertPath, config.KeyPath)
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	certPath := strings.Replace(config.CertPath, "~", homeDir, 1)
+	keyPath := strings.Replace(config.KeyPath, "~", homeDir, 1)
+	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	tlsConfig := &tls.Config{
 		Certificates:       []tls.Certificate{cert},
-		InsecureSkipVerify: true,
+		InsecureSkipVerify: config.Insecure,
 	}
 	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}

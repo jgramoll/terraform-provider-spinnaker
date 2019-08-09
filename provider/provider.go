@@ -22,6 +22,7 @@ type Config struct {
 	CertPath  string `mapstructure:"cert_path"`
 	KeyPath   string `mapstructure:"key_path"`
 	UserEmail string `mapstructure:"user_email"`
+	Insecure  bool   `mapstructure:"insecure"`
 }
 
 // Provider for terraform
@@ -54,6 +55,13 @@ func Provider() terraform.ResourceProvider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
 				Description: "Path to user_email to authenticate with spinnaker api",
+			},
+
+			"insecure": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "If http client should skip ssl validation",
 			},
 		},
 
