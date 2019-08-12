@@ -10,7 +10,7 @@ docker-compose build sonar
 
 docker-compose run --rm sonar sonar-scanner \
   -Dsonar.host.url="https://sonarqube.core.inseng.net" \
-  -Dsonar.login=$(cat .sonar_token) \
+  -Dsonar.login=$SONAR_TOKEN \
   -Dsonar.projectKey="terraform-provider-spinnaker" \
   -Dsonar.projectName="terraform-provider-spinnaker" \
   -Dsonar.projectVersion=0.0.1 \

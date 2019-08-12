@@ -22,6 +22,7 @@ type Config struct {
 	CertPath  string `mapstructure:"cert_path"`
 	KeyPath   string `mapstructure:"key_path"`
 	UserEmail string `mapstructure:"user_email"`
+	Insecure  bool   `mapstructure:"insecure"`
 }
 
 // Provider for terraform
@@ -55,12 +56,21 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
 				Description: "Path to user_email to authenticate with spinnaker api",
 			},
+
+			"insecure": &schema.Schema{
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "If http client should skip ssl validation",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"spinnaker_pipeline":              pipelineResource(),
-			"spinnaker_pipeline_bake_stage":   pipelineBakeStageResource(),
-			"spinnaker_pipeline_deploy_stage": pipelineDeployStageResource(),
+			"spinnaker_pipeline":                       pipelineResource(),
+			"spinnaker_pipeline_bake_stage":            pipelineBakeStageResource(),
+			"spinnaker_pipeline_delete_manifest_stage": pipelineDeleteManifestStageResource(),
+			"spinnaker_pipeline_deploy_manifest_stage": pipelineDeployManifestStageResource(),
+			"spinnaker_pipeline_deploy_stage":          pipelineDeployStageResource(),
 
 			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),
 			"spinnaker_pipeline_jenkins_stage":              pipelineJenkinsStageResource(),

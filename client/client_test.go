@@ -50,7 +50,7 @@ func TestClientNewRequestWithBody(t *testing.T) {
 }
 
 func TestClientErrorResponse(t *testing.T) {
-	req, err := client.NewRequest("get", testPath)
+	req, err := client.NewRequest("GET", testPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,6 +93,7 @@ func newTestClient() *Client {
 		CertPath:  certPath,
 		KeyPath:   keyPath,
 		UserEmail: fmt.Sprintf("%s", usr.Username),
+		Insecure:  true,
 	}
 	return NewClient(c)
 }

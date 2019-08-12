@@ -3,6 +3,7 @@ module github.com/jgramoll/terraform-provider-spinnaker
 require (
 	github.com/apparentlymart/go-cidr v1.0.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/ghodss/yaml v1.0.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/google/uuid v1.1.0
 	github.com/hashicorp/go-getter v1.0.1 // indirect
@@ -19,6 +20,7 @@ require (
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/hashstructure v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
+	github.com/sergi/go-diff v1.0.0
 	golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b // indirect
 	golang.org/x/net v0.0.0-20190119204137-ed066c81e75e // indirect
 )
