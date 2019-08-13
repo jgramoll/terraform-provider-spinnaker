@@ -63,13 +63,13 @@ resource "spinnaker_pipeline_trigger" "jenkins" {
 resource "spinnaker_pipeline_notification" "edge" {
   pipeline = "${spinnaker_pipeline.edge.id}"
   address = "bridge-career-deploys"
-  message = {
+  message {
     complete = "edge is done"
     failed = "edge is failed"
     starting = "edge is starting"
   }
   type = "slack"
-  when = {
+  when {
     complete = true
     starting = false
     failed = true
@@ -89,11 +89,11 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
 
   notification {
     address = "#my-slack-channel"
-    message = {
+    message {
       failed = "Jenkins Stage failed"
     }
     type = "slack"
-    when = {
+    when {
       failed = true
     }
   }

@@ -17,8 +17,8 @@ func TestAccPipelineTriggerBasic(t *testing.T) {
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	jenkinsMaster := "inst-ci"
 	newJenkinsMaster := jenkinsMaster + "-new"
-	trigger1 := "spinnaker_pipeline_trigger.1"
-	trigger2 := "spinnaker_pipeline_trigger.2"
+	trigger1 := "spinnaker_pipeline_trigger.t1"
+	trigger2 := "spinnaker_pipeline_trigger.t2"
 	pipelineResourceName := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
@@ -108,7 +108,7 @@ func testAccPipelineTriggerConfigBasic(pipeName string, master string, count int
 	triggers := ""
 	for i := 1; i <= count; i++ {
 		triggers += fmt.Sprintf(`
-resource "spinnaker_pipeline_trigger" "%v" {
+resource "spinnaker_pipeline_trigger" "t%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
 	master = "%s"

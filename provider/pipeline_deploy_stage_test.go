@@ -22,8 +22,8 @@ func TestAccPipelineDeployStageBasic(t *testing.T) {
 	clusterAccount := "inst-ci"
 	newClusterAccount := clusterAccount + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_deploy_stage.1"
-	stage2 := "spinnaker_pipeline_deploy_stage.2"
+	stage1 := "spinnaker_pipeline_deploy_stage.s1"
+	stage2 := "spinnaker_pipeline_deploy_stage.s2"
 	stageEnabledType := "expression"
 
 	resource.Test(t, resource.TestCase{
@@ -139,7 +139,7 @@ func testAccPipelineDeployStageConfigBasic(pipeName string, clusterAccount strin
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_deploy_stage" "%v" {
+resource "spinnaker_pipeline_deploy_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	restricted_execution_window {

@@ -22,8 +22,8 @@ func TestAccPipelineBakeStageBasic(t *testing.T) {
 	vmType := "hvm"
 	newVMType := "pv"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_bake_stage.1"
-	stage2 := "spinnaker_pipeline_bake_stage.2"
+	stage1 := "spinnaker_pipeline_bake_stage.s1"
+	stage2 := "spinnaker_pipeline_bake_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -112,7 +112,7 @@ func testAccPipelineBakeStageConfigBasic(pipeName string, vmType string, count i
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_bake_stage" "%v" {
+resource "spinnaker_pipeline_bake_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	vm_type  = "%v"

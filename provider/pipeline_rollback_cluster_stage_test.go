@@ -22,8 +22,8 @@ func TestAccPipelineRollbackClusterStageBasic(t *testing.T) {
 	targetHealthyRollbackPercentage := "95"
 	newTargetHealthyRollbackPercentage := "90"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_rollback_cluster_stage.1"
-	stage2 := "spinnaker_pipeline_rollback_cluster_stage.2"
+	stage1 := "spinnaker_pipeline_rollback_cluster_stage.s1"
+	stage2 := "spinnaker_pipeline_rollback_cluster_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -112,7 +112,7 @@ func testAccPipelineRollbackClusterStageConfigBasic(pipeName string, targetHealt
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_rollback_cluster_stage" "%v" {
+resource "spinnaker_pipeline_rollback_cluster_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	cluster  = "test_cluster"

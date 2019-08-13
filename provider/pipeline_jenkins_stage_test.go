@@ -22,8 +22,8 @@ func TestAccPipelineJenkinsStageBasic(t *testing.T) {
 	master := "inst-ci"
 	newMaster := master + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_jenkins_stage.1"
-	stage2 := "spinnaker_pipeline_jenkins_stage.2"
+	stage1 := "spinnaker_pipeline_jenkins_stage.s1"
+	stage2 := "spinnaker_pipeline_jenkins_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -112,7 +112,7 @@ func testAccPipelineJenkinsStageConfigBasic(pipeName string, master string, coun
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_jenkins_stage" "%v" {
+resource "spinnaker_pipeline_jenkins_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	master   = "%v"
