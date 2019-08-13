@@ -48,6 +48,8 @@ func (e *SpinnakerError) UnmarshalJSON(bytes []byte) error {
 	switch timestampType {
 	case "string":
 		e.Timestamp = timestampInterface.(string)
+	case "float64":
+		e.Timestamp = fmt.Sprintf("%.0f", timestampInterface.(float64))
 	default:
 		return fmt.Errorf("Unknown timestamp type: %v", timestampType)
 	}
