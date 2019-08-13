@@ -1,4 +1,4 @@
-# terraform-provider-jenkins Change Log
+# terraform-provider-spinnaker Change Log
 
 ## 1.2.0
 
