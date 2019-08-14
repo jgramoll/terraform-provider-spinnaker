@@ -63,13 +63,13 @@ resource "spinnaker_pipeline_trigger" "jenkins" {
 resource "spinnaker_pipeline_notification" "edge" {
   pipeline = "${spinnaker_pipeline.edge.id}"
   address = "bridge-career-deploys"
-  message = {
+  message {
     complete = "edge is done"
     failed = "edge is failed"
     starting = "edge is starting"
   }
   type = "slack"
-  when = {
+  when {
     complete = true
     starting = false
     failed = true
@@ -89,11 +89,11 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
 
   notification {
     address = "#my-slack-channel"
-    message = {
+    message {
       failed = "Jenkins Stage failed"
     }
     type = "slack"
-    when = {
+    when {
       failed = true
     }
   }
@@ -231,45 +231,45 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
 }
 
 resource "spinnaker_pipeline_parameter" "version" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "version"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "version"
 }
 
 resource "spinnaker_pipeline_delete_manifest_stage" "main" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Delete manifest"
-	account  = "account"
-	app      = "app"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Delete manifest"
+  account  = "account"
+  app      = "app"
 
-	cloud_provider = "kubernetes"
-	location       = "location"
-	manifest_name  = "manifest name"
-	mode           = "static"
+  cloud_provider = "kubernetes"
+  location       = "location"
+  manifest_name  = "manifest name"
+  mode           = "static"
 }
 
 resource "spinnaker_pipeline_deploy_manifest_stage" "main" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Deploy Manifest"
-	account  = "account"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Deploy Manifest"
+  account  = "account"
 
-	cloud_provider            = "kubernetes"
-	source                    = "text"
-	manifest_artifact_account = "docker-registry"
+  cloud_provider            = "kubernetes"
+  source                    = "text"
+  manifest_artifact_account = "docker-registry"
 
-	relationships {}
-	traffic_management {
-		options {}
-	}
+  relationships {}
+  traffic_management {
+    options {}
+  }
 
-	manifests = [
-		<<EOT
+  manifests = [
+    <<EOT
 first: 1
 EOT
 ,
 <<EOT
 second: 2
 EOT
-	]
+  ]
 }
 
 ```

@@ -22,8 +22,8 @@ func TestAccPipelineResizeServerGroupStageBasic(t *testing.T) {
 	target := "my-target"
 	newTarget := "new-my-target"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_resize_server_group_stage.1"
-	stage2 := "spinnaker_pipeline_resize_server_group_stage.2"
+	stage1 := "spinnaker_pipeline_resize_server_group_stage.s1"
+	stage2 := "spinnaker_pipeline_resize_server_group_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -115,7 +115,7 @@ func testAccPipelineResizeServerGroupStageConfigBasic(pipeName string, target st
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_resize_server_group_stage" "%v" {
+resource "spinnaker_pipeline_resize_server_group_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	cluster  = "test_cluster"

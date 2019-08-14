@@ -63,7 +63,10 @@ func TestClientErrorResponse(t *testing.T) {
 	if resp.StatusCode != 404 {
 		t.Fatalf("should return 404, not %v", resp.StatusCode)
 	}
-	spinnakerError := err.(*SpinnakerError)
+	spinnakerError, ok := err.(*SpinnakerError)
+	if !ok {
+		t.Fatalf("expected spinnaker error, got %v", err)
+	}
 	if spinnakerError.Status != 404 {
 		t.Fatalf("should return 404, not %v", spinnakerError.Status)
 	}

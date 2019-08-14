@@ -22,8 +22,8 @@ func TestAccPipelinePipelineStageBasic(t *testing.T) {
 	targetPipeline := "my-pipeline"
 	newTargetPipeline := "new-pipeline"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_pipeline_stage.1"
-	stage2 := "spinnaker_pipeline_pipeline_stage.2"
+	stage1 := "spinnaker_pipeline_pipeline_stage.s1"
+	stage2 := "spinnaker_pipeline_pipeline_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -117,7 +117,7 @@ func testAccPipelinePipelineStageConfigBasic(pipeName string, targetPipeline str
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_pipeline_stage" "%v" {
+resource "spinnaker_pipeline_pipeline_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	application  = "test_app"
