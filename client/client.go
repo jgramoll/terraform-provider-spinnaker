@@ -19,33 +19,51 @@ var ErrInvalidDecodeResponseParameter = errors.New("nil interface provided to de
 
 // Config for Client
 type Config struct {
-	Address   string
-	CertPath  string
-	KeyPath   string
-	UserEmail string
-	Insecure  bool
+	Address string
+	Auth    *Auth
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Insecure: false,
+		Auth: NewAuth(),
 	}
 }
 
 // Client to talk to Spinnaker
 type Client struct {
-	Config Config
+	Config *Config
 	client *http.Client
 }
 
 // NewClient Return a new client with loaded configuration
-func NewClient(config Config) *Client {
+func NewClient(config *Config) *Client {
+
+	var httpClient *http.Client
+	if config.Auth.Enabled {
+		httpClient = newTlsHttpClient(config)
+	} else {
+		httpClient = http.DefaultClient
+	}
+
+	return &Client{
+		Config: config,
+		client: httpClient,
+	}
+}
+
+func newTlsHttpClient(config *Config) *http.Client {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("[ERROR]", err)
 	}
-	certPath := strings.Replace(config.CertPath, "~", homeDir, 1)
-	keyPath := strings.Replace(config.KeyPath, "~", homeDir, 1)
+	certPath := strings.Replace(config.Auth.CertPath, "~", homeDir, 1)
+	if certPath == "" {
+		log.Fatal("[ERROR] Missing Cert Path")
+	}
+	keyPath := strings.Replace(config.Auth.KeyPath, "~", homeDir, 1)
+	if keyPath == "" {
+		log.Fatal("[ERROR] Missing Cert Key Path")
+	}
 	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
 	if err != nil {
 		log.Fatal(err)
@@ -53,16 +71,11 @@ func NewClient(config Config) *Client {
 
 	tlsConfig := &tls.Config{
 		Certificates:       []tls.Certificate{cert},
-		InsecureSkipVerify: config.Insecure,
+		InsecureSkipVerify: config.Auth.Insecure,
 	}
 	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	httpClient := &http.Client{Transport: transport}
-
-	return &Client{
-		Config: config,
-		client: httpClient,
-	}
+	return &http.Client{Transport: transport}
 }
 
 // NewRequest create http request
@@ -102,19 +115,20 @@ func (client *Client) Do(req *http.Request) (*http.Response, error) {
 }
 
 // DoWithRetry send http request with retry
-func (client *Client) DoWithRetry(createReq func() (*http.Request, error)) (*http.Response, error) {
+func (client *Client) DoWithRetry(retryOnStatus int, maxAttempts int, createReq func() (*http.Request, error)) (*http.Response, error) {
 	attempts := 0
 	req, err := createReq()
 	if err != nil {
 		return nil, err
 	}
 	resp, respErr := client.Do(req)
-	for respErr != nil && attempts < 5 {
+	for respErr != nil && attempts < maxAttempts {
 		spinnakerError, ok := respErr.(*SpinnakerError)
 		if !ok {
 			return nil, respErr
 		}
-		if spinnakerError.Status != 400 {
+		log.Printf("[INFO] spinnakerError.Status %v\n", spinnakerError.Status)
+		if spinnakerError.Status != retryOnStatus {
 			return nil, spinnakerError
 		}
 		time.Sleep(time.Duration(attempts*attempts) * time.Second)

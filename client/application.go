@@ -10,13 +10,38 @@ type ProviderSettings struct {
 	AWS *AwsProviderSettings `json:"aws"`
 }
 
+type DataSources struct {
+	Disabled *[]string `json:"disabled"`
+	Enabled  *[]string `json:"enabled"`
+}
+
 // Application Settings for Application
 type Application struct {
-	CloudProviders   string            `json:"cloudProviders"`
-	InstancePort     int               `json:"instancePort"`
-	ProviderSettings *ProviderSettings `json:"providerSettings"`
-	Name             string            `json:"name"`
-	Email            string            `json:"email"`
+	Accounts       string       `json:"accounts"`
+	CloudProviders string       `json:"cloudProviders"`
+	CreateTs       string       `json:"createTs"`
+	DataSources    *DataSources `json:"dataSources"`
+	DesiredCount   string       `json:"desiredCount"`
+	Email          string       `json:"email"`
+
+	EnableRestartRunningExecutions bool `json:"enableRestartRunningExecutions"`
+
+	IamRole        string `json:"iamRole"`
+	InstancePort   int    `json:"instancePort"`
+	LastModifiedBy string `json:"lastModifiedBy"`
+	Name           string `json:"name"`
+
+	PlatformHealthOnly             bool              `json:"platformHealthOnly"`
+	PlatformHealthOnlyShowOverride bool              `json:"platformHealthOnlyShowOverride"`
+	ProviderSettings               *ProviderSettings `json:"providerSettings"`
+
+	RepoProjectKey string   `json:"repoProjectKey"`
+	RepoSlug       string   `json:"repoSlug"`
+	RepoType       string   `json:"repoType"`
+	TaskDefinition string   `json:"taskDefinition"`
+	TrafficGuards  []string `json:"trafficGuards"`
+	UpdateTs       string   `json:"updateTs"`
+	User           string   `json:"user"`
 }
 
 // NewAwsProviderSettings return Aws provider settings with default values

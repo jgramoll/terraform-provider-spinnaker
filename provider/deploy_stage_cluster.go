@@ -28,7 +28,8 @@ type deployStageCluster struct {
 	LoadBalancers                       []string               `mapstructure:"load_balancers"`
 	Moniker                             *[]*moniker            `mapstructure:"moniker"`
 	Provider                            string                 `mapstructure:"provider"`
-	SecurityGroups                      []string               `mapstructure:"security_groups"`
+	SecurityGroups                      interface{}            `mapstructure:"security_groups"`
+	SecurityGroupsExpression            string                 `mapstructure:"security_groups_expression"`
 	SpelLoadBalancers                   []string               `mapstructure:"spel_load_balancers"`
 	SpelTargetGroups                    []string               `mapstructure:"spel_target_groups"`
 	SpotPrice                           string                 `mapstructure:"spot_price"`
@@ -40,6 +41,7 @@ type deployStageCluster struct {
 	TargetGroups                        []string               `mapstructure:"target_groups"`
 	TargetHealthyDeployPercentage       int                    `mapstructure:"target_healthy_deploy_percentage"`
 	TerminationPolicies                 []string               `mapstructure:"termination_policies"`
+	UserData                            string                 `mapstructure:"user_data"`
 	UseAmiBlockDeviceMappings           bool                   `mapstructure:"use_ami_block_device_mappings"`
 	UseSourceCapacity                   bool                   `mapstructure:"use_source_capacity"`
 }
@@ -91,7 +93,11 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	clientCluster.LoadBalancers = c.LoadBalancers
 	clientCluster.Moniker = toClientMoniker(c.Moniker)
 	clientCluster.Provider = c.Provider
-	clientCluster.SecurityGroups = c.SecurityGroups
+	if c.SecurityGroupsExpression != "" {
+		clientCluster.SecurityGroups = c.SecurityGroupsExpression
+	} else {
+		clientCluster.SecurityGroups = c.SecurityGroups
+	}
 	clientCluster.SpelLoadBalancers = c.SpelLoadBalancers
 	clientCluster.SpelTargetGroups = c.SpelTargetGroups
 	clientCluster.SpotPrice = c.SpotPrice
@@ -105,6 +111,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	clientCluster.TerminationPolicies = c.TerminationPolicies
 	clientCluster.UseAmiBlockDeviceMappings = c.UseAmiBlockDeviceMappings
 	clientCluster.UseSourceCapacity = c.UseSourceCapacity
+	clientCluster.UserData = c.UserData
 	return clientCluster
 }
 
@@ -120,6 +127,15 @@ func (s *deployStage) toClientClusters() *[]*client.DeployStageCluster {
 }
 
 func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
+	var sgs []string
+	var sgExpression string
+	switch v := c.SecurityGroups.(type) {
+	case string:
+		sgExpression = v
+	case []string:
+		sgs = v
+	}
+
 	newCluster := deployStageCluster{
 		Account:       c.Account,
 		Application:   c.Application,
@@ -128,33 +144,35 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 
 		CopySourceCustomBlockDeviceMappings: c.CopySourceCustomBlockDeviceMappings,
 
-		EBSOptimized:           c.EBSOptimized,
-		EnabledMetrics:         c.EnabledMetrics,
-		FreeFormDetails:        c.FreeFormDetails,
-		HealthCheckGracePeriod: c.HealthCheckGracePeriod,
-		HealthCheckType:        c.HealthCheckType,
-		IAMRole:                c.IAMRole,
-		InstanceMonitoring:     c.InstanceMonitoring,
-		InstanceType:           c.InstanceType,
-		KeyPair:                c.KeyPair,
-		MaxRemainingAsgs:       c.MaxRemainingAsgs,
-		LoadBalancers:          c.LoadBalancers,
-		Provider:               c.Provider,
-		SecurityGroups:         c.SecurityGroups,
-		SpelLoadBalancers:      c.SpelLoadBalancers,
-		SpelTargetGroups:       c.SpelTargetGroups,
-		SpotPrice:              c.SpotPrice,
-		Stack:                  c.Stack,
-		Strategy:               c.Strategy,
-		SubnetType:             c.SubnetType,
-		SuspendedProcesses:     c.SuspendedProcesses,
-		Tags:                   c.Tags,
-		TargetGroups:           c.TargetGroups,
+		EBSOptimized:             c.EBSOptimized,
+		EnabledMetrics:           c.EnabledMetrics,
+		FreeFormDetails:          c.FreeFormDetails,
+		HealthCheckGracePeriod:   c.HealthCheckGracePeriod,
+		HealthCheckType:          c.HealthCheckType,
+		IAMRole:                  c.IAMRole,
+		InstanceMonitoring:       c.InstanceMonitoring,
+		InstanceType:             c.InstanceType,
+		KeyPair:                  c.KeyPair,
+		MaxRemainingAsgs:         c.MaxRemainingAsgs,
+		LoadBalancers:            c.LoadBalancers,
+		Provider:                 c.Provider,
+		SecurityGroups:           sgs,
+		SecurityGroupsExpression: sgExpression,
+		SpelLoadBalancers:        c.SpelLoadBalancers,
+		SpelTargetGroups:         c.SpelTargetGroups,
+		SpotPrice:                c.SpotPrice,
+		Stack:                    c.Stack,
+		Strategy:                 c.Strategy,
+		SubnetType:               c.SubnetType,
+		SuspendedProcesses:       c.SuspendedProcesses,
+		Tags:                     c.Tags,
+		TargetGroups:             c.TargetGroups,
 
 		TargetHealthyDeployPercentage: c.TargetHealthyDeployPercentage,
 		TerminationPolicies:           c.TerminationPolicies,
 		UseAmiBlockDeviceMappings:     c.UseAmiBlockDeviceMappings,
 		UseSourceCapacity:             c.UseSourceCapacity,
+		UserData:                      c.UserData,
 	}
 	newCluster.importAvailabilityZones(c)
 	newCluster.Capacity = fromClientCapacity(c.Capacity)

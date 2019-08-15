@@ -81,7 +81,7 @@ func (s *ResizeServerGroupStage) GetRefID() string {
 
 func parseResizeServerGroupStage(stageMap map[string]interface{}) (Stage, error) {
 	stage := newSerializableResizeServerGroupStage()
-	if err := mapstructure.Decode(stageMap, stage); err != nil {
+	if err := mapstructure.WeakDecode(stageMap, stage); err != nil {
 		return nil, err
 	}
 

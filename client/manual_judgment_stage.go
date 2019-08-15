@@ -4,20 +4,19 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// DeployStageType deploy stage
-var DeployStageType StageType = "deploy"
+// ManualJudgmentStageType deploy stage
+var ManualJudgmentStageType StageType = "manualJudgment"
 
 func init() {
-	stageFactories[DeployStageType] = parseDeployStage
+	stageFactories[ManualJudgmentStageType] = parseManualJudgmentStage
 }
 
-// StageEnabled when stage is enabled
-type StageEnabled struct {
-	Expression string `json:"expression"`
-	Type       string `json:"type"`
+// JudgmentInputs inputs for judgment
+type JudgmentInputs struct {
+	Value string `json:"value"`
 }
 
-type serializableDeployStage struct {
+type serializableManualJudgmentStage struct {
 	// BaseStage
 	Name                              string                `json:"name"`
 	RefID                             string                `json:"refId"`
@@ -34,48 +33,49 @@ type serializableDeployStage struct {
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	Clusters *[]*DeployStageCluster `json:"clusters"`
+	Instructions   string           `json:"instructions"`
+	JudgmentInputs []JudgmentInputs `json:"judgmentInputs"`
 }
 
-// DeployStage for pipeline
-type DeployStage struct {
-	*serializableDeployStage
+// ManualJudgmentStage for pipeline
+type ManualJudgmentStage struct {
+	*serializableManualJudgmentStage
 	Notifications *[]*Notification `json:"notifications"`
 }
 
-func newSerializableDeployStage() *serializableDeployStage {
-	return &serializableDeployStage{
-		Type:                 DeployStageType,
+func newSerializableManualJudgmentStage() *serializableManualJudgmentStage {
+	return &serializableManualJudgmentStage{
+		Type:                 ManualJudgmentStageType,
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
 	}
 }
 
-// NewDeployStage for pipeline
-func NewDeployStage() *DeployStage {
-	return &DeployStage{
-		serializableDeployStage: newSerializableDeployStage(),
+// NewManualJudgmentStage for pipeline
+func NewManualJudgmentStage() *ManualJudgmentStage {
+	return &ManualJudgmentStage{
+		serializableManualJudgmentStage: newSerializableManualJudgmentStage(),
 	}
 }
 
 // GetName for Stage interface
-func (s *DeployStage) GetName() string {
+func (s *ManualJudgmentStage) GetName() string {
 	return s.Name
 }
 
 // GetType for Stage interface
-func (s *DeployStage) GetType() StageType {
+func (s *ManualJudgmentStage) GetType() StageType {
 	return s.Type
 }
 
 // GetRefID for Stage interface
-func (s *DeployStage) GetRefID() string {
+func (s *ManualJudgmentStage) GetRefID() string {
 	return s.RefID
 }
 
-func parseDeployStage(stageMap map[string]interface{}) (Stage, error) {
-	stage := newSerializableDeployStage()
-	if err := mapstructure.WeakDecode(stageMap, stage); err != nil {
+func parseManualJudgmentStage(stageMap map[string]interface{}) (Stage, error) {
+	stage := newSerializableManualJudgmentStage()
+	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err
 	}
 
@@ -83,8 +83,8 @@ func parseDeployStage(stageMap map[string]interface{}) (Stage, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DeployStage{
-		serializableDeployStage: stage,
-		Notifications:           notifications,
+	return &ManualJudgmentStage{
+		serializableManualJudgmentStage: stage,
+		Notifications:                   notifications,
 	}, nil
 }

@@ -1,11 +1,14 @@
 package provider
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type bakeStage struct {
+type webhookStage struct {
 	// baseStage
 	Name                              string                   `mapstructure:"name"`
 	RefID                             string                   `mapstructure:"ref_id"`
@@ -22,40 +25,35 @@ type bakeStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	AmiName            string            `mapstructure:"ami_name"`
-	AmiSuffix          string            `mapstructure:"ami_suffix"`
-	BaseAMI            string            `mapstructure:"base_ami"`
-	BaseLabel          string            `mapstructure:"base_label"`
-	BaseName           string            `mapstructure:"base_name"`
-	BaseOS             string            `mapstructure:"base_os"`
-	CloudProviderType  string            `mapstructure:"cloud_provider_type"`
-	ExtendedAttributes map[string]string `mapstructure:"extended_attributes"`
-	Package            string            `mapstructure:"package"`
-	Rebake             bool              `mapstructure:"rebake"`
-	Region             string            `mapstructure:"region"`
-	Regions            []string          `mapstructure:"regions"`
-	StoreType          string            `mapstructure:"store_type"`
-	TemplateFileName   string            `mapstructure:"template_file_name"`
-	User               string            `mapstructure:"user"`
-	VarFileName        string            `mapstructure:"var_file_name"`
-	VMType             string            `mapstructure:"vm_type"`
+	CanceledStatuses    string            `mapstructure:"canceled_statuses"`
+	CustomHeaders       map[string]string `mapstructure:"custom_headers"`
+	FailFastStatusCodes []string          `mapstructure:"fail_fast_status_codes"`
+	Method              string            `mapstructure:"method"`
+	Payload             string            `mapstructure:"payload_string"`
+	ProgressJSONPath    string            `mapstructure:"progress_json_path"`
+	StatusJSONPath      string            `mapstructure:"status_json_path"`
+	StatusURLJSONPath   string            `mapstructure:"status_url_json_path"`
+	StatusURLResolution string            `mapstructure:"status_url_resolution"`
+	SuccessStatuses     string            `mapstructure:"success_statuses"`
+	TerminalStatuses    string            `mapstructure:"terminal_statuses"`
+	URL                 string            `mapstructure:"url"`
 }
 
-func newBakeStage() *bakeStage {
-	return &bakeStage{
-		Type:         client.BakeStageType,
+func newWebhookStage() *webhookStage {
+	return &webhookStage{
+		Type:         client.WebhookStageType,
 		FailPipeline: true,
 	}
 }
 
-func (s *bakeStage) toClientStage(config *client.Config) (client.Stage, error) {
+func (s *webhookStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
 		return nil, err
 	}
 
-	cs := client.NewBakeStage()
+	cs := client.NewWebhookStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
@@ -71,38 +69,38 @@ func (s *bakeStage) toClientStage(config *client.Config) (client.Stage, error) {
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
 	// End baseStage
 
-	cs.AmiName = s.AmiName
-	cs.AmiSuffix = s.AmiSuffix
-	cs.BaseAMI = s.BaseAMI
-	cs.BaseLabel = s.BaseLabel
-	cs.BaseName = s.BaseName
-	cs.BaseOS = s.BaseOS
-	cs.CloudProviderType = s.CloudProviderType
-	cs.ExtendedAttributes = s.ExtendedAttributes
-	cs.Package = s.Package
-	cs.Rebake = s.Rebake
-	if s.Region == "" && len(s.Regions) == 1 {
-		cs.Region = s.Regions[0]
-	} else {
-		cs.Region = s.Region
+	cs.CanceledStatuses = s.CanceledStatuses
+	cs.CustomHeaders = s.CustomHeaders
+	cs.FailFastStatusCodes = s.FailFastStatusCodes
+	cs.Method = s.Method
+
+	var definedPayload map[string]interface{}
+	if len(s.Payload) > 0 {
+		if err = json.Unmarshal([]byte(s.Payload), &definedPayload); err != nil {
+			return nil, err
+		}
 	}
-	cs.Regions = s.Regions
-	cs.StoreType = s.StoreType
-	cs.TemplateFileName = s.TemplateFileName
-	if s.User == "" {
-		cs.User = config.Auth.UserEmail
-	} else {
-		cs.User = s.User
+	cs.Payload = definedPayload
+
+	cs.ProgressJSONPath = s.ProgressJSONPath
+	cs.StatusJSONPath = s.StatusJSONPath
+	cs.StatusURLJSONPath = s.StatusURLJSONPath
+	statusResolution := s.StatusURLResolution
+	if s.StatusURLResolution == "" {
+		statusResolution = "getMethod"
 	}
-	cs.VarFileName = s.VarFileName
-	cs.VMType = s.VMType
+	cs.StatusURLResolution = statusResolution
+	cs.SuccessStatuses = s.SuccessStatuses
+	cs.TerminalStatuses = s.TerminalStatuses
+	cs.URL = s.URL
+	cs.WaitForCompletion = s.StatusURLResolution != ""
 
 	return cs, nil
 }
 
-func (s *bakeStage) fromClientStage(cs client.Stage) stage {
-	clientStage := cs.(*client.BakeStage)
-	newStage := newBakeStage()
+func (s *webhookStage) fromClientStage(cs client.Stage) stage {
+	clientStage := cs.(*client.WebhookStage)
+	newStage := newWebhookStage()
 
 	// baseStage
 	newStage.Name = clientStage.Name
@@ -119,28 +117,35 @@ func (s *bakeStage) fromClientStage(cs client.Stage) stage {
 	newStage.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
 	// end baseStage
 
-	newStage.AmiName = clientStage.AmiName
-	newStage.AmiSuffix = clientStage.AmiSuffix
-	newStage.BaseAMI = clientStage.BaseAMI
-	newStage.BaseLabel = clientStage.BaseLabel
-	newStage.BaseName = clientStage.BaseName
-	newStage.BaseOS = clientStage.BaseOS
-	newStage.CloudProviderType = clientStage.CloudProviderType
-	newStage.ExtendedAttributes = clientStage.ExtendedAttributes
-	newStage.Package = clientStage.Package
-	newStage.Rebake = clientStage.Rebake
-	newStage.Region = clientStage.Region
-	newStage.Regions = clientStage.Regions
-	newStage.StoreType = clientStage.StoreType
-	newStage.TemplateFileName = clientStage.TemplateFileName
-	newStage.User = clientStage.User
-	newStage.VarFileName = clientStage.VarFileName
-	newStage.VMType = clientStage.VMType
+	newStage.CanceledStatuses = clientStage.CanceledStatuses
+	newStage.CustomHeaders = clientStage.CustomHeaders
+	newStage.FailFastStatusCodes = clientStage.FailFastStatusCodes
+	newStage.Method = clientStage.Method
+
+	if clientStage.Payload != nil && len(clientStage.Payload) > 0 {
+		out, err := json.Marshal(clientStage.Payload)
+		if err != nil {
+			log.Println("[WARN]: Failed to unmarshal payload into string")
+		}
+		newStage.Payload = string(out)
+	}
+
+	newStage.ProgressJSONPath = clientStage.ProgressJSONPath
+	newStage.StatusJSONPath = clientStage.StatusJSONPath
+	newStage.StatusURLJSONPath = clientStage.StatusURLJSONPath
+	statusResolution := clientStage.StatusURLResolution
+	if !clientStage.WaitForCompletion {
+		statusResolution = ""
+	}
+	newStage.StatusURLResolution = statusResolution
+	newStage.SuccessStatuses = clientStage.SuccessStatuses
+	newStage.TerminalStatuses = clientStage.TerminalStatuses
+	newStage.URL = clientStage.URL
 
 	return newStage
 }
 
-func (s *bakeStage) SetResourceData(d *schema.ResourceData) error {
+func (s *webhookStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
 	err := d.Set("name", s.Name)
 	if err != nil {
@@ -188,69 +193,58 @@ func (s *bakeStage) SetResourceData(d *schema.ResourceData) error {
 	}
 	// End baseStage
 
-	err = d.Set("ami_name", s.AmiName)
+	err = d.Set("canceled_statuses", s.CanceledStatuses)
 	if err != nil {
 		return err
 	}
-	err = d.Set("ami_suffix", s.AmiSuffix)
+	err = d.Set("custom_headers", s.CustomHeaders)
 	if err != nil {
 		return err
 	}
-	err = d.Set("base_ami", s.BaseAMI)
+	err = d.Set("fail_fast_status_codes", s.FailFastStatusCodes)
 	if err != nil {
 		return err
 	}
-	err = d.Set("base_label", s.BaseLabel)
+	err = d.Set("method", s.Method)
 	if err != nil {
 		return err
 	}
-	err = d.Set("base_name", s.BaseName)
+	err = d.Set("payload_string", s.Payload)
 	if err != nil {
 		return err
 	}
-	err = d.Set("base_os", s.BaseOS)
+	err = d.Set("progress_json_path", s.ProgressJSONPath)
 	if err != nil {
 		return err
 	}
-	err = d.Set("cloud_provider_type", s.CloudProviderType)
+	err = d.Set("status_json_path", s.StatusJSONPath)
 	if err != nil {
 		return err
 	}
-	err = d.Set("extended_attributes", s.ExtendedAttributes)
+	err = d.Set("status_url_json_path", s.StatusURLJSONPath)
 	if err != nil {
 		return err
 	}
-	err = d.Set("package", s.Package)
+	err = d.Set("status_url_resolution", s.StatusURLResolution)
 	if err != nil {
 		return err
 	}
-	err = d.Set("rebake", s.Rebake)
+	err = d.Set("success_statuses", s.SuccessStatuses)
 	if err != nil {
 		return err
 	}
-	err = d.Set("regions", s.Regions)
+	err = d.Set("terminal_statuses", s.TerminalStatuses)
 	if err != nil {
 		return err
 	}
-	err = d.Set("store_type", s.StoreType)
-	if err != nil {
-		return err
-	}
-	err = d.Set("template_file_name", s.TemplateFileName)
-	if err != nil {
-		return err
-	}
-	err = d.Set("var_file_name", s.VarFileName)
-	if err != nil {
-		return err
-	}
-	return d.Set("vm_type", s.VMType)
+	return d.Set("url", s.URL)
+
 }
 
-func (s *bakeStage) SetRefID(id string) {
+func (s *webhookStage) SetRefID(id string) {
 	s.RefID = id
 }
 
-func (s *bakeStage) GetRefID() string {
+func (s *webhookStage) GetRefID() string {
 	return s.RefID
 }

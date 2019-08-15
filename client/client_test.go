@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/user"
 	"testing"
@@ -55,13 +54,9 @@ func TestClientErrorResponse(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var resp *http.Response
-	resp, err = client.Do(req)
+	_, err = client.Do(req)
 	if err == nil {
 		t.Fatal("should fail")
-	}
-	if resp.StatusCode != 404 {
-		t.Fatalf("should return 404, not %v", resp.StatusCode)
 	}
 	spinnakerError, ok := err.(*SpinnakerError)
 	if !ok {
@@ -75,28 +70,26 @@ func TestClientErrorResponse(t *testing.T) {
 func newTestClient() *Client {
 	usr, err := user.Current()
 	if err != nil {
-		log.Println("[Error] unable to get current user: ", err)
+		log.Println("[ERROR] unable to get current user: ", err)
 	}
 
 	address := os.Getenv("SPINNAKER_ADDRESS")
 	if address == "" {
-		log.Println("[Error] SPINNAKER_ADDRESS not defined")
+		log.Println("[ERROR] SPINNAKER_ADDRESS not defined")
 	}
 	certPath := os.Getenv("SPINNAKER_CERT")
 	if certPath == "" {
-		log.Println("[Error] SPINNAKER_CERT not defined")
+		log.Println("[ERROR] SPINNAKER_CERT not defined")
 	}
 	keyPath := os.Getenv("SPINNAKER_KEY")
 	if keyPath == "" {
-		log.Println("[Error] SPINNAKER_KEY not defined")
+		log.Println("[ERROR] SPINNAKER_KEY not defined")
 	}
 
-	c := Config{
-		Address:   address,
-		CertPath:  certPath,
-		KeyPath:   keyPath,
-		UserEmail: fmt.Sprintf("%s", usr.Username),
-		Insecure:  true,
-	}
+	c := NewConfig()
+	c.Address = address
+	c.Auth.CertPath = certPath
+	c.Auth.KeyPath = keyPath
+	c.Auth.UserEmail = fmt.Sprintf("%s", usr.Username)
 	return NewClient(c)
 }

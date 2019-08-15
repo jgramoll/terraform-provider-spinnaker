@@ -235,7 +235,7 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 			},
 			"iam_role": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "IAM instane profile",
+				Description: "IAM instance profile",
 				Optional:    true,
 			},
 			"instance_monitoring": &schema.Schema{
@@ -287,6 +287,11 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"security_groups_expression": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Security Group expression -- will override other sg inputs",
+				Optional:    true,
 			},
 			"spel_load_balancers": &schema.Schema{
 				Type:        schema.TypeList,
@@ -370,6 +375,11 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Spinnaker will use the current capacity of the existing server group when deploying a new server group.\nThis setting is intended to support a server group with auto-scaling enabled, where the bounds and desired capacity are controlled by an external process.\nIn the event that there is no existing server group, the deploy will fail.",
 				Optional:    true,
 				Default:     false,
+			},
+			"user_data": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "UserData is a base64 encoded string.",
+				Optional:    true,
 			},
 		},
 	}

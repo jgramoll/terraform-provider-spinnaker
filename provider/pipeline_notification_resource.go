@@ -14,9 +14,6 @@ import (
 // ErrNotificationNotFound notification not found
 var ErrNotificationNotFound = errors.New("Could not find notification")
 
-// PipelineKey key for pipeline in map
-const PipelineKey = "pipeline"
-
 var errInvalidNotificationImportKey = errors.New("Invalid import key, must be pipelineID_notificationID")
 
 func pipelineNotificationResource() *schema.Resource {
