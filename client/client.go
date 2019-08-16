@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -44,7 +45,7 @@ func NewClient(config Config) (*Client, error) {
 		var cert tls.Certificate
 		var err error
 		if config.Auth.CertContent != "" {
-			cert, err = tls.X509KeyPair([]byte(config.Auth.CertContent), []byte(config.Auth.KeyContent))
+			cert, err = decodeBase64KeyPair(config.Auth.CertContent, config.Auth.KeyContent)
 		} else {
 			cert, err = tls.LoadX509KeyPair(config.Auth.CertPath, config.Auth.KeyPath)
 		}
@@ -65,6 +66,18 @@ func NewClient(config Config) (*Client, error) {
 		Config: config,
 		client: httpClient,
 	}, nil
+}
+
+func decodeBase64KeyPair(cert64, key64 string) (tls.Certificate, error) {
+	certBytes, err := base64.StdEncoding.DecodeString(cert64)
+	if err != nil {
+		return tls.Certificate{}, err
+	}
+	keyBytes, err := base64.StdEncoding.DecodeString(key64)
+	if err != nil {
+		return tls.Certificate{}, err
+	}
+	return tls.X509KeyPair(certBytes, keyBytes)
 }
 
 // NewRequest create http request
