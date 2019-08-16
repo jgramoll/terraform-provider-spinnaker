@@ -24,7 +24,7 @@ type Config struct {
 
 // Auth for provider
 type Auth struct {
-	Enabled   bool
+	Enabled   bool   `mapstructure:"enabled"`
 	CertPath  string `mapstructure:"cert_path"`
 	KeyPath   string `mapstructure:"key_path"`
 	UserEmail string `mapstructure:"user_email"`
@@ -48,7 +48,8 @@ func Provider() terraform.ResourceProvider {
 					Schema: map[string]*schema.Schema{
 						"enabled": &schema.Schema{
 							Type:        schema.TypeBool,
-							Required:    false,
+							Optional:    true,
+							Default:     false,
 							Description: "Path to cert to authenticate with spinnaker api",
 						},
 
@@ -104,7 +105,7 @@ func Provider() terraform.ResourceProvider {
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var config Config
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &config); err != nil {
+	if err := mapstructure.WeakDecode(configRaw, &config); err != nil {
 		return nil, err
 	}
 
