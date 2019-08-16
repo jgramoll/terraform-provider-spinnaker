@@ -2,6 +2,7 @@ package provider
 
 import (
 	"log"
+	"os"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -24,10 +25,12 @@ type Config struct {
 
 // Auth for provider
 type Auth struct {
-	Enabled   bool   `mapstructure:"enabled"`
-	CertPath  string `mapstructure:"cert_path"`
-	KeyPath   string `mapstructure:"key_path"`
-	UserEmail string `mapstructure:"user_email"`
+	Enabled     bool   `mapstructure:"enabled"`
+	CertPath    string `mapstructure:"cert_path"`
+	KeyPath     string `mapstructure:"key_path"`
+	CertContent string `mapstructure:"cert_content"`
+	KeyContent  string `mapstructure:"key_content"`
+	UserEmail   string `mapstructure:"user_email"`
 }
 
 // Provider for terraform
@@ -65,6 +68,20 @@ func Provider() terraform.ResourceProvider {
 							Required:    false,
 							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
 							Description: "Path to key to authenticate with spinnaker api",
+						},
+
+						"cert_content": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
+							Description: "Cert string in base64 to authenticate with spinnaker api",
+						},
+
+						"key_content": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
+							Description: "Key string in base64 to authenticate with spinnaker api",
 						},
 
 						"user_email": &schema.Schema{
@@ -114,13 +131,26 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	clientConfig := client.Config{
 		Address: config.Address,
 		Auth: client.Auth{
-			Enabled:   config.Auth.Enabled,
-			CertPath:  config.Auth.CertPath,
-			KeyPath:   config.Auth.KeyPath,
-			UserEmail: config.Auth.UserEmail,
+			Enabled:     config.Auth.Enabled,
+			CertPath:    config.Auth.CertPath,
+			KeyPath:     config.Auth.KeyPath,
+			CertContent: config.Auth.CertContent,
+			KeyContent:  config.Auth.KeyContent,
+			UserEmail:   config.Auth.UserEmail,
 		},
 	}
-	c := client.NewClient(clientConfig)
+	if v := os.Getenv("SPINNAKER_CERT"); v != "" {
+		clientConfig.Auth.CertPath = v
+		clientConfig.Auth.KeyPath = os.Getenv("SPINNAKER_KEY")
+	}
+	if v := os.Getenv("SPINNAKER_CERT_CONTENT"); v != "" {
+		clientConfig.Auth.CertContent = v
+		clientConfig.Auth.KeyContent = os.Getenv("SPINNAKER_KEY_CONTENT")
+	}
+	c, err := client.NewClient(clientConfig)
+	if err != nil {
+		return nil, err
+	}
 	return &Services{
 		Config:             clientConfig,
 		ApplicationService: client.ApplicationService{Client: c},
