@@ -32,53 +32,49 @@ func Provider() terraform.ResourceProvider {
 			"auth": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
-				"enabled": {
-					Type:        schema.TypeBool,
-					Optional:    true,
-					Default:     true,
-					Description: "If a cert should be used to talk to spinnaker",
-				},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+					"cert_path": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
+						Description: "Path to cert to authenticate with spinnaker api",
+					},
 
-				"cert_path": {
-					Type:        schema.TypeString,
-					Optional:    true,
-					DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
-					Description: "Path to cert to authenticate with spinnaker api",
-				},
+					"key_path": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
+						Description: "Path to key to authenticate with spinnaker api",
+					},
 
-				"key_path": {
-					Type:        schema.TypeString,
-					Optional:    true,
-					DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
-					Description: "Path to key to authenticate with spinnaker api",
-				},
+					"cert_content": &schema.Schema{
+						Type:        schema.TypeString,
+						Required:    false,
+						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
+						Description: "Cert string in base64 to authenticate with spinnaker api",
+					},
 
-				"cert_path_content": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    false,
-					DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
-					Description: "Cert string in base64 to authenticate with spinnaker api",
-				},
+					"key_content": &schema.Schema{
+						Type:        schema.TypeString,
+						Required:    false,
+						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
+						Description: "Key string in base64 to authenticate with spinnaker api",
+					},
 
-				"key_path_content": &schema.Schema{
-					Type:        schema.TypeString,
-					Required:    false,
-					DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
-					Description: "Key string in base64 to authenticate with spinnaker api",
-				},
+					"user_email": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
+						Description: "Path to user_email to authenticate with spinnaker api",
+					},
 
-				"user_email": {
-					Type:        schema.TypeString,
-					Optional:    true,
-					DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
-					Description: "Path to user_email to authenticate with spinnaker api",
-				},
-
-				"insecure": {
-					Type:        schema.TypeBool,
-					Optional:    true,
-					Default:     true,
-					Description: "If http client should skip ssl validation",
+					"insecure": {
+						Type:        schema.TypeBool,
+						Optional:    true,
+						Default:     true,
+						Description: "If http client should skip ssl validation",
+					},
 				},
 			},
 		},
