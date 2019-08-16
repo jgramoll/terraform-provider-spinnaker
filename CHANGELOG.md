@@ -1,4 +1,9 @@
-# terraform-provider-spinnaker Change Log
+# terraform-provider-spinnaker
+
+## 1.3.0
+
+- `8d5a409` merge from fanatics (#24)
+- `1ffae34` update terraform dependency to 0.12.6 (#8)
 
 ## 1.2.0
 
