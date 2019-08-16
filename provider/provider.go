@@ -2,6 +2,7 @@ package provider
 
 import (
 	"log"
+	"os"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -144,6 +145,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	log.Println("[INFO] Initializing Spinnaker client")
 
 	clientConfig := config.toClientConfig()
+
 	c, err := client.NewClient(clientConfig)
 	if err != nil {
 		return nil, err
