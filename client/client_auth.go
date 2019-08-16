@@ -2,11 +2,13 @@ package client
 
 // Auth for login on spinnaker
 type Auth struct {
-	Enabled   bool
-	CertPath  string
-	KeyPath   string
-	UserEmail string
-	Insecure  bool
+	Enabled     bool
+	CertPath    string
+	CertContent string
+	KeyPath     string
+	KeyContent  string
+	UserEmail   string
+	Insecure    bool
 }
 
 // NewAuth new auth

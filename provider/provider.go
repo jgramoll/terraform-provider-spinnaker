@@ -49,6 +49,20 @@ func Provider() terraform.ResourceProvider {
 				Description: "Path to key to authenticate with spinnaker api",
 			},
 
+			"cert_path_content": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    false,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
+				Description: "Cert string to authenticate with spinnaker api",
+			},
+
+			"key_path_content": &schema.Schema{
+				Type:        schema.TypeString,
+				Required:    false,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
+				Description: "Key string to authenticate with spinnaker api",
+			},
+
 			"user_email": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -129,7 +143,10 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	log.Println("[INFO] Initializing Spinnaker client")
 
 	clientConfig := config.toClientConfig()
-	c := client.NewClient(config.toClientConfig())
+	c, err := client.NewClient(clientConfig)
+	if err != nil {
+		return nil, err
+	}
 	return &Services{
 		Config:              clientConfig,
 		ApplicationService:  &client.ApplicationService{Client: c},

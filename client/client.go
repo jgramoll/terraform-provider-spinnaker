@@ -37,37 +37,46 @@ type Client struct {
 }
 
 // NewClient Return a new client with loaded configuration
-func NewClient(config *Config) *Client {
+func NewClient(config *Config) (*Client, error) {
 
 	httpClient := http.DefaultClient
 	if config.Auth.Enabled {
-		httpClient = newTLSHTTPClient(config)
-	} else {
-		httpClient = http.DefaultClient
+		var err error
+		httpClient, err = newTLSHTTPClient(config)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &Client{
 		Config: config,
 		client: httpClient,
-	}
+	}, nil
 }
 
-func newTLSHTTPClient(config *Config) *http.Client {
-	homeDir, err := os.UserHomeDir()
+func newTLSHTTPClient(config *Config) (*http.Client, error) {
+
+	var cert tls.Certificate
+	var err error
+	if config.Auth.CertContent != "" {
+		cert, err = tls.X509KeyPair([]byte(config.Auth.CertContent), []byte(config.Auth.KeyContent))
+	} else {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return nil, err
+		}
+		certPath := strings.Replace(config.Auth.CertPath, "~", homeDir, 1)
+		if certPath == "" {
+			log.Fatal("[ERROR] Missing Cert Path")
+		}
+		keyPath := strings.Replace(config.Auth.KeyPath, "~", homeDir, 1)
+		if keyPath == "" {
+			log.Fatal("[ERROR] Missing Cert Key Path")
+		}
+		cert, err = tls.LoadX509KeyPair(certPath, keyPath)
+	}
 	if err != nil {
-		log.Fatal("[ERROR]", err)
-	}
-	certPath := strings.Replace(config.Auth.CertPath, "~", homeDir, 1)
-	if certPath == "" {
-		log.Fatal("[ERROR] Missing Cert Path")
-	}
-	keyPath := strings.Replace(config.Auth.KeyPath, "~", homeDir, 1)
-	if keyPath == "" {
-		log.Fatal("[ERROR] Missing Cert Key Path")
-	}
-	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
-	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	tlsConfig := &tls.Config{
@@ -76,7 +85,7 @@ func newTLSHTTPClient(config *Config) *http.Client {
 	}
 	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	return &http.Client{Transport: transport}
+	return &http.Client{Transport: transport}, nil
 }
 
 // NewRequest create http request
