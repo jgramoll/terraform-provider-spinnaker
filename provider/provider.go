@@ -2,6 +2,7 @@ package provider
 
 import (
 	"log"
+	"os"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -137,6 +138,14 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			KeyContent:  config.Auth.KeyContent,
 			UserEmail:   config.Auth.UserEmail,
 		},
+	}
+	if v := os.Getenv("SPINNAKER_CERT"); v != "" {
+		clientConfig.Auth.CertPath = v
+		clientConfig.Auth.KeyPath = os.Getenv("SPINNAKER_KEY")
+	}
+	if v := os.Getenv("SPINNAKER_CERT_CONTENT"); v != "" {
+		clientConfig.Auth.CertContent = v
+		clientConfig.Auth.KeyContent = os.Getenv("SPINNAKER_KEY_CONTENT")
 	}
 	c, err := client.NewClient(clientConfig)
 	if err != nil {
