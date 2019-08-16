@@ -24,10 +24,12 @@ type Config struct {
 
 // Auth for provider
 type Auth struct {
-	Enabled   bool   `mapstructure:"enabled"`
-	CertPath  string `mapstructure:"cert_path"`
-	KeyPath   string `mapstructure:"key_path"`
-	UserEmail string `mapstructure:"user_email"`
+	Enabled     bool   `mapstructure:"enabled"`
+	CertPath    string `mapstructure:"cert_path"`
+	KeyPath     string `mapstructure:"key_path"`
+	CertContent string `mapstructure:"cert_content"`
+	KeyContent  string `mapstructure:"key_content"`
+	UserEmail   string `mapstructure:"user_email"`
 }
 
 // Provider for terraform
@@ -65,6 +67,20 @@ func Provider() terraform.ResourceProvider {
 							Required:    false,
 							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
 							Description: "Path to key to authenticate with spinnaker api",
+						},
+
+						"cert_path_content": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
+							Description: "Cert string to authenticate with spinnaker api",
+						},
+
+						"key_path_content": &schema.Schema{
+							Type:        schema.TypeString,
+							Required:    false,
+							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
+							Description: "Key string to authenticate with spinnaker api",
 						},
 
 						"user_email": &schema.Schema{
@@ -114,13 +130,18 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	clientConfig := client.Config{
 		Address: config.Address,
 		Auth: client.Auth{
-			Enabled:   config.Auth.Enabled,
-			CertPath:  config.Auth.CertPath,
-			KeyPath:   config.Auth.KeyPath,
-			UserEmail: config.Auth.UserEmail,
+			Enabled:     config.Auth.Enabled,
+			CertPath:    config.Auth.CertPath,
+			KeyPath:     config.Auth.KeyPath,
+			CertContent: config.Auth.CertContent,
+			KeyContent:  config.Auth.KeyContent,
+			UserEmail:   config.Auth.UserEmail,
 		},
 	}
-	c := client.NewClient(clientConfig)
+	c, err := client.NewClient(clientConfig)
+	if err != nil {
+		return nil, err
+	}
 	return &Services{
 		Config:             clientConfig,
 		ApplicationService: client.ApplicationService{Client: c},

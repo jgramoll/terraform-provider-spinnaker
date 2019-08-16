@@ -23,10 +23,12 @@ type Config struct {
 
 // Auth for login on spinnaker
 type Auth struct {
-	Enabled   bool
-	CertPath  string
-	KeyPath   string
-	UserEmail string
+	Enabled     bool
+	CertPath    string
+	CertContent string
+	KeyPath     string
+	KeyContent  string
+	UserEmail   string
 }
 
 // Client to talk to Spinnaker
@@ -36,12 +38,18 @@ type Client struct {
 }
 
 // NewClient Return a new client with loaded configuration
-func NewClient(config Config) *Client {
+func NewClient(config Config) (*Client, error) {
 	httpClient := http.DefaultClient
 	if config.Auth.Enabled {
-		cert, err := tls.LoadX509KeyPair(config.Auth.CertPath, config.Auth.KeyPath)
+		var cert tls.Certificate
+		var err error
+		if config.Auth.CertContent != "" {
+			cert, err = tls.X509KeyPair([]byte(config.Auth.CertContent), []byte(config.Auth.KeyContent))
+		} else {
+			cert, err = tls.LoadX509KeyPair(config.Auth.CertPath, config.Auth.KeyPath)
+		}
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		tlsConfig := &tls.Config{
@@ -56,7 +64,7 @@ func NewClient(config Config) *Client {
 	return &Client{
 		Config: config,
 		client: httpClient,
-	}
+	}, nil
 }
 
 // NewRequest create http request
