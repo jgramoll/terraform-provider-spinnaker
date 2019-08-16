@@ -16,11 +16,16 @@ func init() {
 }
 
 func TestCreateDeleteApplication(t *testing.T) {
-	expectedName := fmt.Sprintf("mytestapp%d", rand.Int())
+	appName := fmt.Sprintf("mytestapp%d", rand.Int())
 	app := NewApplication()
-	app.Name = expectedName
-	app.Email = applicationService.Config.UserEmail
+	app.Name = appName
+	app.Email = applicationService.Config.Auth.UserEmail
 	err := applicationService.CreateApplication(app)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	app, err = applicationService.GetApplicationByNameWithRetries(appName)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,6 +56,9 @@ func TestApplicationCleanup(t *testing.T) {
 	}
 
 	for _, app := range *apps {
+		if strings.Contains(app.Email, "@spin.com") {
+			applicationService.DeleteApplication(app)
+		}
 		if strings.Contains(app.Name, "mytestapp") {
 			applicationService.DeleteApplication(app)
 		}

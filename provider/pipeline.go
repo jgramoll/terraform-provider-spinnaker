@@ -86,7 +86,7 @@ func (p *pipeline) setResourceData(d *schema.ResourceData) error {
 	return nil
 }
 
-// PipelineFromResourceData get pipeline from resource data
+// pipelineFromResourceData get pipeline from resource data
 func pipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData) {
 	pipeline.Index = d.Get("index").(int)
 	pipeline.Application = d.Get(ApplicationKey).(string)

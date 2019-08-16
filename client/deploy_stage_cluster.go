@@ -10,7 +10,7 @@ type DeployStageCluster struct {
 	Cooldown                            int                    `json:"cooldown"`
 	CopySourceCustomBlockDeviceMappings bool                   `json:"copySourceCustomBlockDeviceMappings"`
 	DelayBeforeDisableSec               int                    `json:"delayBeforeDisableSec"`
-	DelayBeforeScaleDownSec             int                    `json:"delayBeforeDisableSec"`
+	DelayBeforeScaleDownSec             int                    `json:"delayBeforeScaleDownSec"`
 	Dirty                               map[string]interface{} `json:"dirty"`
 	EBSOptimized                        bool                   `json:"ebsOptimized"`
 	EnabledMetrics                      []string               `json:"enabledMetrics"`
@@ -27,7 +27,7 @@ type DeployStageCluster struct {
 	Provider                            string                 `json:"provider"`
 	Rollback                            *Rollback              `json:"rollback"`
 	ScaleDown                           bool                   `json:"scaleDown"`
-	SecurityGroups                      []string               `json:"securityGroups"`
+	SecurityGroups                      interface{}            `json:"securityGroups"`
 	SpelLoadBalancers                   []string               `json:"spelLoadBalancers"`
 	SpelTargetGroups                    []string               `json:"spelTargetGroups"`
 	SpotPrice                           string                 `json:"spotPrice"`
@@ -41,6 +41,7 @@ type DeployStageCluster struct {
 	TerminationPolicies                 []string               `json:"terminationPolicies"`
 	UseAmiBlockDeviceMappings           bool                   `json:"useAmiBlockDeviceMappings"`
 	UseSourceCapacity                   bool                   `json:"useSourceCapacity"`
+	UserData                            string                 `json:"base64UserData"`
 }
 
 func NewDeployStageCluster() *DeployStageCluster {

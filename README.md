@@ -29,6 +29,26 @@ provider "spinnaker" {
   user_email = "${var.user_email}"
 }
 
+resource "spinnaker_application" "application" {
+  name             = "myApplication"
+  email            = "testo@test.com"
+  repo_type        = "github"
+  repo_project_key = "http://github.com/user/my-project"
+  repo_slug        = "my-project"
+
+  cloud_providers = [
+    "aws",
+  ]
+
+  provider_settings = {
+    aws = {
+      use_ami_block_device_mappings = true
+    }
+  }
+
+  instance_port = 8080
+}
+
 resource "spinnaker_pipeline" "edge" {
   application = "career"
   name        = "My New Pipeline"

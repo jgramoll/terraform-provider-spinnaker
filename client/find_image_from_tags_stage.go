@@ -4,20 +4,14 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// DeployStageType deploy stage
-var DeployStageType StageType = "deploy"
+// FindImageFromTagsStageType bake stage
+var FindImageFromTagsStageType StageType = "findImageFromTags"
 
 func init() {
-	stageFactories[DeployStageType] = parseDeployStage
+	stageFactories[FindImageFromTagsStageType] = parseFindImageStage
 }
 
-// StageEnabled when stage is enabled
-type StageEnabled struct {
-	Expression string `json:"expression"`
-	Type       string `json:"type"`
-}
-
-type serializableDeployStage struct {
+type serializableFindImageFromTagsStage struct {
 	// BaseStage
 	Name                              string                `json:"name"`
 	RefID                             string                `json:"refId"`
@@ -34,48 +28,52 @@ type serializableDeployStage struct {
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	Clusters *[]*DeployStageCluster `json:"clusters"`
+	CloudProvider     string            `json:"cloudProvider"`
+	CloudProviderType string            `json:"cloudProviderType"`
+	PackageName       string            `json:"packageName"`
+	Regions           []string          `json:"regions"`
+	Tags              map[string]string `json:"tags"`
 }
 
-// DeployStage for pipeline
-type DeployStage struct {
-	*serializableDeployStage
+// FindImageFromTagsStage for pipeline
+type FindImageFromTagsStage struct {
+	*serializableFindImageFromTagsStage
 	Notifications *[]*Notification `json:"notifications"`
 }
 
-func newSerializableDeployStage() *serializableDeployStage {
-	return &serializableDeployStage{
-		Type:                 DeployStageType,
+func newserializableFindImageStage() *serializableFindImageFromTagsStage {
+	return &serializableFindImageFromTagsStage{
+		Type:                 FindImageFromTagsStageType,
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
 	}
 }
 
-// NewDeployStage for pipeline
-func NewDeployStage() *DeployStage {
-	return &DeployStage{
-		serializableDeployStage: newSerializableDeployStage(),
+// NewFindImageStage for pipeline
+func NewFindImageStage() *FindImageFromTagsStage {
+	return &FindImageFromTagsStage{
+		serializableFindImageFromTagsStage: newserializableFindImageStage(),
 	}
 }
 
 // GetName for Stage interface
-func (s *DeployStage) GetName() string {
+func (s *FindImageFromTagsStage) GetName() string {
 	return s.Name
 }
 
 // GetType for Stage interface
-func (s *DeployStage) GetType() StageType {
+func (s *FindImageFromTagsStage) GetType() StageType {
 	return s.Type
 }
 
 // GetRefID for Stage interface
-func (s *DeployStage) GetRefID() string {
+func (s *FindImageFromTagsStage) GetRefID() string {
 	return s.RefID
 }
 
-func parseDeployStage(stageMap map[string]interface{}) (Stage, error) {
-	stage := newSerializableDeployStage()
-	if err := mapstructure.WeakDecode(stageMap, stage); err != nil {
+func parseFindImageStage(stageMap map[string]interface{}) (Stage, error) {
+	stage := newserializableFindImageStage()
+	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err
 	}
 
@@ -83,8 +81,8 @@ func parseDeployStage(stageMap map[string]interface{}) (Stage, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DeployStage{
-		serializableDeployStage: stage,
-		Notifications:           notifications,
+	return &FindImageFromTagsStage{
+		serializableFindImageFromTagsStage: stage,
+		Notifications:                      notifications,
 	}, nil
 }

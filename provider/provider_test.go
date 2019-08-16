@@ -29,33 +29,47 @@ func TestProvider(t *testing.T) {
 
 func TestProviderConfigure(t *testing.T) {
 	raw := map[string]interface{}{
-		"address":   "#address",
-		"cert_path": os.Getenv("SPINNAKER_CERT"),
-		"key_path":  os.Getenv("SPINNAKER_KEY"),
+		"address": "#address",
+		"auth": map[string]interface{}{
+			"cert_path": os.Getenv("SPINNAKER_CERT"),
+			"key_path":  os.Getenv("SPINNAKER_KEY"),
+		},
 	}
 	rawConfig, configErr := config.NewRawConfig(raw)
 	if configErr != nil {
 		t.Fatal(configErr)
 	}
 	c := terraform.NewResourceConfig(rawConfig)
-	err := testAccProvider.Configure(c)
+	provider := Provider().(*schema.Provider)
+	err := provider.Configure(c)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	config := testAccProvider.Meta().(*Services).Config
+	config := provider.Meta().(*Services).Config
 	if config.Address != raw["address"] {
 		t.Fatalf("address should be %#v, not %#v", raw["address"], config.Address)
 	}
-	if config.CertPath != raw["cert_path"] {
-		t.Fatalf("certPath should be %#v, not %#v", raw["cert_path"], config.CertPath)
+
+	auth, ok := raw["auth"].(map[string]interface{})
+	if !ok {
+		t.Fatal("auth is not present")
 	}
-	if config.KeyPath != raw["key_path"] {
-		t.Fatalf("keyPath should be %#v, not %#v", raw["key_path"], config.KeyPath)
+
+	if config.Auth.CertPath != auth["cert_path"] {
+		t.Fatalf("certPath should be %#v, not %#v", auth["cert_path"], config.Auth.CertPath)
+	}
+	if config.Auth.KeyPath != auth["key_path"] {
+		t.Fatalf("keyPath should be %#v, not %#v", auth["key_path"], config.Auth.KeyPath)
 	}
 }
 
 func testAccPreCheck(t *testing.T) {
+	hasAuthCfg := (os.Getenv("SPINNAKER_CERT") != "" && os.Getenv("SPINNAKER_KEY") != "")
+	if !hasAuthCfg {
+		t.Fatal("Spinnaker config (SPINNAKER_CERT and SPINNAKER_KEY) must be set for acceptance tests")
+	}
+
 	c := terraform.NewResourceConfig(nil)
 	err := testAccProvider.Configure(c)
 	if err != nil {
