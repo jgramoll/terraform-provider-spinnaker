@@ -119,6 +119,17 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
   }
 }
 
+resource "spinnaker_pipeline_manual_judgment_stage" "main" {
+  pipeline     = "${spinnaker_pipeline.test.id}"
+  name         = "Judgment"
+  instructions = "Manual Judgment Instructions"
+
+  judgment_inputs = [
+    "commit",
+    "rollback",
+  ]
+}
+
 resource "spinnaker_pipeline_deploy_stage" "deploy" {
   pipeline = "${spinnaker_pipeline.test.id}"
   name     = "Stage Deploy"
@@ -217,6 +228,15 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
   target = "oldest_asg_dynamic"
 }
 
+resource "spinnaker_pipeline_find_image_from_tags_stage" "main" {
+  pipeline     = "${spinnaker_pipeline.test.id}"
+  name         = "Find image"
+  package_name = "my-package"
+
+  cloud_provider      = "aws"
+  cloud_provider_type = "aws"
+}
+
 resource "spinnaker_pipeline_resize_server_group_stage" "deploy" {
   pipeline = "${spinnaker_pipeline.test.id}"
   name     = "Resize Server Group"
@@ -290,6 +310,12 @@ EOT
 second: 2
 EOT
   ]
+}
+
+resource "spinnaker_pipeline_webhook_stage" "main" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Webhook"
+	url  	 = "http://my-webhook.io/"
 }
 
 ```
