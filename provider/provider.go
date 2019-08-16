@@ -122,7 +122,7 @@ func Provider() terraform.ResourceProvider {
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	config := newProviderConfig()
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &config); err != nil {
+	if err := mapstructure.WeakDecode(configRaw, &config); err != nil {
 		return nil, err
 	}
 
