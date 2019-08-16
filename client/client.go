@@ -59,7 +59,7 @@ func newTLSHTTPClient(config *Config) (*http.Client, error) {
 	var cert tls.Certificate
 	var err error
 	if config.Auth.CertContent != "" {
-		cert, err = tls.X509KeyPair([]byte(config.Auth.CertContent), []byte(config.Auth.KeyContent))
+		cert, err = decodeBase64KeyPair(config.Auth.CertContent, config.Auth.KeyContent)
 	} else {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
@@ -86,6 +86,18 @@ func newTLSHTTPClient(config *Config) (*http.Client, error) {
 	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
 	return &http.Client{Transport: transport}, nil
+}
+
+func decodeBase64KeyPair(cert64, key64 string) (tls.Certificate, error) {
+	certBytes, err := base64.StdEncoding.DecodeString(cert64)
+	if err != nil {
+		return tls.Certificate{}, err
+	}
+	keyBytes, err := base64.StdEncoding.DecodeString(key64)
+	if err != nil {
+		return tls.Certificate{}, err
+	}
+	return tls.X509KeyPair(certBytes, keyBytes)
 }
 
 // NewRequest create http request
