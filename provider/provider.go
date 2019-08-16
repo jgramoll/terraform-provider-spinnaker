@@ -69,14 +69,14 @@ func Provider() terraform.ResourceProvider {
 							Description: "Path to key to authenticate with spinnaker api",
 						},
 
-						"cert_path_content": &schema.Schema{
+						"cert_content": &schema.Schema{
 							Type:        schema.TypeString,
 							Required:    false,
 							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
 							Description: "Cert string in base64 to authenticate with spinnaker api",
 						},
 
-						"key_path_content": &schema.Schema{
+						"key_content": &schema.Schema{
 							Type:        schema.TypeString,
 							Required:    false,
 							DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
