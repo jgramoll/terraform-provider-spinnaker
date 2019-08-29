@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"log"
 	"strings"
 
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
@@ -130,8 +131,21 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 	var sgs []string
 	var sgExpression string
 	switch v := c.SecurityGroups.(type) {
+	default:
+		log.Println("[WARN] unknown security group type", v)
 	case string:
 		sgExpression = v
+	case []interface{}:
+		varray := []string{}
+		for _, i := range v {
+			s, ok := i.(string)
+			if ok {
+				varray = append(varray, s)
+			} else {
+				log.Println("[WARN] unknown security group type, should be string", i)
+			}
+		}
+		sgs = varray
 	case []string:
 		sgs = v
 	}

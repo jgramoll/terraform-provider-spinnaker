@@ -38,6 +38,7 @@ func TestAccPipelineDeployStageBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(stage1, "cluster.0.account", clusterAccount+"-1"),
 					resource.TestCheckResourceAttr(stage1, "cluster.0.availability_zones.0.us_east_1.0", "us-east-1a"),
 					resource.TestCheckResourceAttr(stage1, "cluster.0.capacity.0.desired", "7"),
+					resource.TestCheckResourceAttr(stage1, "cluster.0.security_groups.0", "sg-1"),
 					resource.TestCheckResourceAttr(stage1, "cluster.1.account", clusterAccount+"-1"),
 					resource.TestCheckResourceAttr(stage1, "cluster.1.availability_zones.0.us_east_2.0", "us-east-2a"),
 					resource.TestCheckResourceAttr(stage1, "stage_enabled.0.type", stageEnabledType),
@@ -178,6 +179,10 @@ resource "spinnaker_pipeline_deploy_stage" "s%v" {
 		instance_type = "t2.micro"
 		key_pair = "key_pair"
 		provider = "aws"
+		security_groups = [
+			"sg-1",
+			"sg-2"
+		]
 		strategy = "redblack"
 		subnet_type = "subnet"
 	}
