@@ -78,7 +78,7 @@ func pipelineResource() *schema.Resource {
 				Type:        schema.TypeInt,
 				Description: "Index of the pipeline",
 				Optional:    true,
-				Default:     0,
+				Computed:    true,
 			},
 			"roles": &schema.Schema{
 				Type:        schema.TypeList,
