@@ -1,5 +1,10 @@
 # terraform-provider-spinnaker
 
+## 1.3.1
+
+- `60bcb31` allow for pipeline index to be computed (#27)
+- `4b067ab` add more resources to README (#26)
+
 ## 1.3.0
 
 - `8d5a409` merge from fanatics (#24)
