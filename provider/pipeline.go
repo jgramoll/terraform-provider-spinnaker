@@ -11,16 +11,23 @@ type pipeline struct {
 	AppConfig            map[string]interface{} `mapstructure:"appConfig"`
 	Disabled             bool                   `mapstructure:"disabled"`
 	ID                   string                 `mapstructure:"id"`
+	Index                int                    `mapstructure:"index"`
 	KeepWaitingPipelines bool                   `mapstructure:"keep_waiting_pipelines"`
 	LimitConcurrent      bool                   `mapstructure:"limit_concerrent"`
 	Name                 string                 `mapstructure:"name"`
-	Index                int                    `mapstructure:"index"`
 	Roles                *[]string              `mapstructure:"roles"`
 	ServiceAccount       string                 `mapstructure:"serviceAccount"`
+
+	Locked []locked `mapstructure:"locked"`
+}
+
+type locked struct {
+	UI            bool `mapstructure:"ui"`
+	AllowUnlockUI bool `mapstructure:"allow_unlock_ui"`
 }
 
 func (p *pipeline) toClientPipeline() *client.Pipeline {
-	return &client.Pipeline{
+	pipeline := &client.Pipeline{
 		SerializablePipeline: client.SerializablePipeline{
 			Application:          p.Application,
 			AppConfig:            p.AppConfig,
@@ -33,10 +40,20 @@ func (p *pipeline) toClientPipeline() *client.Pipeline {
 			Roles:                p.Roles,
 		},
 	}
+
+	if len(p.Locked) > 0 {
+		locked := p.Locked[0]
+		pipeline.Locked = &client.Locked{
+			UI:            locked.UI,
+			AllowUnlockUI: locked.AllowUnlockUI,
+		}
+	}
+
+	return pipeline
 }
 
 func fromClientPipeline(p *client.Pipeline) *pipeline {
-	return &pipeline{
+	pip := &pipeline{
 		Application:          p.Application,
 		AppConfig:            p.AppConfig,
 		Disabled:             p.Disabled,
@@ -47,6 +64,17 @@ func fromClientPipeline(p *client.Pipeline) *pipeline {
 		Index:                p.Index,
 		Roles:                p.Roles,
 	}
+
+	if p.Locked != nil {
+		pip.Locked = []locked{
+			locked{
+				UI:            p.Locked.UI,
+				AllowUnlockUI: p.Locked.AllowUnlockUI,
+			},
+		}
+	}
+
+	return pip
 }
 
 func (p *pipeline) setResourceData(d *schema.ResourceData) error {
@@ -83,6 +111,11 @@ func (p *pipeline) setResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
+	err = d.Set("locked", p.Locked)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -95,11 +128,39 @@ func pipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData)
 	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
 	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
 	pipeline.Roles = pipelineRolesFromResourceData(d)
+	pipeline.Locked = pipelineLockedFromResourceData(d)
 
 	serviceAccount, ok := d.GetOk("service_account")
 	if ok {
 		pipeline.ServiceAccount = serviceAccount.(string)
 	}
+
+}
+
+func pipelineLockedFromResourceData(d *schema.ResourceData) *client.Locked {
+	lockedInterface, ok := d.GetOk("locked")
+	if !ok {
+		return nil
+	}
+
+	// If lock UI is false return nil.
+	// Spinnaker check if field locked exist on response and not the content of locked.ui
+	// if locked.ui = false spinnaker still lock the UI
+	for _, locked := range lockedInterface.([]interface{}) {
+		lock := locked.(map[string]interface{})
+		ui := lock["ui"].(bool)
+		if !ui {
+			return nil
+		}
+
+		allowUnlockUI := lock["allow_unlock_ui"].(bool)
+		return &client.Locked{
+			UI:            ui,
+			AllowUnlockUI: allowUnlockUI,
+		}
+	}
+
+	return nil
 }
 
 func pipelineRolesFromResourceData(d *schema.ResourceData) *[]string {

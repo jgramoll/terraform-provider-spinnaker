@@ -17,8 +17,8 @@ type TaskExecution struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Application string `json:"application"`
-	StartTime   int    `json:"startTime"`
-	EndTime     int    `json:"endTime"`
-	BuildTime   int    `json:"buildTime"`
+	StartTime   int64  `json:"startTime"`
+	EndTime     int64  `json:"endTime"`
+	BuildTime   int64  `json:"buildTime"`
 	Status      string `json:"status"`
 }

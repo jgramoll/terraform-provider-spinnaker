@@ -14,10 +14,12 @@ type SerializablePipeline struct {
 	KeepWaitingPipelines bool                   `json:"keepWaitingPipelines"`
 	LimitConcurrent      bool                   `json:"limitConcurrent"`
 	Name                 string                 `json:"name"`
-	ParameterConfig      *[]*PipelineParameter  `json:"parameterConfig"`
 	Roles                *[]string              `json:"roles"`
 	ServiceAccount       string                 `json:"serviceAccount,omitempty"`
-	Triggers             []*Trigger             `json:"triggers"`
+
+	Locked          *Locked               `json:"locked,omitempty"`
+	ParameterConfig *[]*PipelineParameter `json:"parameterConfig"`
+	Triggers        []*Trigger            `json:"triggers"`
 }
 
 // Pipeline deploy pipeline in application
@@ -26,6 +28,12 @@ type Pipeline struct {
 
 	Notifications *[]*Notification `json:"notifications"`
 	Stages        *[]Stage         `json:"stages"`
+}
+
+// Locked enable/disable to edit Pipeline over the UI
+type Locked struct {
+	UI            bool `json:"ui"`
+	AllowUnlockUI bool `json:"allowUnlockUi"`
 }
 
 // NewSerializablePipeline Pipeline with default values
@@ -63,10 +71,31 @@ func parsePipeline(pipelineHash map[string]interface{}) (*Pipeline, error) {
 		return nil, err
 	}
 
+	locked, err := parseLocked(pipelineHash["locked"])
+	if err != nil {
+		return nil, err
+	}
+
+	if locked != nil {
+		serializablePipeline.Locked = locked
+	}
+
 	return &Pipeline{
 		SerializablePipeline: serializablePipeline,
 		Notifications:        notifications,
 		Stages:               stages,
+	}, nil
+}
+
+func parseLocked(lockedHash interface{}) (*Locked, error) {
+	if lockedHash == nil {
+		return nil, nil
+	}
+
+	lockedToParse := lockedHash.(map[string]interface{})
+	return &Locked{
+		UI:            lockedToParse["ui"].(bool),
+		AllowUnlockUI: lockedToParse["allowUnlockUi"].(bool),
 	}, nil
 }
 

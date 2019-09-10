@@ -93,6 +93,28 @@ func pipelineResource() *schema.Resource {
 				Description: "Service account to run pipeline",
 				Optional:    true,
 			},
+			"locked": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Lock options",
+				Optional:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ui": &schema.Schema{
+							Type:        schema.TypeBool,
+							Description: "Lock user to edit pipeline over the spinnaker UI",
+							Optional:    true,
+							Default:     false,
+						},
+						"allow_unlock_ui": &schema.Schema{
+							Type:        schema.TypeBool,
+							Description: "Allow user to unlock ui to edit pipeline",
+							Optional:    true,
+							Default:     false,
+						},
+					},
+				},
+			},
 		},
 	}
 }
