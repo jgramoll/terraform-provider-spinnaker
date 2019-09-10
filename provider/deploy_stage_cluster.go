@@ -97,7 +97,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeploymentCluster {
 	clientCluster.Moniker = toClientMoniker(c.Moniker)
 	clientCluster.Provider = c.Provider
 	if c.SecurityGroupsExpression != "" {
-		clientCluster.SecurityGroups = c.SecurityGroupsExpression
+		clientCluster.SecurityGroups = []string{c.SecurityGroupsExpression}
 	} else {
 		clientCluster.SecurityGroups = c.SecurityGroups
 	}
