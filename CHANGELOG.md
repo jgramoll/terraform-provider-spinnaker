@@ -1,5 +1,9 @@
 # terraform-provider-spinnaker
 
+## 1.4.0
+
+- `a8a20e4` add pipeline date source (#29)
+
 ## 1.3.1
 
 - `60bcb31` allow for pipeline index to be computed (#27)
