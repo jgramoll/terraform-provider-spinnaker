@@ -63,6 +63,10 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 
+		DataSourcesMap: map[string]*schema.Resource{
+			"spinnaker_pipeline": pipelineDataSource(),
+		},
+
 		ResourcesMap: map[string]*schema.Resource{
 			"spinnaker_application":         applicationResource(),
 			"spinnaker_pipeline":            pipelineResource(),
