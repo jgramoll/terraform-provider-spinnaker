@@ -50,6 +50,8 @@ func TestCanaryConfigCleanup(t *testing.T) {
 	for _, config := range *configs {
 		if strings.Contains(config.Name, "mytestcanary") {
 			canaryConfigService.DeleteCanaryConfig(config.Id)
+		} else if strings.Contains(config.Name, "tfacctest") {
+			canaryConfigService.DeleteCanaryConfig(config.Id)
 		}
 	}
 }
