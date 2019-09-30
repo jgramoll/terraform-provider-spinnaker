@@ -57,8 +57,8 @@ func (service *CanaryConfigService) CreateCanaryConfig(config *CanaryConfig) (co
 }
 
 func (service *CanaryConfigService) UpdateCanaryConfig(config *CanaryConfig) error {
-	path := "/v2/canaryConfig"
-	req, err := service.NewRequestWithBody("POST", path, config)
+	path := fmt.Sprintf("/v2/canaryConfig/%s", config.Id)
+	req, err := service.NewRequestWithBody("PUT", path, config)
 	if err != nil {
 		return err
 	}

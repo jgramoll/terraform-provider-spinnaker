@@ -11,9 +11,10 @@ import (
 
 // Services used by provider
 type Services struct {
-	Config             *client.Config
-	ApplicationService *client.ApplicationService
-	PipelineService    *client.PipelineService
+	Config              *client.Config
+	ApplicationService  *client.ApplicationService
+	CanaryConfigService *client.CanaryConfigService
+	PipelineService     *client.PipelineService
 }
 
 // Provider for terraform
@@ -68,7 +69,9 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"spinnaker_application":         applicationResource(),
+			"spinnaker_application":   applicationResource(),
+			"spinnaker_canary_config": canaryConfigResource(),
+
 			"spinnaker_pipeline":            pipelineResource(),
 			"spinnaker_pipeline_bake_stage": pipelineBakeStageResource(),
 
@@ -105,8 +108,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	clientConfig := config.toClientConfig()
 	c := client.NewClient(config.toClientConfig())
 	return &Services{
-		Config:             clientConfig,
-		ApplicationService: &client.ApplicationService{Client: c},
-		PipelineService:    &client.PipelineService{Client: c},
+		Config:              clientConfig,
+		ApplicationService:  &client.ApplicationService{Client: c},
+		CanaryConfigService: &client.CanaryConfigService{Client: c},
+		PipelineService:     &client.PipelineService{Client: c},
 	}, nil
 }

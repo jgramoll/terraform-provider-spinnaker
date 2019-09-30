@@ -38,7 +38,7 @@ func (service *ApplicationService) GetApplications() (*[]*Application, error) {
 	return &apps, nil
 }
 
-// GetApplicationByNameWithRetries return the application given a name and retries 
+// GetApplicationByNameWithRetries return the application given a name and retries
 func (service *ApplicationService) GetApplicationByNameWithRetries(name string) (*Application, error) {
 
 	// Execute every 2 seconds

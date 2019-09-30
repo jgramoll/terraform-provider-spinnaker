@@ -313,9 +313,31 @@ EOT
 }
 
 resource "spinnaker_pipeline_webhook_stage" "main" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Webhook"
-	url  	 = "http://my-webhook.io/"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Webhook"
+  url      = "http://my-webhook.io/"
+}
+
+resource "spinnaker_canary_config" "test" {
+  name         = "%s"
+  applications = ["app"]
+  metric {
+    groups = ["Group 1"]
+    name = "my metric"
+    query {
+      metric_name = "avg:aws.ec2.cpucredit_balance"
+      service_type = "datadog"
+      type = "datadog"
+    }
+  }
+  classifier {
+    group_weights = {
+      "Group 1" = 100
+    }
+  }
+  judge {
+    name = "NetflixACAJudge-v1.0"
+  }
 }
 
 ```

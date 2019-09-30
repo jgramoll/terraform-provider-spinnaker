@@ -31,7 +31,7 @@ func TestCreateCanaryConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if (responseConfig.Name != config.Name) {
+	if responseConfig.Name != config.Name {
 		t.Fatalf("Expected canary config name to be %s, got %s", config.Name, responseConfig.Name)
 	}
 
