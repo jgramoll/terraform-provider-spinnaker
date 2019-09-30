@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -28,18 +29,18 @@ func TestAccCanaryConfigBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", name),
 				),
 			},
-			// {
-			// 	ResourceName:  resourceName,
-			// 	ImportStateId: "invalid",
-			// 	ImportState:   true,
-			// 	ExpectError:   regexp.MustCompile(`403 Forbidden`),
-			// },
-			// {
-			// 	ResourceName:      resourceName,
-			// 	ImportStateId:     name,
-			// 	ImportState:       true,
-			// 	ImportStateVerify: true,
-			// },
+			{
+				ResourceName:  resourceName,
+				ImportStateId: "non-existent",
+				ImportState:   true,
+				ExpectError:   regexp.MustCompile(`Cannot import non-existent remote object`),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportStateId:     canaryConfigRef.Id,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 			{
 				Config: testAccCanaryConfigConfigBasic(newName),
 				Check: resource.ComposeAggregateTestCheckFunc(
