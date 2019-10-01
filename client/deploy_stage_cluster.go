@@ -1,5 +1,6 @@
 package client
 
+// TODO rename to more generic
 // DeployStageCluster cluster to deploy
 type DeployStageCluster struct {
 	Account                             string                 `json:"account"`

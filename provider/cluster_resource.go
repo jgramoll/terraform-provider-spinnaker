@@ -4,18 +4,16 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func pipelineDeployStageClusterResource() *schema.Resource {
+func clusterResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"account": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Account to deploy cluster",
-				Required:    true,
+				Type:     schema.TypeMap,
+				Required: true,
 			},
 			"application": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Application to deploy cluster",
-				Required:    true,
+				Type:     schema.TypeString,
+				Required: true,
 			},
 			"availability_zones": &schema.Schema{
 				Type:        schema.TypeList,
@@ -32,32 +30,27 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Elem:        capacityResource(),
 			},
 			"cloud_provider": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Cloud Provider to deploy cluster",
-				Required:    true,
+				Type:     schema.TypeString,
+				Required: true,
 			},
 			"cooldown": &schema.Schema{
-				Type:        schema.TypeInt,
-				Description: "Cooldown to deploy cluster",
-				Optional:    true,
-				Default:     10,
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  10,
 			},
 			"copy_source_custom_block_device_mappings": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "Spinnaker will use the block device mappings of the existing server group when deploying a new server group.\nIn the event that there is no existing server group, the defaults for the selected instance type will be used.",
-				Optional:    true,
-				Default:     false,
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
 			},
-			"dirty": &schema.Schema{
-				Type:        schema.TypeMap,
-				Description: "",
-				Optional:    true,
+			"credentials": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"ebs_optimized": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "",
-				Optional:    true,
-				Default:     false,
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
 			},
 			"enabled_metrics": &schema.Schema{
 				Type:        schema.TypeList,
@@ -104,12 +97,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Key pair name for cluster",
 				Required:    true,
 			},
-			"max_remaining_asgs": &schema.Schema{
-				Type:        schema.TypeInt,
-				Description: "Max amount of asgs to run",
-				Optional:    true,
-				Default:     2,
-			},
 			"load_balancers": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Load balancer to attach to cluster",
@@ -118,18 +105,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"moniker": &schema.Schema{
-				Type:        schema.TypeList,
-				Description: "Name to attach to cluster",
-				Optional:    true,
-				MaxItems:    1,
-				Elem:        monikerResource(),
-			},
-			"provider": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Provider to deploy cluster",
-				Required:    true,
-			},
 			"security_groups": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Security Groups to attach to cluster",
@@ -137,11 +112,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-			},
-			"security_groups_expression": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Security Group expression -- will override other sg inputs",
-				Optional:    true,
 			},
 			"spel_load_balancers": &schema.Schema{
 				Type:        schema.TypeList,
@@ -158,11 +128,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-			},
-			"spot_price": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "spot price for cluster",
-				Optional:    true,
 			},
 			"stack": &schema.Schema{
 				Type:        schema.TypeString,
@@ -224,11 +189,6 @@ func pipelineDeployStageClusterResource() *schema.Resource {
 				Description: "Spinnaker will use the current capacity of the existing server group when deploying a new server group.\nThis setting is intended to support a server group with auto-scaling enabled, where the bounds and desired capacity are controlled by an external process.\nIn the event that there is no existing server group, the deploy will fail.",
 				Optional:    true,
 				Default:     false,
-			},
-			"user_data": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "UserData is a base64 encoded string.",
-				Optional:    true,
 			},
 		},
 	}

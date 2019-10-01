@@ -5,7 +5,7 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type deployStage struct {
+type canaryAnalysisStage struct {
 	// baseStage
 	Name                              string                   `mapstructure:"name"`
 	RefID                             string                   `mapstructure:"ref_id"`
@@ -22,24 +22,28 @@ type deployStage struct {
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
 
-	Clusters *deployStageClusters `mapstructure:"cluster"`
+	AnalysisType string                 `mapstructure:"analysis_type"`
+	CanaryConfig *canaryAnalysisConfigs `mapstructure:"canary_config"`
+	Deployments  *deployStageClusters   `mapstructure:"deployments"`
 }
 
-func newDeployStage() *deployStage {
-	return &deployStage{
-		Type:         client.DeployStageType,
+func newCanaryAnalysisStage() *canaryAnalysisStage {
+	return &canaryAnalysisStage{
+		Type:         client.CanaryAnalysisStageType,
 		FailPipeline: true,
+		CanaryConfig: &canaryAnalysisConfigs{},
+		Deployments:  &deployStageClusters{},
 	}
 }
 
-func (s *deployStage) toClientStage(config *client.Config) (client.Stage, error) {
+func (s *canaryAnalysisStage) toClientStage(config *client.Config) (client.Stage, error) {
 	// baseStage
 	notifications, err := toClientNotifications(s.Notifications)
 	if err != nil {
 		return nil, err
 	}
 
-	cs := client.NewDeployStage()
+	cs := client.NewCanaryAnalysisStage()
 	cs.Name = s.Name
 	cs.RefID = s.RefID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
@@ -55,16 +59,18 @@ func (s *deployStage) toClientStage(config *client.Config) (client.Stage, error)
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
 	// End baseStage
 
-	if s.Clusters != nil {
-		cs.Clusters = s.Clusters.toClientClusters()
+	cs.AnalysisType = s.AnalysisType
+	cs.CanaryConfig = s.CanaryConfig.toClientCanaryConfig()
+	if s.Deployments != nil {
+		cs.Deployments = s.Deployments.toClientClusters()
 	}
 
 	return cs, nil
 }
 
-func (s *deployStage) fromClientStage(cs client.Stage) stage {
-	clientStage := cs.(*client.DeployStage)
-	newStage := newDeployStage()
+func (s *canaryAnalysisStage) fromClientStage(cs client.Stage) stage {
+	clientStage := cs.(*client.CanaryAnalysisStage)
+	newStage := newCanaryAnalysisStage()
 
 	// baseStage
 	newStage.Name = clientStage.Name
@@ -81,12 +87,14 @@ func (s *deployStage) fromClientStage(cs client.Stage) stage {
 	newStage.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
 	// end baseStage
 
-	newStage.Clusters = newStage.Clusters.fromClientClusters(clientStage.Clusters)
+	newStage.AnalysisType = clientStage.AnalysisType
+	newStage.CanaryConfig = newStage.CanaryConfig.fromClientCanaryConfig(clientStage.CanaryConfig)
+	newStage.Deployments = newStage.Deployments.fromClientClusters(clientStage.Deployments)
 
 	return newStage
 }
 
-func (s *deployStage) SetResourceData(d *schema.ResourceData) error {
+func (s *canaryAnalysisStage) SetResourceData(d *schema.ResourceData) error {
 	// baseStage
 	err := d.Set("name", s.Name)
 	if err != nil {
@@ -134,13 +142,21 @@ func (s *deployStage) SetResourceData(d *schema.ResourceData) error {
 	}
 	// End baseStage
 
-	return d.Set("cluster", s.Clusters)
+	err = d.Set("analysis_type", s.AnalysisType)
+	if err != nil {
+		return err
+	}
+	err = d.Set("canary_config", s.CanaryConfig)
+	if err != nil {
+		return err
+	}
+	return d.Set("deployments", s.Deployments)
 }
 
-func (s *deployStage) SetRefID(id string) {
+func (s *canaryAnalysisStage) SetRefID(id string) {
 	s.RefID = id
 }
 
-func (s *deployStage) GetRefID() string {
+func (s *canaryAnalysisStage) GetRefID() string {
 	return s.RefID
 }
