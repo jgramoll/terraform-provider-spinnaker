@@ -30,11 +30,27 @@ func pipelineCanaryAnalysisConfigResource() *schema.Resource {
 				Description: "The name of the metrics account configured in spinnaker.",
 				Required:    true,
 			},
-			"scopes": &schema.Schema{
+			"scope": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"control_location": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"control_scope": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"experiment_location": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"experiment_scope": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"extended_scope_params": &schema.Schema{
 							Type: schema.TypeMap,
 							Description: "Metric source specific parameters which may be used to further alter the canary scope." +

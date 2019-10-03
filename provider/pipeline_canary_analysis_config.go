@@ -12,7 +12,7 @@ type canaryAnalysisConfig struct {
 	LifetimeDuration           string `mapstructure:"lifetime_duration"`
 	MetricsAccountName         string `mapstructure:"metrics_account_name"`
 
-	Scopes          canaryAnalysisConfigScopes                `mapstructure:"scopes"`
+	Scopes          canaryAnalysisConfigScopes                `mapstructure:"scope"`
 	ScoreThresholds canaryAnalysisConfigScoreThreadholdsArray `mapstructure:"score_thresholds"`
 
 	StorageAccountName string `mapstructure:"storage_account_name"`
