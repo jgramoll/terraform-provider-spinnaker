@@ -65,7 +65,8 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"spinnaker_pipeline": pipelineDataSource(),
+			"spinnaker_canary_config": canaryConfigDataSource(),
+			"spinnaker_pipeline":      pipelineDataSource(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
