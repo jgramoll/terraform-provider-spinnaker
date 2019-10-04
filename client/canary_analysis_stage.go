@@ -59,8 +59,15 @@ func (s *CanaryAnalysisStage) GetRefID() string {
 
 func parseCanaryAnalysisStage(stageMap map[string]interface{}) (Stage, error) {
 	stage := NewCanaryAnalysisStage()
+	notifications, err := parseNotifications(stageMap["notifications"])
+	if err != nil {
+		return nil, err
+	}
+	delete(stageMap, "notifications")
+
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err
 	}
+	stage.Notifications = notifications
 	return stage, nil
 }

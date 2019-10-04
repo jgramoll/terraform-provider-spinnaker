@@ -63,6 +63,10 @@ func pipelineCanaryAnalysisConfigResource() *schema.Resource {
 							Optional: true,
 							Default:  "default",
 						},
+						"step": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
 					},
 				},
 			},

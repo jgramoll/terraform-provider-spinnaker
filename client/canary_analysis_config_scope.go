@@ -7,4 +7,5 @@ type CanaryAnalysisConfigScope struct {
 	ExperimentScope     string            `json:"experimentScope,omitempty"`
 	ExtendedScopeParams map[string]string `json:"extendedScopeParams"`
 	ScopeName           string            `json:"scopeName"`
+	Step                int               `json:"step"`
 }

@@ -13,6 +13,7 @@ type canaryAnalysisConfigScope struct {
 	ExperimentScope     string            `mapstructure:"experiment_scope"`
 	ExtendedScopeParams map[string]string `mapstructure:"extended_scope_params"`
 	ScopeName           string            `mapstructure:"scope_name"`
+	Step                int               `mapstructure:"step"`
 }
 
 func (scopes *canaryAnalysisConfigScopes) toClientCanaryConfigScopes() *[]*client.CanaryAnalysisConfigScope {
@@ -25,6 +26,7 @@ func (scopes *canaryAnalysisConfigScopes) toClientCanaryConfigScopes() *[]*clien
 			ExperimentScope:     c.ExperimentScope,
 			ExtendedScopeParams: c.ExtendedScopeParams,
 			ScopeName:           c.ScopeName,
+			Step:                c.Step,
 		})
 	}
 	return &clientScopes
@@ -40,6 +42,7 @@ func (*canaryAnalysisConfigScopes) fromClientCanaryConfigScopes(clientScopes *[]
 			ExperimentScope:     c.ExperimentScope,
 			ExtendedScopeParams: c.ExtendedScopeParams,
 			ScopeName:           c.ScopeName,
+			Step:                c.Step,
 		})
 	}
 	return &scopes
