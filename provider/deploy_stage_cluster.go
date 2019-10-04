@@ -119,6 +119,9 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 }
 
 func (s *deployStageClusters) toClientClusters() *[]*client.DeployStageCluster {
+	if len(*s) == 0 {
+		return nil
+	}
 	clusters := []*client.DeployStageCluster{}
 	for _, c := range *s {
 		clusters = append(clusters, c.toClientCluster())

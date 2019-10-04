@@ -30,7 +30,7 @@ type CanaryAnalysisStage struct {
 
 	AnalysisType string                 `json:"analysisType"`
 	CanaryConfig *CanaryAnalysisConfig  `json:"canaryConfig"`
-	Deployments  *[]*DeployStageCluster `json:"deployments"`
+	Deployments  *[]*DeployStageCluster `json:"deployments,omitempty"`
 }
 
 func NewCanaryAnalysisStage() *CanaryAnalysisStage {
@@ -39,7 +39,6 @@ func NewCanaryAnalysisStage() *CanaryAnalysisStage {
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
 		CanaryConfig:         NewCanaryAnalysisConfig(),
-		Deployments:          &[]*DeployStageCluster{},
 	}
 }
 
