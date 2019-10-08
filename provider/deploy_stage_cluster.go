@@ -41,7 +41,7 @@ type deployStageCluster struct {
 	TargetGroups                        []string               `mapstructure:"target_groups"`
 	TargetHealthyDeployPercentage       int                    `mapstructure:"target_healthy_deploy_percentage"`
 	TerminationPolicies                 []string               `mapstructure:"termination_policies"`
-	UserData                            string                 `mapstructure:"user_data"`
+	Base64UserData                      string                 `mapstructure:"user_data"`
 	UseAmiBlockDeviceMappings           bool                   `mapstructure:"use_ami_block_device_mappings"`
 	UseSourceCapacity                   bool                   `mapstructure:"use_source_capacity"`
 }
@@ -111,7 +111,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	clientCluster.TerminationPolicies = c.TerminationPolicies
 	clientCluster.UseAmiBlockDeviceMappings = c.UseAmiBlockDeviceMappings
 	clientCluster.UseSourceCapacity = c.UseSourceCapacity
-	clientCluster.UserData = c.UserData
+	clientCluster.Base64UserData = c.Base64UserData
 	return clientCluster
 }
 
@@ -172,7 +172,7 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 		TerminationPolicies:           c.TerminationPolicies,
 		UseAmiBlockDeviceMappings:     c.UseAmiBlockDeviceMappings,
 		UseSourceCapacity:             c.UseSourceCapacity,
-		UserData:                      c.UserData,
+		Base64UserData:                c.Base64UserData,
 	}
 	newCluster.importAvailabilityZones(c)
 	newCluster.Capacity = fromClientCapacity(c.Capacity)
