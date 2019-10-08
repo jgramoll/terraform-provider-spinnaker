@@ -24,23 +24,24 @@ type serializableWebhookStage struct {
 	FailOnFailedExpressions           bool                  `json:"failOnFailedExpressions"`
 	FailPipeline                      bool                  `json:"failPipeline"`
 	OverrideTimeout                   bool                  `json:"overrideTimeout"`
+	StageTimeoutMS                    int                   `json:"stageTimeoutMs,omitempty"`
 	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage
 
-	CanceledStatuses    string            `json:"canceledStatuses"`
-	CustomHeaders       map[string]string `json:"customHeaders"`
-	FailFastStatusCodes []string          `json:"failFastStatusCodes"`
-	Method              string            `json:"method"`
+	CanceledStatuses    string                 `json:"canceledStatuses"`
+	CustomHeaders       map[string]string      `json:"customHeaders"`
+	FailFastStatusCodes []string               `json:"failFastStatusCodes"`
+	Method              string                 `json:"method"`
 	Payload             map[string]interface{} `json:"payload"`
-	ProgressJSONPath    string            `json:"progressJsonPath"`
-	StatusJSONPath      string            `json:"statusJsonPath"`
-	StatusURLJSONPath   string            `json:"statusUrlJsonPath"`
-	StatusURLResolution string            `json:"statusUrlResolution"`
-	SuccessStatuses     string            `json:"successStatuses"`
-	TerminalStatuses    string            `json:"terminalStatuses"`
-	URL                 string            `json:"url"`
-	WaitForCompletion   bool              `json:"waitForCompletion"`
+	ProgressJSONPath    string                 `json:"progressJsonPath"`
+	StatusJSONPath      string                 `json:"statusJsonPath"`
+	StatusURLJSONPath   string                 `json:"statusUrlJsonPath"`
+	StatusURLResolution string                 `json:"statusUrlResolution"`
+	SuccessStatuses     string                 `json:"successStatuses"`
+	TerminalStatuses    string                 `json:"terminalStatuses"`
+	URL                 string                 `json:"url"`
+	WaitForCompletion   bool                   `json:"waitForCompletion"`
 }
 
 // WebhookStage for pipeline

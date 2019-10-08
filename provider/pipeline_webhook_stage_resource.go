@@ -81,6 +81,11 @@ func pipelineWebhookStageResource() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"stage_timeout_ms": &schema.Schema{
+				Type:        schema.TypeInt,
+				Description: "Allows you to declare the amount of time the stage can run before failing, if override timeout is enabled.\nNote: this represents the overall time the stage has to complete (the sum of all the task times).",
+				Optional:    true,
+			},
 			"restrict_execution_during_time_window": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "Restrict execution to specific time windows",
