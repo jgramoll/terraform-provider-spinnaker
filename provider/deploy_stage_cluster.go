@@ -7,6 +7,8 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
+type deployStageClusters []*deployStageCluster
+
 type deployStageCluster struct {
 	Account                             string                 `mapstructure:"account"`
 	Application                         string                 `mapstructure:"application"`
@@ -116,12 +118,12 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	return clientCluster
 }
 
-func (s *deployStage) toClientClusters() *[]*client.DeployStageCluster {
-	if s.Clusters == nil || len(*s.Clusters) == 0 {
+func (s *deployStageClusters) toClientClusters() *[]*client.DeployStageCluster {
+	if len(*s) == 0 {
 		return nil
 	}
 	clusters := []*client.DeployStageCluster{}
-	for _, c := range *s.Clusters {
+	for _, c := range *s {
 		clusters = append(clusters, c.toClientCluster())
 	}
 	return &clusters
@@ -194,12 +196,12 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 	return &newCluster
 }
 
-func fromClientClusters(clientClusters *[]*client.DeployStageCluster) *[]*deployStageCluster {
+func (s *deployStageClusters) fromClientClusters(clientClusters *[]*client.DeployStageCluster) *deployStageClusters {
 	if clientClusters == nil || len(*clientClusters) == 0 {
 		return nil
 	}
 
-	newClusters := []*deployStageCluster{}
+	newClusters := deployStageClusters{}
 	for _, c := range *clientClusters {
 		cluster := fromClientCluster(c)
 		newClusters = append(newClusters, cluster)

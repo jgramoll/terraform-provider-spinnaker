@@ -11,9 +11,10 @@ import (
 
 // Services used by provider
 type Services struct {
-	Config             *client.Config
-	ApplicationService *client.ApplicationService
-	PipelineService    *client.PipelineService
+	Config              *client.Config
+	ApplicationService  *client.ApplicationService
+	CanaryConfigService *client.CanaryConfigService
+	PipelineService     *client.PipelineService
 }
 
 // Provider for terraform
@@ -64,14 +65,18 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"spinnaker_pipeline": pipelineDataSource(),
+			"spinnaker_canary_config": canaryConfigDataSource(),
+			"spinnaker_pipeline":      pipelineDataSource(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"spinnaker_application":         applicationResource(),
+			"spinnaker_application":   applicationResource(),
+			"spinnaker_canary_config": canaryConfigResource(),
+
 			"spinnaker_pipeline":            pipelineResource(),
 			"spinnaker_pipeline_bake_stage": pipelineBakeStageResource(),
 
+			"spinnaker_pipeline_canary_analysis_stage":      pipelineCanaryAnalysisStageResource(),
 			"spinnaker_pipeline_delete_manifest_stage":      pipelineDeleteManifestStageResource(),
 			"spinnaker_pipeline_deploy_manifest_stage":      pipelineDeployManifestStageResource(),
 			"spinnaker_pipeline_deploy_stage":               pipelineDeployStageResource(),
@@ -105,8 +110,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	clientConfig := config.toClientConfig()
 	c := client.NewClient(config.toClientConfig())
 	return &Services{
-		Config:             clientConfig,
-		ApplicationService: &client.ApplicationService{Client: c},
-		PipelineService:    &client.PipelineService{Client: c},
+		Config:              clientConfig,
+		ApplicationService:  &client.ApplicationService{Client: c},
+		CanaryConfigService: &client.CanaryConfigService{Client: c},
+		PipelineService:     &client.PipelineService{Client: c},
 	}, nil
 }

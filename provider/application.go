@@ -56,7 +56,7 @@ func (a *application) toClientApplication() *client.Application {
 
 		PlatformHealthOnly:             a.PlatformHealthOnly,
 		PlatformHealthOnlyShowOverride: a.PlatformHealthOnlyShowOverride,
-		ProviderSettings:               a.toClientProviderSettigns(a.ProviderSettings),
+		ProviderSettings:               a.toClientProviderSettings(a.ProviderSettings),
 
 		RepoProjectKey: a.RepoProjectKey,
 		RepoSlug:       a.RepoSlug,
@@ -66,7 +66,7 @@ func (a *application) toClientApplication() *client.Application {
 	}
 }
 
-func (a *application) toClientProviderSettigns(settings *[]providerSettings) *client.ProviderSettings {
+func (a *application) toClientProviderSettings(settings *[]providerSettings) *client.ProviderSettings {
 	if settings != nil || len(*settings) > 0 {
 		for _, setting := range *settings {
 			if setting.AWS != nil && len(*setting.AWS) > 0 {
