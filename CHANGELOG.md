@@ -1,5 +1,9 @@
 # terraform-provider-spinnaker
 
+## 1.5.0
+
+- `48c4729` add canary config to client (#30
+
 ## 1.4.0
 
 - `a8a20e4` add pipeline date source (#29)

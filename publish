@@ -1,4 +1,4 @@
-version=v1.4.0
+version=v1.5.0
 git tag -a $version -m $version
 git push origin $version
 goreleaser release --rm-dist
