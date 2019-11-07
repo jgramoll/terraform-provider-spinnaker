@@ -23,6 +23,21 @@ func trafficManagementResource() *schema.Resource {
 							Optional: true,
 							Default:  false,
 						},
+						"namespace": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"services": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"strategy": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 					},
 				},
 			},
