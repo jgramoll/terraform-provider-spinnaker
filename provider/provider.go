@@ -36,6 +36,7 @@ type Auth struct {
 // Provider for terraform
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
+		TerraformVersion: ">= 0.12",
 		Schema: map[string]*schema.Schema{
 			"address": &schema.Schema{
 				Type:        schema.TypeString,
