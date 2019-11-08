@@ -21,6 +21,7 @@ type Services struct {
 // Provider for terraform
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
+		TerraformVersion: ">= 0.12",
 		Schema: map[string]*schema.Schema{
 			"address": {
 				Type:        schema.TypeString,
