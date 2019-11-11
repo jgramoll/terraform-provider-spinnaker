@@ -35,8 +35,7 @@ type Auth struct {
 
 // Provider for terraform
 func Provider() terraform.ResourceProvider {
-	return &schema.Provider{
-		TerraformVersion: ">= 0.12",
+	p := &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"address": &schema.Schema{
 				Type:        schema.TypeString,
@@ -115,12 +114,22 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_trigger":       pipelineTriggerResource(),
 			"spinnaker_pipeline_webhook_stage": pipelineWebhookStageResource(),
 		},
-
-		ConfigureFunc: providerConfigure,
 	}
+
+	p.ConfigureFunc = func(d *schema.ResourceData) (interface{}, error) {
+		terraformVersion := p.TerraformVersion
+		if terraformVersion == "" {
+			// Terraform 0.12 introduced this field to the protocol
+			// We can therefore assume that if it's missing it's 0.10 or 0.11
+			terraformVersion = "0.11+compatible"
+		}
+		return providerConfigure(d, terraformVersion)
+	}
+
+	return p
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(d *schema.ResourceData, terraformVersion string) (interface{}, error) {
 	var config Config
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.WeakDecode(configRaw, &config); err != nil {
@@ -130,7 +139,8 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	log.Println("[INFO] Initializing Spinnaker client")
 
 	clientConfig := client.Config{
-		Address: config.Address,
+		Address:          config.Address,
+		TerraformVersion: terraformVersion,
 		Auth: client.Auth{
 			Enabled:     config.Auth.Enabled,
 			CertPath:    config.Auth.CertPath,
