@@ -18,8 +18,9 @@ var ErrInvalidDecodeResponseParameter = errors.New("nil interface provided to de
 
 // Config for Client
 type Config struct {
-	Address string
-	Auth    Auth
+	Address          string
+	TerraformVersion string
+	Auth             Auth
 }
 
 // Auth for login on spinnaker
