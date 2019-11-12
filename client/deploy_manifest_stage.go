@@ -32,6 +32,7 @@ type DeployManifestStage struct {
 	// End BaseStage
 
 	Account                  string               `json:"account"`
+	NamespaceOverride        string               `json:"namespaceOverride,omitempty"`
 	CloudProvider            string               `json:"cloudProvider"`
 	ManifestArtifactAccount  string               `json:"manifestArtifactAccount"`
 	Manifests                *DeployManifests     `json:"manifests"`

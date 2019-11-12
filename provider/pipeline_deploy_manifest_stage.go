@@ -23,6 +23,7 @@ type deployManifestStage struct {
 	// End baseStage
 
 	Account                  string                `mapstructure:"account"`
+	NamespaceOverride        string                `mapstructure:"namespace_override"`
 	CloudProvider            string                `mapstructure:"cloud_provider"`
 	ManifestArtifactAccount  string                `mapstructure:"manifest_artifact_account"`
 	Manifests                *deployManifests      `mapstructure:"manifests"`
@@ -67,6 +68,7 @@ func (s *deployManifestStage) toClientStage(config *client.Config) (client.Stage
 	// End baseStage
 
 	cs.Account = s.Account
+	cs.NamespaceOverride = s.NamespaceOverride
 	cs.CloudProvider = s.CloudProvider
 	cs.ManifestArtifactAccount = s.ManifestArtifactAccount
 	cs.Manifests = s.Manifests.toClientDeployManifests()
@@ -103,6 +105,7 @@ func (s *deployManifestStage) fromClientStage(cs client.Stage) stage {
 	// end baseStage
 
 	newStage.Account = clientStage.Account
+	newStage.NamespaceOverride = clientStage.NamespaceOverride
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.ManifestArtifactAccount = clientStage.ManifestArtifactAccount
 	newStage.Manifests = fromClientDeployManifests(clientStage.Manifests)
@@ -164,6 +167,10 @@ func (s *deployManifestStage) SetResourceData(d *schema.ResourceData) error {
 	// End baseStage
 
 	err = d.Set("account", s.Account)
+	if err != nil {
+		return err
+	}
+	err = d.Set("namespace_override", s.NamespaceOverride)
 	if err != nil {
 		return err
 	}

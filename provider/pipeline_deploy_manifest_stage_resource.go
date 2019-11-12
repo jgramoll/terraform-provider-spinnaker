@@ -167,6 +167,11 @@ func pipelineDeployManifestStageResource() *schema.Resource {
 				Description: "The account name",
 				Required:    true,
 			},
+			"namespace_override": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Namespace override",
+				Optional:    true,
+			},
 			"cloud_provider": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The cloud provider name",
