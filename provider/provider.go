@@ -79,6 +79,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_canary_analysis_stage":      pipelineCanaryAnalysisStageResource(),
 			"spinnaker_pipeline_delete_manifest_stage":      pipelineDeleteManifestStageResource(),
 			"spinnaker_pipeline_deploy_manifest_stage":      pipelineDeployManifestStageResource(),
+			"spinnaker_pipeline_scale_manifest_stage":       pipelineScaleManifestStageResource(),
 			"spinnaker_pipeline_deploy_stage":               pipelineDeployStageResource(),
 			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),
 			"spinnaker_pipeline_find_image_from_tags_stage": pipelineFindImageFromTagsStageResource(),
