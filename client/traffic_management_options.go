@@ -2,9 +2,9 @@ package client
 
 type TrafficManagementOptions struct {
 	EnableTraffic bool     `json:"enableTraffic"`
-	Namespace     string   `json:"namespace"`
+	Namespace     string   `json:"namespace,omitempty"`
 	Services      []string `json:"services"`
-	Strategy      string   `json:"strategy"`
+	Strategy      string   `json:"strategy,omitempty"`
 }
 
 func NewTrafficManagementOptions() *TrafficManagementOptions {
