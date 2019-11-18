@@ -5,3 +5,5 @@ terraform-provider-spinnaker
 coverage.out
 report.json
 .envrc
+.idea
+*.iml
