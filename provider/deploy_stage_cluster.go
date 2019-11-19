@@ -29,7 +29,6 @@ type deployStageCluster struct {
 	Moniker                             *[]*moniker            `mapstructure:"moniker"`
 	Provider                            string                 `mapstructure:"provider"`
 	SecurityGroups                      interface{}            `mapstructure:"security_groups"`
-	SecurityGroupsExpression            string                 `mapstructure:"security_groups_expression"`
 	SpelLoadBalancers                   []string               `mapstructure:"spel_load_balancers"`
 	SpelTargetGroups                    []string               `mapstructure:"spel_target_groups"`
 	SpotPrice                           string                 `mapstructure:"spot_price"`
@@ -93,11 +92,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	clientCluster.LoadBalancers = c.LoadBalancers
 	clientCluster.Moniker = toClientMoniker(c.Moniker)
 	clientCluster.Provider = c.Provider
-	if c.SecurityGroupsExpression != "" {
-		clientCluster.SecurityGroups = []string{c.SecurityGroupsExpression}
-	} else {
-		clientCluster.SecurityGroups = c.SecurityGroups
-	}
+	clientCluster.SecurityGroups = c.SecurityGroups
 	clientCluster.SpelLoadBalancers = c.SpelLoadBalancers
 	clientCluster.SpelTargetGroups = c.SpelTargetGroups
 	clientCluster.SpotPrice = c.SpotPrice
@@ -127,15 +122,6 @@ func (s *deployStage) toClientClusters() *[]*client.DeployStageCluster {
 }
 
 func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
-	var sgs []string
-	var sgExpression string
-	switch v := c.SecurityGroups.(type) {
-	case string:
-		sgExpression = v
-	case []string:
-		sgs = v
-	}
-
 	newCluster := deployStageCluster{
 		Account:       c.Account,
 		Application:   c.Application,
@@ -144,29 +130,28 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 
 		CopySourceCustomBlockDeviceMappings: c.CopySourceCustomBlockDeviceMappings,
 
-		EBSOptimized:             c.EBSOptimized,
-		EnabledMetrics:           c.EnabledMetrics,
-		FreeFormDetails:          c.FreeFormDetails,
-		HealthCheckGracePeriod:   c.HealthCheckGracePeriod,
-		HealthCheckType:          c.HealthCheckType,
-		IAMRole:                  c.IAMRole,
-		InstanceMonitoring:       c.InstanceMonitoring,
-		InstanceType:             c.InstanceType,
-		KeyPair:                  c.KeyPair,
-		MaxRemainingAsgs:         c.MaxRemainingAsgs,
-		LoadBalancers:            c.LoadBalancers,
-		Provider:                 c.Provider,
-		SecurityGroups:           sgs,
-		SecurityGroupsExpression: sgExpression,
-		SpelLoadBalancers:        c.SpelLoadBalancers,
-		SpelTargetGroups:         c.SpelTargetGroups,
-		SpotPrice:                c.SpotPrice,
-		Stack:                    c.Stack,
-		Strategy:                 c.Strategy,
-		SubnetType:               c.SubnetType,
-		SuspendedProcesses:       c.SuspendedProcesses,
-		Tags:                     c.Tags,
-		TargetGroups:             c.TargetGroups,
+		EBSOptimized:           c.EBSOptimized,
+		EnabledMetrics:         c.EnabledMetrics,
+		FreeFormDetails:        c.FreeFormDetails,
+		HealthCheckGracePeriod: c.HealthCheckGracePeriod,
+		HealthCheckType:        c.HealthCheckType,
+		IAMRole:                c.IAMRole,
+		InstanceMonitoring:     c.InstanceMonitoring,
+		InstanceType:           c.InstanceType,
+		KeyPair:                c.KeyPair,
+		MaxRemainingAsgs:       c.MaxRemainingAsgs,
+		LoadBalancers:          c.LoadBalancers,
+		Provider:               c.Provider,
+		SecurityGroups:         c.SecurityGroups,
+		SpelLoadBalancers:      c.SpelLoadBalancers,
+		SpelTargetGroups:       c.SpelTargetGroups,
+		SpotPrice:              c.SpotPrice,
+		Stack:                  c.Stack,
+		Strategy:               c.Strategy,
+		SubnetType:             c.SubnetType,
+		SuspendedProcesses:     c.SuspendedProcesses,
+		Tags:                   c.Tags,
+		TargetGroups:           c.TargetGroups,
 
 		TargetHealthyDeployPercentage: c.TargetHealthyDeployPercentage,
 		TerminationPolicies:           c.TerminationPolicies,
