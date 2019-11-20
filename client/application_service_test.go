@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -16,6 +17,9 @@ func init() {
 }
 
 func TestCreateDeleteApplication(t *testing.T) {
+	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
+		return
+	}
 	appName := fmt.Sprintf("mytestapp%d", rand.Int())
 	app := NewApplication()
 	app.Name = appName
@@ -37,6 +41,9 @@ func TestCreateDeleteApplication(t *testing.T) {
 }
 
 func TestApplicationNameWithSpace(t *testing.T) {
+	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
+		return
+	}
 	expectedName := fmt.Sprintf("my test app %d", rand.Int())
 	app := NewApplication()
 	app.Name = expectedName

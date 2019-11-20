@@ -46,6 +46,10 @@ func TestParsePipeline(t *testing.T) {
 			Failed:   &MessageText{Text: "pipe is failed"},
 		},
 	}
+	expectedTriggers := []Trigger{
+		NewJenkinsTrigger(),
+		NewPipelineTrigger(),
+	}
 
 	pipeline, err := parsePipeline(map[string]interface{}{
 		"name": expectedName,
@@ -72,6 +76,14 @@ func TestParsePipeline(t *testing.T) {
 				"when": expectedNotification.When,
 			},
 		},
+		"triggers": []interface{}{
+			map[string]interface{}{
+				"type": JenkinsTriggerType.String(),
+			},
+			map[string]interface{}{
+				"type": PipelineTriggerType.String(),
+			},
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -80,6 +92,7 @@ func TestParsePipeline(t *testing.T) {
 	expected.Name = expectedName
 	expected.Stages = &[]Stage{expectedStage}
 	expected.Notifications = &[]*Notification{&expectedNotification}
+	expected.Triggers = expectedTriggers
 	err = pipeline.equals(expected)
 	if err != nil {
 		t.Fatal(err)

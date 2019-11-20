@@ -77,10 +77,8 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	newApp := "newApp"
 	newName := fmt.Sprintf("My New Name Pipe %d", rand.Int())
 	pipeline.Name = newName
-	pipeline.Application = newApp
 	pipeline.Stages = &[]Stage{
 		NewBakeStage(),
 	}
@@ -105,7 +103,7 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 	}
 
 	var updatedPipeline *Pipeline
-	updatedPipeline, err = pipelineService.GetPipeline(newApp, newName)
+	updatedPipeline, err = pipelineService.GetPipeline(pipeline.Application, newName)
 	if err != nil {
 		t.Fatal(err)
 	}
