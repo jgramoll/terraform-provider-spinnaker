@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"errors"
 	"log"
 	"strings"
 
@@ -10,55 +9,6 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
-
-var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
-
-func pipelineTriggerResource() *schema.Resource {
-	return &schema.Resource{
-		Create: resourcePipelineTriggerCreate,
-		Read:   resourcePipelineTriggerRead,
-		Update: resourcePipelineTriggerUpdate,
-		Delete: resourcePipelineTriggerDelete,
-		Importer: &schema.ResourceImporter{
-			State: resourceTriggerImporter,
-		},
-
-		Schema: map[string]*schema.Schema{
-			PipelineKey: &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Id of the pipeline to trigger",
-				Required:    true,
-				ForceNew:    true,
-			},
-			"enabled": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "If the trigger is enabled",
-				Optional:    true,
-				Default:     true,
-			},
-			"job": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the job",
-				Required:    true,
-			},
-			"master": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the job master",
-				Required:    true,
-			},
-			"property_file": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of file to use for properties",
-				Optional:    true,
-			},
-			"type": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Type of trigger (jenkins, etc)",
-				Required:    true,
-			},
-		},
-	}
-}
 
 func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error {
 	pipelineLock.Lock()
