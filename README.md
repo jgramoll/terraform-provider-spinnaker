@@ -72,6 +72,14 @@ resource "spinnaker_pipeline" "edge" {
   }
 }
 
+resource "spinnaker_pipeline_docker_trigger" "docker" {
+  pipeline = "${spinnaker_pipeline.edge.id}"
+
+  account = "my-docker-hub"
+  organization = "my-org"
+  repository = "test"
+}
+
 resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
   pipeline = "${spinnaker_pipeline.edge.id}"
   job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
