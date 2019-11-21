@@ -1,8 +1,13 @@
 # terraform-provider-spinnaker
 
+## 1.6.0
+
+- `331273b` bump terraform dependency to 0.12.16 (#34)
+- `83a089c` Dockertrigger (#33)
+
 ## 1.5.0
 
-- `48c4729` add canary config to client (#30
+- `48c4729` add canary config to client (#30)
 
 ## 1.4.0
 
