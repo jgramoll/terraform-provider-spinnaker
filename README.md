@@ -356,23 +356,32 @@ resource "spinnaker_canary_config" "test" {
 }
 
 resource "spinnaker_pipeline_canary_analysis_stage" "test" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Canary Analysis"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Canary Analysis"
 
-	analysis_type  = "realTimeAutomatic"
+  analysis_type  = "realTimeAutomatic"
 
-	canary_config {
-		canary_config_id  = "${spinnaker_canary_config.test.id}"
-		lifetime_duration = "PT0H5M"
+  canary_config {
+    canary_config_id  = "${spinnaker_canary_config.test.id}"
+    lifetime_duration = "PT0H5M"
 
-		metrics_account_name = "metrics-account"
-		storage_account_name = "storage-account"
+    metrics_account_name = "metrics-account"
+    storage_account_name = "storage-account"
 
-		score_thresholds {
-			marginal = "1"
-			pass     = "2"
-		}
-	}
+    score_thresholds {
+      marginal = "1"
+      pass     = "2"
+    }
+  }
+}
+
+resource "spinnaker_pipeline_scale_manifest_stage" "test" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Stage Scale (Manifest)"
+
+  account        = "my-k8s-account"
+  cloud_provider = "kubernetes"
+  mode           = "static"
 }
 
 ```
