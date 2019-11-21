@@ -59,7 +59,7 @@ func parsePipeline(pipelineHash map[string]interface{}) (*Pipeline, error) {
 	pipeline.Triggers = *triggers
 	delete(pipelineHash, "triggers")
 
-	if err := mapstructure.Decode(pipelineHash, &pipeline); err != nil {
+	if err := mapstructure.Decode(pipelineHash, pipeline); err != nil {
 		return nil, err
 	}
 	return pipeline, nil

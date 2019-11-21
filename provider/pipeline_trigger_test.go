@@ -8,7 +8,7 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func testAccCheckPipelineTriggers(resourceName string, expected []string, triggers *[]*client.Trigger) resource.TestCheckFunc {
+func testAccCheckPipelineTriggers(resourceName string, expected []string, triggers *[]client.Trigger) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -43,26 +43,12 @@ func testAccCheckPipelineTriggers(resourceName string, expected []string, trigge
 	}
 }
 
-func ensureTrigger(triggers *[]*client.Trigger, expected *terraform.ResourceState) (*client.Trigger, error) {
+func ensureTrigger(triggers *[]client.Trigger, expected *terraform.ResourceState) (client.Trigger, error) {
 	expectedID := expected.Primary.Attributes["id"]
 	for _, t := range *triggers {
-		if t.ID == expectedID {
+		if t.GetID() == expectedID {
 			return t, nil
 		}
 	}
 	return nil, fmt.Errorf("Trigger not found %s", expectedID)
-}
-
-func testAccCheckPipelineTriggerDestroy(s *terraform.State) error {
-	pipelineService := testAccProvider.Meta().(*Services).PipelineService
-	for _, rs := range s.RootModule().Resources {
-		if rs.Type == "spinnaker_pipeline_trigger" {
-			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes[PipelineKey])
-			if err == nil {
-				return fmt.Errorf("Pipeline trigger still exists: %s", rs.Primary.ID)
-			}
-		}
-	}
-
-	return nil
 }

@@ -13,7 +13,7 @@ import (
 
 func TestAccPipelineTriggerDeprecated(t *testing.T) {
 	var pipelineRef client.Pipeline
-	var triggers []*client.Trigger
+	var triggers []client.Trigger
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	jenkinsMaster := "inst-ci"
 	newJenkinsMaster := jenkinsMaster + "-new"
@@ -22,9 +22,8 @@ func TestAccPipelineTriggerDeprecated(t *testing.T) {
 	pipelineResourceName := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineTriggerDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineTriggerConfigDeprecated(pipeName, jenkinsMaster, 2),
@@ -53,7 +52,7 @@ func TestAccPipelineTriggerDeprecated(t *testing.T) {
 					if len(triggers) == 0 {
 						return "", fmt.Errorf("no triggers to import")
 					}
-					return fmt.Sprintf("%s_%s", pipelineRef.ID, triggers[0].ID), nil
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, triggers[0].GetID()), nil
 				},
 				ImportStateVerify: true,
 			},
@@ -64,7 +63,7 @@ func TestAccPipelineTriggerDeprecated(t *testing.T) {
 					if len(triggers) < 2 {
 						return "", fmt.Errorf("no triggers to import")
 					}
-					return fmt.Sprintf("%s_%s", pipelineRef.ID, triggers[1].ID), nil
+					return fmt.Sprintf("%s_%s", pipelineRef.ID, triggers[1].GetID()), nil
 				},
 				ImportStateVerify: true,
 			},

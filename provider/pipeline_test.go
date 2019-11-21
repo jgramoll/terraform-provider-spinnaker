@@ -45,13 +45,13 @@ func TestAccPipelineBasic(t *testing.T) {
 
 func TestAccPipelineTrigger(t *testing.T) {
 	var pipelineRef client.Pipeline
-	var triggers []*client.Trigger
+	var triggers []client.Trigger
 	app := "app"
 	name := fmt.Sprintf("tf-acc-test-%s",
 		acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	newName := name + "-changed"
 	resourceName := "spinnaker_pipeline.test"
-	trigger := "spinnaker_pipeline_trigger.jenkins"
+	trigger := "spinnaker_pipeline_jenkins_trigger.jenkins"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -101,11 +101,10 @@ resource "spinnaker_pipeline" "test" {
 	index       = 2
 }
 
-resource "spinnaker_pipeline_trigger" "jenkins" {
+resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
 	master = "inst-ci"
-	type = "jenkins"
 }
 `, app, name)
 }

@@ -72,12 +72,18 @@ resource "spinnaker_pipeline" "edge" {
   }
 }
 
-resource "spinnaker_pipeline_trigger" "jenkins" {
+resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
   pipeline = "${spinnaker_pipeline.edge.id}"
   job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
   master = "inst-ci"
   property_file = "build.properties.test"
-  type = "jenkins"
+}
+
+resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
+  pipeline = "${spinnaker_pipeline.edge.id}"
+  job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
+  master = "inst-ci"
+  property_file = "build.properties.test"
 }
 
 resource "spinnaker_pipeline_notification" "edge" {

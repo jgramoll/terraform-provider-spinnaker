@@ -1,19 +1,32 @@
 package provider
 
 import (
+	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func pipelineTriggerResource() *schema.Resource {
+var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
+
+func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource {
+	triggerInterface := func() pipelineTrigger {
+		return newJenkinsTrigger()
+	}
 	return &schema.Resource{
-		Create: resourcePipelineTriggerCreate,
-		Read:   resourcePipelineTriggerRead,
-		Update: resourcePipelineTriggerUpdate,
+		Create: func(d *schema.ResourceData, m interface{}) error {
+			return resourcePipelineTriggerCreate(d, m, triggerInterface)
+		},
+		Read: func(d *schema.ResourceData, m interface{}) error {
+			return resourcePipelineTriggerRead(d, m, triggerInterface)
+		},
+		Update: func(d *schema.ResourceData, m interface{}) error {
+			return resourcePipelineTriggerUpdate(d, m, triggerInterface)
+		},
 		Delete: resourcePipelineTriggerDelete,
 		Importer: &schema.ResourceImporter{
 			State: resourceTriggerImporter,
 		},
-		DeprecationMessage: "use spinnaker_pipeline_jenkins_trigger",
+		DeprecationMessage: deprecationMessage,
 
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{
@@ -43,10 +56,16 @@ func pipelineTriggerResource() *schema.Resource {
 				Description: "Name of file to use for properties",
 				Optional:    true,
 			},
+			"run_as_user": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Name of user to run pipeline as",
+				Optional:    true,
+			},
 			"type": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Type of trigger (jenkins, etc)",
+				Description: "[DEPRECATED] Type of trigger, not used use explicit trigger resource",
 				Optional:    true,
+				Deprecated:  "DO NOT USE",
 			},
 		},
 	}

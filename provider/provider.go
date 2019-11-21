@@ -92,8 +92,8 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_parameter":     pipelineParameterResource(),
 			"spinnaker_pipeline_webhook_stage": pipelineWebhookStageResource(),
 
-			"spinnaker_pipeline_trigger":         pipelineTriggerResource(),
-			"spinnaker_pipeline_jenkins_trigger": pipelineJenkinsTriggerResource(),
+			"spinnaker_pipeline_trigger":         pipelineJenkinsTriggerResource("use spinnaker_pipeline_jenkins_trigger"),
+			"spinnaker_pipeline_jenkins_trigger": pipelineJenkinsTriggerResource(""),
 		},
 
 		ConfigureFunc: providerConfigure,

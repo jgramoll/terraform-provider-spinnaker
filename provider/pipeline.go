@@ -21,17 +21,15 @@ type pipeline struct {
 
 func (p *pipeline) toClientPipeline() *client.Pipeline {
 	return &client.Pipeline{
-		SerializablePipeline: client.SerializablePipeline{
-			Application:          p.Application,
-			AppConfig:            p.AppConfig,
-			Disabled:             p.Disabled,
-			ID:                   p.ID,
-			KeepWaitingPipelines: p.KeepWaitingPipelines,
-			LimitConcurrent:      p.LimitConcurrent,
-			Name:                 p.Name,
-			Index:                p.Index,
-			Roles:                p.Roles,
-		},
+		Application:          p.Application,
+		AppConfig:            p.AppConfig,
+		Disabled:             p.Disabled,
+		ID:                   p.ID,
+		KeepWaitingPipelines: p.KeepWaitingPipelines,
+		LimitConcurrent:      p.LimitConcurrent,
+		Name:                 p.Name,
+		Index:                p.Index,
+		Roles:                p.Roles,
 	}
 }
 
