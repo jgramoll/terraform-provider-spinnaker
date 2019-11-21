@@ -17,6 +17,7 @@ type pipeline struct {
 	Index                int                    `mapstructure:"index"`
 	Roles                *[]string              `mapstructure:"roles"`
 	ServiceAccount       string                 `mapstructure:"serviceAccount"`
+	Locked               lockedArray            `mapstructure:"locked"`
 }
 
 func (p *pipeline) toClientPipeline() *client.Pipeline {
@@ -30,6 +31,7 @@ func (p *pipeline) toClientPipeline() *client.Pipeline {
 		Name:                 p.Name,
 		Index:                p.Index,
 		Roles:                p.Roles,
+		Locked:               p.Locked.toClientLocked(),
 	}
 }
 
@@ -44,6 +46,7 @@ func fromClientPipeline(p *client.Pipeline) *pipeline {
 		Name:                 p.Name,
 		Index:                p.Index,
 		Roles:                p.Roles,
+		Locked:               fromClientLocked(p.Locked),
 	}
 }
 
@@ -81,6 +84,11 @@ func (p *pipeline) setResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
+	err = d.Set("locked", p.Locked)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -93,11 +101,39 @@ func pipelineFromResourceData(pipeline *client.Pipeline, d *schema.ResourceData)
 	pipeline.KeepWaitingPipelines = d.Get("keep_waiting_pipelines").(bool)
 	pipeline.LimitConcurrent = d.Get("limit_concurrent").(bool)
 	pipeline.Roles = pipelineRolesFromResourceData(d)
+	pipeline.Locked = pipelineLockedFromResourceData(d)
 
 	serviceAccount, ok := d.GetOk("service_account")
 	if ok {
 		pipeline.ServiceAccount = serviceAccount.(string)
 	}
+
+}
+
+func pipelineLockedFromResourceData(d *schema.ResourceData) *client.Locked {
+	lockedInterface, ok := d.GetOk("locked")
+	if !ok {
+		return nil
+	}
+
+	// If lock UI is false return nil.
+	// Spinnaker check if field locked exist on response and not the content of locked.ui
+	// if locked.ui = false spinnaker still lock the UI
+	for _, locked := range lockedInterface.([]interface{}) {
+		lock := locked.(map[string]interface{})
+		ui := lock["ui"].(bool)
+		if !ui {
+			return nil
+		}
+
+		allowUnlockUI := lock["allow_unlock_ui"].(bool)
+		return &client.Locked{
+			UI:            ui,
+			AllowUnlockUI: allowUnlockUI,
+		}
+	}
+
+	return nil
 }
 
 func pipelineRolesFromResourceData(d *schema.ResourceData) *[]string {
