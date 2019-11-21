@@ -79,13 +79,6 @@ resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
   property_file = "build.properties.test"
 }
 
-resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
-  pipeline = "${spinnaker_pipeline.edge.id}"
-  job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
-  master = "inst-ci"
-  property_file = "build.properties.test"
-}
-
 resource "spinnaker_pipeline_pipeline_trigger" "pipeline" {
   pipeline = "${spinnaker_pipeline.edge.id}"
 
