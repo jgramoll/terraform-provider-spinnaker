@@ -18,7 +18,9 @@ type DockerTrigger struct {
 
 	Account      string `json:"account"`
 	Organization string `json:"organization"`
+	Registry     string `json:"registry"`
 	Repository   string `json:"repository"`
+	Tag          string `json:"tag"`
 }
 
 func NewDockerTrigger() *DockerTrigger {
