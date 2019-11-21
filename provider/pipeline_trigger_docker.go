@@ -14,7 +14,9 @@ type dockerTrigger struct {
 
 	Account      string `mapstructure:"account"`
 	Organization string `mapstructure:"organization"`
+	Registry     string `mapstructure:"registry"`
 	Repository   string `mapstructure:"repository"`
+	Tag          string `mapstructure:"tag"`
 }
 
 func newDockerTrigger() *dockerTrigger {
@@ -29,7 +31,9 @@ func (t *dockerTrigger) toClientTrigger(id string) (client.Trigger, error) {
 
 	clientTrigger.Account = t.Account
 	clientTrigger.Organization = t.Organization
+	clientTrigger.Registry = t.Registry
 	clientTrigger.Repository = t.Repository
+	clientTrigger.Tag = t.Tag
 	return clientTrigger, nil
 }
 
@@ -44,7 +48,9 @@ func (*dockerTrigger) fromClientTrigger(clientTriggerInterface client.Trigger) (
 
 	t.Account = clientTrigger.Account
 	t.Organization = clientTrigger.Organization
+	t.Registry = clientTrigger.Registry
 	t.Repository = clientTrigger.Repository
+	t.Tag = clientTrigger.Tag
 	return t, nil
 }
 
@@ -66,7 +72,15 @@ func (t *dockerTrigger) setResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
+	err = d.Set("registry", t.Registry)
+	if err != nil {
+		return err
+	}
 	err = d.Set("repository", t.Repository)
+	if err != nil {
+		return err
+	}
+	err = d.Set("tag", t.Tag)
 	if err != nil {
 		return err
 	}
