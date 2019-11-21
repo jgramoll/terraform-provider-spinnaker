@@ -39,8 +39,8 @@ type scaleManifestStage struct {
 
 func newScaleManifestStage() *scaleManifestStage {
 	return &scaleManifestStage{
-		Type:                    client.ScaleManifestStageType,
-		FailPipeline:            true,
+		Type:         client.ScaleManifestStageType,
+		FailPipeline: true,
 		// TODO defaults
 	}
 }

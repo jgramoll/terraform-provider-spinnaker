@@ -1,7 +1,7 @@
 package client
 
 import (
- 	"github.com/mitchellh/mapstructure"
+	"github.com/mitchellh/mapstructure"
 )
 
 // ScaleManifestStageType scale manifest stage
@@ -49,7 +49,7 @@ func NewScaleManifestStage() *ScaleManifestStage {
 		Type:                 ScaleManifestStageType,
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
-        // TODO defaults
+		// TODO defaults
 	}
 }
 
