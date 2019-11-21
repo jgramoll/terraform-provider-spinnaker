@@ -7,66 +7,18 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
 
 var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
 
-func pipelineTriggerResource() *schema.Resource {
-	return &schema.Resource{
-		Create: resourcePipelineTriggerCreate,
-		Read:   resourcePipelineTriggerRead,
-		Update: resourcePipelineTriggerUpdate,
-		Delete: resourcePipelineTriggerDelete,
-		Importer: &schema.ResourceImporter{
-			State: resourceTriggerImporter,
-		},
-
-		Schema: map[string]*schema.Schema{
-			PipelineKey: &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Id of the pipeline to trigger",
-				Required:    true,
-				ForceNew:    true,
-			},
-			"enabled": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "If the trigger is enabled",
-				Optional:    true,
-				Default:     true,
-			},
-			"job": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the job",
-				Required:    true,
-			},
-			"master": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of the job master",
-				Required:    true,
-			},
-			"property_file": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of file to use for properties",
-				Optional:    true,
-			},
-			"type": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Type of trigger (jenkins, etc)",
-				Required:    true,
-			},
-		},
-	}
-}
-
-func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var t trigger
+	t := createTrigger()
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &t); err != nil {
+	if err := mapstructure.Decode(configRaw, t); err != nil {
 		return err
 	}
 
@@ -74,7 +26,6 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 	if err != nil {
 		return err
 	}
-	t.ID = id.String()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -82,8 +33,11 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	clientTrigger := client.Trigger(t)
-	pipeline.AppendTrigger(&clientTrigger)
+	clientTrigger, err := t.toClientTrigger(id.String())
+	if err != nil {
+		return err
+	}
+	pipeline.AppendTrigger(clientTrigger)
 
 	err = pipelineService.UpdatePipeline(pipeline)
 	if err != nil {
@@ -92,10 +46,10 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}) error 
 
 	log.Println("[DEBUG] Creating pipeline trigger:", id)
 	d.SetId(id.String())
-	return resourcePipelineTriggerRead(d, m)
+	return resourcePipelineTriggerRead(d, m, createTrigger)
 }
 
-func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
@@ -105,29 +59,31 @@ func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	var clientTrigger *client.Trigger
-	clientTrigger, err = pipeline.GetTrigger(d.Id())
+	clientTrigger, err := pipeline.GetTrigger(d.Id())
 	if err != nil {
 		log.Println("[WARN] No Pipeline Trigger found:", err)
 		d.SetId("")
-	} else {
-		d.SetId(clientTrigger.ID)
-		fromClientTrigger(clientTrigger).setResourceData(d)
+		return nil
 	}
 
-	return nil
+	t, err := createTrigger().fromClientTrigger(clientTrigger)
+	if err != nil {
+		log.Println("[WARN] No Pipeline Trigger found:", err)
+		d.SetId("")
+		return nil
+	}
+	return t.setResourceData(d)
 }
 
-func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var t trigger
+	t := createTrigger()
 	configRaw := d.Get("").(map[string]interface{})
-	if err := mapstructure.Decode(configRaw, &t); err != nil {
+	if err := mapstructure.Decode(configRaw, t); err != nil {
 		return err
 	}
-	t.ID = d.Id()
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -135,8 +91,12 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	clientTrigger := client.Trigger(t)
-	err = pipeline.UpdateTrigger(&clientTrigger)
+	clientTrigger, err := t.toClientTrigger(d.Id())
+	if err != nil {
+		return err
+	}
+
+	err = pipeline.UpdateTrigger(clientTrigger)
 	if err != nil {
 		return err
 	}
@@ -147,7 +107,7 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}) error 
 	}
 
 	log.Println("[DEBUG] Updated pipeline trigger:", d.Id())
-	return resourcePipelineTriggerRead(d, m)
+	return resourcePipelineTriggerRead(d, m, createTrigger)
 }
 
 func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error {

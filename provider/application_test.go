@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"testing"
 
@@ -16,6 +17,10 @@ func TestAccApplicationBasic(t *testing.T) {
 	name := fmt.Sprintf("tfacctest%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	newName := name + "_changed"
 	resourceName := "spinnaker_application.test"
+
+	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
+		return
+	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -58,6 +63,10 @@ func TestAccApplicationPipeline(t *testing.T) {
 	newName := name + "_changed"
 	resourceName := "spinnaker_application.test"
 	pipeline := "spinnaker_pipeline.test"
+
+	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
+		return
+	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

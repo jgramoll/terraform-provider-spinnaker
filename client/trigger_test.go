@@ -4,23 +4,21 @@ import (
 	"testing"
 )
 
-func newTriggerTestPipeline() (*Pipeline, *Trigger) {
-	expected := Trigger{}
+func newTriggerTestPipeline() (*Pipeline, *JenkinsTrigger) {
+	expected := NewJenkinsTrigger()
 	expected.ID = "triggerId"
 	return &Pipeline{
-		SerializablePipeline: SerializablePipeline{
-			Triggers: []*Trigger{&expected},
-		},
-	}, &expected
+		Triggers: []Trigger{expected},
+	}, expected
 }
 
 func TestGetTrigger(t *testing.T) {
 	pipeline, expected := newTriggerTestPipeline()
-	s, err := pipeline.GetTrigger(expected.ID)
+	actual, err := pipeline.GetTrigger(expected.GetID())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if s.ID != expected.ID {
+	if actual.GetID() != expected.GetID() {
 		t.Fatal("Not the expected trigger")
 	}
 }
@@ -28,13 +26,17 @@ func TestGetTrigger(t *testing.T) {
 func TestUpdateTrigger(t *testing.T) {
 	pipeline, expected := newTriggerTestPipeline()
 
-	updateTrigger := Trigger(*expected)
+	updateTrigger := JenkinsTrigger(*expected)
 	updateTrigger.Master = "new name"
 	err := pipeline.UpdateTrigger(&updateTrigger)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if (pipeline.Triggers)[0].Master != updateTrigger.Master {
+	actualTrigger, ok := pipeline.Triggers[0].(*JenkinsTrigger)
+	if !ok {
+		t.Fatal("Should be Jenkins Trigger")
+	}
+	if actualTrigger.Master != updateTrigger.Master {
 		t.Fatal("Pipeline Trigger was not updated")
 	}
 }

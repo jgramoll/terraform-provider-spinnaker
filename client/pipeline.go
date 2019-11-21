@@ -4,8 +4,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// SerializablePipeline deploy pipeline in application
-type SerializablePipeline struct {
+// Pipeline deploy pipeline in application
+type Pipeline struct {
 	Application          string                 `json:"application"`
 	AppConfig            map[string]interface{} `json:"appConfig"`
 	Disabled             bool                   `json:"disabled"`
@@ -17,57 +17,52 @@ type SerializablePipeline struct {
 	ParameterConfig      *[]*PipelineParameter  `json:"parameterConfig"`
 	Roles                *[]string              `json:"roles"`
 	ServiceAccount       string                 `json:"serviceAccount,omitempty"`
-	Triggers             []*Trigger             `json:"triggers"`
-}
-
-// Pipeline deploy pipeline in application
-type Pipeline struct {
-	SerializablePipeline
+	Triggers             []Trigger              `json:"triggers"`
 
 	Notifications *[]*Notification `json:"notifications"`
 	Stages        *[]Stage         `json:"stages"`
 }
 
-// NewSerializablePipeline Pipeline with default values
-func NewSerializablePipeline() SerializablePipeline {
-	return SerializablePipeline{
+// NewPipeline Pipeline with default values
+func NewPipeline() *Pipeline {
+	return &Pipeline{
 		Disabled:             false,
 		KeepWaitingPipelines: false,
 		LimitConcurrent:      true,
-		Triggers:             []*Trigger{},
+		Triggers:             []Trigger{},
 		AppConfig:            map[string]interface{}{},
 		ParameterConfig:      &[]*PipelineParameter{},
 	}
 }
 
-// NewPipeline Pipeline with default values
-func NewPipeline() *Pipeline {
-	return &Pipeline{
-		SerializablePipeline: NewSerializablePipeline(),
-	}
-}
-
 func parsePipeline(pipelineHash map[string]interface{}) (*Pipeline, error) {
-	serializablePipeline := NewSerializablePipeline()
-	if err := mapstructure.Decode(pipelineHash, &serializablePipeline); err != nil {
-		return nil, err
-	}
+	pipeline := NewPipeline()
 
 	stages, err := parseStages(pipelineHash["stages"])
 	if err != nil {
 		return nil, err
 	}
+	pipeline.Stages = stages
+	delete(pipelineHash, "stages")
 
 	notifications, err := parseNotifications(pipelineHash["notifications"])
 	if err != nil {
 		return nil, err
 	}
+	pipeline.Notifications = notifications
+	delete(pipelineHash, "notifications")
 
-	return &Pipeline{
-		SerializablePipeline: serializablePipeline,
-		Notifications:        notifications,
-		Stages:               stages,
-	}, nil
+	triggers, err := parseTriggers(pipelineHash["triggers"])
+	if err != nil {
+		return nil, err
+	}
+	pipeline.Triggers = *triggers
+	delete(pipelineHash, "triggers")
+
+	if err := mapstructure.Decode(pipelineHash, pipeline); err != nil {
+		return nil, err
+	}
+	return pipeline, nil
 }
 
 // AppendStage append stage

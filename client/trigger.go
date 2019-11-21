@@ -2,26 +2,22 @@ package client
 
 import (
 	"errors"
+	"log"
 )
 
 // ErrTriggerNotFound trigger not found
 var ErrTriggerNotFound = errors.New("could not find trigger")
 
-// Trigger for Pipeline
-type Trigger struct {
-	ID           string `json:"id"`
-	Enabled      bool   `json:"enabled"`
-	Job          string `json:"job"`
-	Master       string `json:"master"`
-	PropertyFile string `json:"propertyFile"`
-	RunAsUser    string `json:"runAsUser,omitempty"`
-	Type         string `json:"type"`
+// Trigger interface for Pipeline triggers
+type Trigger interface {
+	GetID() string
+	GetType() TriggerType
 }
 
 // GetTrigger by ID
-func (p *Pipeline) GetTrigger(triggerID string) (*Trigger, error) {
+func (p *Pipeline) GetTrigger(triggerID string) (Trigger, error) {
 	for _, trigger := range p.Triggers {
-		if trigger.ID == triggerID {
+		if trigger.GetID() == triggerID {
 			return trigger, nil
 		}
 	}
@@ -29,14 +25,14 @@ func (p *Pipeline) GetTrigger(triggerID string) (*Trigger, error) {
 }
 
 // AppendTrigger append trigger
-func (pipeline *Pipeline) AppendTrigger(trigger *Trigger) {
+func (pipeline *Pipeline) AppendTrigger(trigger Trigger) {
 	pipeline.Triggers = append(pipeline.Triggers, trigger)
 }
 
 // UpdateTrigger in pipeline
-func (p *Pipeline) UpdateTrigger(trigger *Trigger) error {
+func (p *Pipeline) UpdateTrigger(trigger Trigger) error {
 	for i, t := range p.Triggers {
-		if t.ID == trigger.ID {
+		if t.GetID() == trigger.GetID() {
 			p.Triggers[i] = trigger
 			return nil
 		}
@@ -47,10 +43,41 @@ func (p *Pipeline) UpdateTrigger(trigger *Trigger) error {
 // DeleteTrigger in pipeline
 func (p *Pipeline) DeleteTrigger(triggerID string) error {
 	for i, t := range p.Triggers {
-		if t.ID == triggerID {
+		if t.GetID() == triggerID {
 			p.Triggers = append(p.Triggers[:i], p.Triggers[i+1:]...)
 			return nil
 		}
 	}
 	return ErrTriggerNotFound
+}
+
+func parseTriggers(triggersHashInterface interface{}) (*[]Trigger, error) {
+	triggers := []Trigger{}
+	if triggersHashInterface == nil {
+		return &triggers, nil
+	}
+
+	triggersToParse := triggersHashInterface.([]interface{})
+	for _, triggerInterface := range triggersToParse {
+		triggerMap := triggerInterface.(map[string]interface{})
+
+		triggerTypeInterface, ok := triggerMap["type"]
+		if !ok {
+			log.Println("[WARN] pipeline trigger type is missing")
+			continue
+		}
+		triggerType := TriggerType(triggerTypeInterface.(string))
+
+		factory := triggerFactories[triggerType]
+		if factory == nil {
+			log.Printf("[WARN] unknown pipeline trigger \"%s\"\n", triggerType)
+			continue
+		}
+		trigger, err := factory(triggerMap)
+		if err != nil {
+			return nil, err
+		}
+		triggers = append(triggers, trigger)
+	}
+	return &triggers, nil
 }

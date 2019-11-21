@@ -90,8 +90,12 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_rollback_cluster_stage":     pipelineRollbackClusterStageResource(),
 
 			"spinnaker_pipeline_parameter":     pipelineParameterResource(),
-			"spinnaker_pipeline_trigger":       pipelineTriggerResource(),
 			"spinnaker_pipeline_webhook_stage": pipelineWebhookStageResource(),
+
+			"spinnaker_pipeline_trigger":          pipelineJenkinsTriggerResource("use spinnaker_pipeline_jenkins_trigger"),
+			"spinnaker_pipeline_docker_trigger":   pipelineDockerTriggerResource(),
+			"spinnaker_pipeline_jenkins_trigger":  pipelineJenkinsTriggerResource(""),
+			"spinnaker_pipeline_pipeline_trigger": pipelinePipelineTriggerResource(),
 		},
 
 		ConfigureFunc: providerConfigure,

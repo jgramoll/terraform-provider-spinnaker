@@ -72,12 +72,27 @@ resource "spinnaker_pipeline" "edge" {
   }
 }
 
-resource "spinnaker_pipeline_trigger" "jenkins" {
+resource "spinnaker_pipeline_docker_trigger" "docker" {
+  pipeline = "${spinnaker_pipeline.edge.id}"
+
+  account = "my-docker-hub"
+  organization = "my-org"
+  repository = "test"
+}
+
+resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
   pipeline = "${spinnaker_pipeline.edge.id}"
   job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
   master = "inst-ci"
   property_file = "build.properties.test"
-  type = "jenkins"
+}
+
+resource "spinnaker_pipeline_pipeline_trigger" "pipeline" {
+  pipeline = "${spinnaker_pipeline.edge.id}"
+
+  triggering_application = "app"
+  triggering_pipeline = "my-other-pipeline"
+  status = ["successful"]
 }
 
 resource "spinnaker_pipeline_notification" "edge" {
