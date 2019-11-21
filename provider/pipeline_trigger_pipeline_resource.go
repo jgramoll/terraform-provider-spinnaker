@@ -4,9 +4,9 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource {
+func pipelinePipelineTriggerResource() *schema.Resource {
 	triggerInterface := func() trigger {
-		return newJenkinsTrigger()
+		return newPipelineTrigger()
 	}
 	return &schema.Resource{
 		Create: func(d *schema.ResourceData, m interface{}) error {
@@ -22,7 +22,6 @@ func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource 
 		Importer: &schema.ResourceImporter{
 			State: resourceTriggerImporter,
 		},
-		DeprecationMessage: deprecationMessage,
 
 		Schema: map[string]*schema.Schema{
 			PipelineKey: &schema.Schema{
@@ -42,26 +41,23 @@ func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource 
 				Description: "Name of user to run pipeline as",
 				Optional:    true,
 			},
-			"job": &schema.Schema{
+			"triggering_application": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Name of the job",
+				Description: "Name of the spinnaker application",
 				Required:    true,
 			},
-			"master": &schema.Schema{
+			"triggering_pipeline": &schema.Schema{
 				Type:        schema.TypeString,
-				Description: "Name of the job master",
+				Description: "Name of the spinnaker pipeline",
 				Required:    true,
 			},
-			"property_file": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of file to use for properties",
-				Optional:    true,
-			},
-			"type": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "[DEPRECATED] Type of trigger, not used use explicit trigger resource",
-				Optional:    true,
-				Deprecated:  "DO NOT USE",
+			"status": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Status of pipeline execution",
+				Required:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 		},
 	}

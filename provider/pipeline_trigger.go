@@ -5,8 +5,8 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type pipelineTrigger interface {
+type trigger interface {
 	toClientTrigger(string) (client.Trigger, error)
-	fromClientTrigger(client.Trigger) (pipelineTrigger, error)
+	fromClientTrigger(client.Trigger) (trigger, error)
 	setResourceData(d *schema.ResourceData) error
 }

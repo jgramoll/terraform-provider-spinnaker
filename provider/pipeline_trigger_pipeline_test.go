@@ -11,14 +11,14 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func TestAccJenkinsTriggerBasic(t *testing.T) {
+func TestAccPipelineTriggerBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var triggers []client.Trigger
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	jenkinsMaster := "inst-ci"
-	newJenkinsMaster := jenkinsMaster + "-new"
-	trigger1 := "spinnaker_pipeline_jenkins_trigger.t1"
-	trigger2 := "spinnaker_pipeline_jenkins_trigger.t2"
+	triggeringPipeline := "inst-ci"
+	newTriggeringPipeline := triggeringPipeline + "-new"
+	trigger1 := "spinnaker_pipeline_pipeline_trigger.t1"
+	trigger2 := "spinnaker_pipeline_pipeline_trigger.t2"
 	pipelineResourceName := "spinnaker_pipeline.test"
 
 	resource.Test(t, resource.TestCase{
@@ -26,12 +26,14 @@ func TestAccJenkinsTriggerBasic(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccJenkinsTriggerConfigBasic(pipeName, jenkinsMaster, 2),
+				Config: testAccPipelineTriggerConfigBasic(pipeName, triggeringPipeline, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(trigger1, "master", jenkinsMaster),
-					resource.TestCheckResourceAttr(trigger1, "property_file", "build.properties.1"),
-					resource.TestCheckResourceAttr(trigger2, "master", jenkinsMaster),
-					resource.TestCheckResourceAttr(trigger2, "property_file", "build.properties.2"),
+					resource.TestCheckResourceAttr(trigger1, "triggering_application", "app"),
+					resource.TestCheckResourceAttr(trigger1, "triggering_pipeline", triggeringPipeline),
+					resource.TestCheckResourceAttr(trigger1, "status.0", "successful"),
+					resource.TestCheckResourceAttr(trigger2, "triggering_application", "app"),
+					resource.TestCheckResourceAttr(trigger2, "triggering_pipeline", triggeringPipeline),
+					resource.TestCheckResourceAttr(trigger2, "status.0", "successful"),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineTriggers(pipelineResourceName, []string{
 						trigger1,
@@ -68,12 +70,15 @@ func TestAccJenkinsTriggerBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccJenkinsTriggerConfigBasic(pipeName, newJenkinsMaster, 2),
+				Config: testAccPipelineTriggerConfigBasic(pipeName, newTriggeringPipeline, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(trigger1, "master", newJenkinsMaster),
-					resource.TestCheckResourceAttr(trigger1, "property_file", "build.properties.1"),
-					resource.TestCheckResourceAttr(trigger2, "master", newJenkinsMaster),
-					resource.TestCheckResourceAttr(trigger2, "property_file", "build.properties.2"),
+					resource.TestCheckResourceAttr(trigger1, "triggering_application", "app"),
+					resource.TestCheckResourceAttr(trigger1, "triggering_pipeline", newTriggeringPipeline),
+					resource.TestCheckResourceAttr(trigger1, "status.0", "successful"),
+					resource.TestCheckResourceAttr(trigger2, "triggering_application", "app"),
+					resource.TestCheckResourceAttr(trigger2, "triggering_pipeline", newTriggeringPipeline),
+					resource.TestCheckResourceAttr(trigger2, "status.0", "successful"),
+
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineTriggers(pipelineResourceName, []string{
 						trigger1,
@@ -82,10 +87,11 @@ func TestAccJenkinsTriggerBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccJenkinsTriggerConfigBasic(pipeName, jenkinsMaster, 1),
+				Config: testAccPipelineTriggerConfigBasic(pipeName, triggeringPipeline, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(trigger1, "master", jenkinsMaster),
-					resource.TestCheckResourceAttr(trigger1, "property_file", "build.properties.1"),
+					resource.TestCheckResourceAttr(trigger1, "triggering_application", "app"),
+					resource.TestCheckResourceAttr(trigger1, "triggering_pipeline", triggeringPipeline),
+					resource.TestCheckResourceAttr(trigger1, "status.0", "successful"),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineTriggers(pipelineResourceName, []string{
 						trigger1,
@@ -93,7 +99,7 @@ func TestAccJenkinsTriggerBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccJenkinsTriggerConfigBasic(pipeName, jenkinsMaster, 0),
+				Config: testAccPipelineTriggerConfigBasic(pipeName, triggeringPipeline, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineTriggers(pipelineResourceName, []string{}, &triggers),
@@ -103,16 +109,17 @@ func TestAccJenkinsTriggerBasic(t *testing.T) {
 	})
 }
 
-func testAccJenkinsTriggerConfigBasic(pipeName string, master string, count int) string {
+func testAccPipelineTriggerConfigBasic(pipeName string, triggeringPipeline string, count int) string {
 	triggers := ""
 	for i := 1; i <= count; i++ {
 		triggers += fmt.Sprintf(`
-resource "spinnaker_pipeline_jenkins_trigger" "t%v" {
+resource "spinnaker_pipeline_pipeline_trigger" "t%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
-	job = "Bridge Career/job/Bridge_nav/job/Bridge_nav_postmerge"
-	master = "%s"
-	property_file = "build.properties.%v"
-}`, i, master, i)
+
+	triggering_application = "app"
+	triggering_pipeline = "%s"
+	status = ["successful"]
+}`, i, triggeringPipeline)
 	}
 
 	return fmt.Sprintf(`

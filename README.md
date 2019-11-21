@@ -86,6 +86,14 @@ resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
   property_file = "build.properties.test"
 }
 
+resource "spinnaker_pipeline_pipeline_trigger" "pipeline" {
+  pipeline = "${spinnaker_pipeline.edge.id}"
+
+  triggering_application = "app"
+  triggering_pipeline = "my-other-pipeline"
+  status = ["successful"]
+}
+
 resource "spinnaker_pipeline_notification" "edge" {
   pipeline = "${spinnaker_pipeline.edge.id}"
   address = "bridge-career-deploys"

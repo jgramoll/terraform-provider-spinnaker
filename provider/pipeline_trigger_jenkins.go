@@ -32,7 +32,7 @@ func (t *jenkinsTrigger) toClientTrigger(id string) (client.Trigger, error) {
 	return clientTrigger, nil
 }
 
-func (*jenkinsTrigger) fromClientTrigger(clientTriggerInterface client.Trigger) (pipelineTrigger, error) {
+func (*jenkinsTrigger) fromClientTrigger(clientTriggerInterface client.Trigger) (trigger, error) {
 	clientTrigger, ok := clientTriggerInterface.(*client.JenkinsTrigger)
 	if !ok {
 		return nil, errors.New("Expected jenkins trigger")

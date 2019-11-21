@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -9,7 +10,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}, createTrigger func() pipelineTrigger) error {
+var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
+
+func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
@@ -46,7 +49,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}, create
 	return resourcePipelineTriggerRead(d, m, createTrigger)
 }
 
-func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}, createTrigger func() pipelineTrigger) error {
+func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineID := d.Get(PipelineKey).(string)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
@@ -72,7 +75,7 @@ func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}, createTr
 	return t.setResourceData(d)
 }
 
-func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}, createTrigger func() pipelineTrigger) error {
+func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
