@@ -24,6 +24,7 @@ type serializableWebhookStage struct {
 	FailOnFailedExpressions           bool                  `json:"failOnFailedExpressions"`
 	FailPipeline                      bool                  `json:"failPipeline"`
 	OverrideTimeout                   bool                  `json:"overrideTimeout"`
+	StageTimeoutMS                    int                   `json:"stageTimeoutMs,omitempty"`
 	RestrictExecutionDuringTimeWindow bool                  `json:"restrictExecutionDuringTimeWindow"`
 	RestrictedExecutionWindow         *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	// End BaseStage

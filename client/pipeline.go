@@ -18,6 +18,7 @@ type Pipeline struct {
 	Roles                *[]string              `json:"roles"`
 	ServiceAccount       string                 `json:"serviceAccount,omitempty"`
 	Triggers             []Trigger              `json:"triggers"`
+	Locked               *Locked                `json:"locked,omitempty"`
 
 	Notifications *[]*Notification `json:"notifications"`
 	Stages        *[]Stage         `json:"stages"`

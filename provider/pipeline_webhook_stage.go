@@ -21,6 +21,7 @@ type webhookStage struct {
 	FailOnFailedExpressions           bool                     `mapstructure:"fail_on_failed_expressions"`
 	FailPipeline                      bool                     `mapstructure:"fail_pipeline"`
 	OverrideTimeout                   bool                     `mapstructure:"override_timeout"`
+	StageTimeoutMS                    int                      `mapstructure:"stage_timeout_ms"`
 	RestrictExecutionDuringTimeWindow bool                     `mapstructure:"restrict_execution_during_time_window"`
 	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
 	// End baseStage
@@ -65,6 +66,7 @@ func (s *webhookStage) toClientStage(config *client.Config) (client.Stage, error
 	cs.FailOnFailedExpressions = s.FailOnFailedExpressions
 	cs.FailPipeline = s.FailPipeline
 	cs.OverrideTimeout = s.OverrideTimeout
+	cs.StageTimeoutMS = s.StageTimeoutMS
 	cs.RestrictExecutionDuringTimeWindow = s.RestrictExecutionDuringTimeWindow
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
 	// End baseStage
@@ -113,6 +115,7 @@ func (s *webhookStage) fromClientStage(cs client.Stage) stage {
 	newStage.FailOnFailedExpressions = clientStage.FailOnFailedExpressions
 	newStage.FailPipeline = clientStage.FailPipeline
 	newStage.OverrideTimeout = clientStage.OverrideTimeout
+	newStage.StageTimeoutMS = clientStage.StageTimeoutMS
 	newStage.RestrictExecutionDuringTimeWindow = clientStage.RestrictExecutionDuringTimeWindow
 	newStage.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
 	// end baseStage
@@ -180,6 +183,10 @@ func (s *webhookStage) SetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("override_timeout", s.OverrideTimeout)
+	if err != nil {
+		return err
+	}
+	err = d.Set("stage_timeout_ms", s.StageTimeoutMS)
 	if err != nil {
 		return err
 	}
