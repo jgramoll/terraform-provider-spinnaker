@@ -180,12 +180,12 @@ func pipelineScaleManifestStageResource() *schema.Resource {
 			"cluster": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The cluster to scale",
-				Required:    true,
+				Optional:    true,
 			},
 			"criteria": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The criteria for determining the target cluster",
-				Required:    true,
+				Optional:    true,
 			},
 			"is_new": &schema.Schema{
 				Type:        schema.TypeBool,
@@ -229,7 +229,7 @@ func pipelineScaleManifestStageResource() *schema.Resource {
 			"replicas": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The number of replicas",
-				Required:    true,
+				Optional:    true,
 			},
 		},
 	}
