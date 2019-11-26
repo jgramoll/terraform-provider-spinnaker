@@ -46,6 +46,21 @@ resource "spinnaker_application" "application" {
     }
   }
 
+  permissions {
+    execute = [
+      "spinnakeradmin",
+      "spinnakerexecute"
+    ]
+    read = [
+      "spinnakeradmin",
+      "spinnakerread"
+    ]
+    write = [
+      "spinnakeradmin",
+      "spinnakerwrite"
+    ]
+  }
+
   instance_port = 8080
 }
 

@@ -172,7 +172,7 @@ func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStag
 		d.SetId("")
 		return nil
 	} else if err != nil {
-		log.Printf("[ERROR] Error on get Pipeline stage: %s", err)
+		log.Println("[ERROR] Error on get Pipeline stage:", err)
 		d.SetId("")
 		return err
 	}

@@ -52,14 +52,14 @@ func (service *ApplicationService) GetApplicationByNameWithRetries(name string) 
 		app, err := service.GetApplicationByName(name)
 		if err != nil {
 			spinnakerError, ok := err.(*SpinnakerError)
-			log.Printf("[DEBUG] GetApplicationByName error %s", err.Error())
+			log.Println("[DEBUG] GetApplicationByName error", err.Error())
 			if !ok || spinnakerError.Status != 403 {
 				errChan <- fmt.Errorf("Error finding app %v.\n %v", name, err)
 			}
 		}
 		if app != nil {
 			appChan <- app
-			log.Printf("[DEBUG] Found application %s\n", name)
+			log.Println("[DEBUG] Found application", name)
 		}
 	}
 
@@ -148,7 +148,7 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 		return err
 	}
 
-	log.Printf("[DEBUG] Checking  job %s task %s execution", jobType, taskResp.Ref)
+	log.Printf("[DEBUG] Checking job %s task %s execution\n", jobType, taskResp.Ref)
 	req, err = service.NewRequest("GET", taskResp.Ref)
 	if err != nil {
 		return err
@@ -165,17 +165,17 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 		var execution TaskExecution
 		_, err := service.DoWithResponse(req, &execution)
 		if err != nil {
-			log.Printf("[ERROR] Error on execute request to check task status. %s", err)
+			log.Println("[ERROR] Error on execute request to check task status.", err)
 			return
 		}
 
-		log.Printf("[DEBUG] Task %s current status %s", jobType, execution.Status)
+		log.Printf("[DEBUG] Task %s current status %s\n", jobType, execution.Status)
 		if execution.Status == "ERROR" || execution.Status == "TERMINAL" {
 			errChan <- fmt.Errorf("Error on execute job %s task id %s", jobType, taskResp.Ref)
 		}
 
 		if execution.Status == "SUCCEEDED" {
-			log.Printf("[DEBUG] Task %s finished with SUCCEEDED", jobType)
+			log.Printf("[DEBUG] Task %s finished with SUCCEEDED\n", jobType)
 			done <- true
 		}
 	}

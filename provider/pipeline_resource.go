@@ -131,7 +131,7 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[DEBUG] Creating pipeline %s on application %s", pipeline.Name, pipeline.Application)
+	log.Printf("[DEBUG] Creating pipeline %s on application %s\n", pipeline.Name, pipeline.Application)
 	pipelineService := m.(*Services).PipelineService
 	err := pipelineService.CreatePipeline(&pipeline)
 	if err != nil {
@@ -140,11 +140,11 @@ func resourcePipelineCreate(d *schema.ResourceData, m interface{}) error {
 
 	pipelineWithID, err := pipelineService.GetPipeline(pipeline.Application, pipeline.Name)
 	if err != nil {
-		log.Printf("[WARN] No Pipeline found: %s", err)
+		log.Println("[WARN] No Pipeline found:", err)
 		return err
 	}
 
-	log.Printf("[DEBUG] New pipeline ID %s", pipelineWithID.ID)
+	log.Println("[DEBUG] New pipeline ID", pipelineWithID.ID)
 	d.SetId(pipelineWithID.ID)
 	// create can't update index...
 	return resourcePipelineUpdate(d, m)
@@ -164,7 +164,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[INFO] Got Pipeline %s", p.ID)
+	log.Println("[INFO] Got Pipeline", p.ID)
 	return fromClientPipeline(p).setResourceData(d)
 }
 
@@ -192,7 +192,7 @@ func resourcePipelineUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[DEBUG] Updated pipeline: %s", d.Id())
+	log.Println("[DEBUG] Updated pipeline:", d.Id())
 	return resourcePipelineRead(d, m)
 }
 
@@ -210,7 +210,7 @@ func resourcePipelineDelete(d *schema.ResourceData, m interface{}) error {
 		return ErrMissingPipelineApplication
 	}
 
-	log.Printf("[DEBUG] Deleting pipeline: %s", d.Id())
+	log.Println("[DEBUG] Deleting pipeline:", d.Id())
 	pipelineService := m.(*Services).PipelineService
 	return pipelineService.DeletePipeline(p.toClientPipeline())
 }

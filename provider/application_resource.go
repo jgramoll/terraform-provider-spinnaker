@@ -86,6 +86,36 @@ func applicationResource() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"permissions": &schema.Schema{
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"execute": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"read": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"write": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 			"platform_health_only": &schema.Schema{
 				Type:        schema.TypeBool,
 				Description: "Consider only cloud provider health when executing tasks",
@@ -148,7 +178,7 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[DEBUG] Creating application %s", application.Name)
+	log.Println("[DEBUG] Creating application", application.Name)
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.CreateApplication(application.toClientApplication())
 	if err != nil {
@@ -186,25 +216,23 @@ func resourceApplicationRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[DEBUG] Got application %s", a.Name)
+	log.Println("[DEBUG] Got application", a.Name)
 	return fromClientApplication(a).setResourceData(d)
 }
 
 func resourceApplicationUpdate(d *schema.ResourceData, m interface{}) error {
+	var application application
+	configRaw := d.Get("").(map[string]interface{})
+	if err := mapstructure.Decode(configRaw, &application); err != nil {
+		return err
+	}
+
 	applicationService := m.(*Services).ApplicationService
-	application, err := applicationService.GetApplicationByName(d.Id())
-	if err != nil {
+	if err := applicationService.UpdateApplication(application.toClientApplication()); err != nil {
 		return err
 	}
 
-	applicationFromResourceData(application, d)
-
-	err = applicationService.UpdateApplication(application)
-	if err != nil {
-		return err
-	}
-
-	log.Printf("[DEBUG] Updated application %s", d.Id())
+	log.Println("[DEBUG] Updated application", d.Id())
 	return resourceApplicationRead(d, m)
 }
 
@@ -215,7 +243,7 @@ func resourceApplicationDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Printf("[DEBUG] Deleting application %s", d.Id())
+	log.Println("[DEBUG] Deleting application", d.Id())
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.DeleteApplication(a.toClientApplication())
 	if err != nil {
