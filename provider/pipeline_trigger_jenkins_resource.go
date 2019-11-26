@@ -24,24 +24,7 @@ func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource 
 		},
 		DeprecationMessage: deprecationMessage,
 
-		Schema: map[string]*schema.Schema{
-			PipelineKey: &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Id of the pipeline to trigger",
-				Required:    true,
-				ForceNew:    true,
-			},
-			"enabled": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "If the trigger is enabled",
-				Optional:    true,
-				Default:     true,
-			},
-			"run_as_user": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of user to run pipeline as",
-				Optional:    true,
-			},
+		Schema: triggerResource(map[string]*schema.Schema{
 			"job": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of the job",
@@ -63,6 +46,6 @@ func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource 
 				Optional:    true,
 				Deprecated:  "DO NOT USE",
 			},
-		},
+		}),
 	}
 }

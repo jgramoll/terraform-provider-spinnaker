@@ -6,9 +6,7 @@ import (
 
 func newNotificationTestPipeline() (*Pipeline, *Notification) {
 	expected := Notification{
-		SerializableNotification: SerializableNotification{
-			ID: "notId",
-		},
+		ID: "notId",
 	}
 	return &Pipeline{
 		Notifications: &[]*Notification{&expected},

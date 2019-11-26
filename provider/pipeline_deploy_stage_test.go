@@ -27,9 +27,8 @@ func TestAccPipelineDeployStageBasic(t *testing.T) {
 	stageEnabledType := "expression"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineDeployStageConfigBasic(pipeName, clusterAccount, 2),

@@ -26,9 +26,8 @@ func TestAccPipelineResizeServerGroupStageBasic(t *testing.T) {
 	stage2 := "spinnaker_pipeline_resize_server_group_stage.s2"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineResizeServerGroupStageConfigBasic(pipeName, target, 2),

@@ -58,17 +58,3 @@ func ensureStage(pipeline *client.Pipeline, expected *terraform.ResourceState) (
 	}
 	return stage, nil
 }
-
-func testAccCheckPipelineStageDestroy(s *terraform.State) error {
-	pipelineService := testAccProvider.Meta().(*Services).PipelineService
-	for _, rs := range s.RootModule().Resources {
-		if _, ok := stageTypes[rs.Type]; ok {
-			_, err := pipelineService.GetPipelineByID(rs.Primary.Attributes[PipelineKey])
-			if err == nil {
-				return fmt.Errorf("Pipeline stage still exists: %s", rs.Primary.ID)
-			}
-		}
-	}
-
-	return nil
-}

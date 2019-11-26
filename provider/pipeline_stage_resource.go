@@ -13,6 +13,98 @@ import (
 
 var errInvalidStageImportKey = errors.New("Invalid import key, must be pipelineID_stageID")
 
+func stageResource(in map[string]*schema.Schema) map[string]*schema.Schema {
+	out := map[string]*schema.Schema{
+		PipelineKey: &schema.Schema{
+			Type:        schema.TypeString,
+			Description: "Id of the pipeline to send notification",
+			Required:    true,
+			ForceNew:    true,
+		},
+		"name": &schema.Schema{
+			Type:        schema.TypeString,
+			Description: "Name of the stage",
+			Required:    true,
+		},
+		"requisite_stage_ref_ids": &schema.Schema{
+			Type:        schema.TypeList,
+			Description: "Stage(s) that must be complete before this one",
+			Optional:    true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
+		"notification": &schema.Schema{
+			Type:        schema.TypeList,
+			Description: "Notifications to send for stage results",
+			Optional:    true,
+			Elem:        notificationResource(),
+		},
+		"complete_other_branches_then_fail": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",
+			Optional:    true,
+			Default:     false,
+		},
+		"continue_pipeline": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "If false, marks the stage as successful right away without waiting for the jenkins job to complete",
+			Optional:    true,
+			Default:     false,
+		},
+		"fail_pipeline": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "If the stage fails, immediately halt execution of all running stages and fails the entire execution",
+			Optional:    true,
+			Default:     true,
+		},
+		"fail_on_failed_expressions": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "The stage will be marked as failed if it contains any failed expressions",
+			Optional:    true,
+			Default:     false,
+		},
+		"override_timeout": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "[Deprecated, use stage_timeout_ms] Allows you to override the amount of time the stage can run before failing.\nNote: this represents the overall time the stage has to complete (the sum of all the task times).",
+			Optional:    true,
+			Default:     false,
+		},
+		"stage_timeout_ms": &schema.Schema{
+			Type:        schema.TypeInt,
+			Description: "Allows you to declare the amount of time the stage can run before failing, if override timeout is enabled.\nNote: this represents the overall time the stage has to complete (the sum of all the task times).",
+			Optional:    true,
+		},
+		"restrict_execution_during_time_window": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "Restrict execution to specific time windows",
+			Optional:    true,
+			Default:     false,
+		},
+		"restricted_execution_window": &schema.Schema{
+			Type:        schema.TypeList,
+			Description: "Time windows to restrict execution",
+			Optional:    true,
+			MaxItems:    1,
+			Elem:        restrictedExecutionWindowResource(),
+		},
+		"stage_enabled": &schema.Schema{
+			Type:        schema.TypeList,
+			Description: "Stage will only execute when the supplied expression evaluates true.\nThe expression does not need to be wrapped in ${ and }.\nIf this expression evaluates to false, the stages following this stage will still execute.",
+			Optional:    true,
+			MaxItems:    1,
+			Elem:        stageEnabledResource(),
+		},
+	}
+
+	// merge input
+	for k, v := range in {
+		out[k] = v
+	}
+
+	return out
+}
+
 func resourcePipelineImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	id := strings.Split(d.Id(), "_")
 	if len(id) < 2 {
@@ -35,13 +127,11 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 	if err := mapstructure.Decode(configRaw, &s); err != nil {
 		return err
 	}
-	stage := s.(stage)
 
 	id, err := uuid.NewRandom()
 	if err != nil {
 		return err
 	}
-	stage.SetRefID(id.String())
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -49,7 +139,7 @@ func resourcePipelineStageCreate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	cs, err := stage.toClientStage(m.(*Services).Config)
+	cs, err := s.toClientStage(m.(*Services).Config, id.String())
 	if err != nil {
 		return err
 	}
@@ -103,8 +193,6 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 	if err := mapstructure.Decode(configRaw, &s); err != nil {
 		return err
 	}
-	stage := s.(stage)
-	stage.SetRefID(d.Id())
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -112,7 +200,7 @@ func resourcePipelineStageUpdate(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	cs, err := stage.toClientStage(m.(*Services).Config)
+	cs, err := s.toClientStage(m.(*Services).Config, d.Id())
 	if err != nil {
 		return err
 	}
@@ -140,8 +228,6 @@ func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createSt
 	if err := mapstructure.Decode(configRaw, &s); err != nil {
 		return err
 	}
-	stage := s.(stage)
-	stage.SetRefID(d.Id())
 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(d.Get(PipelineKey).(string))
@@ -149,7 +235,7 @@ func resourcePipelineStageDelete(d *schema.ResourceData, m interface{}, createSt
 		return err
 	}
 
-	err = pipeline.DeleteStage(stage.GetRefID())
+	err = pipeline.DeleteStage(d.Id())
 	if err != nil {
 		return err
 	}

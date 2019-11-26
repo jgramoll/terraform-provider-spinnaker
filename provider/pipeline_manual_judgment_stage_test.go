@@ -26,9 +26,8 @@ func TestAccPipelineManualJudgmentStageBasic(t *testing.T) {
 	stage2 := "spinnaker_pipeline_manual_judgment_stage.s2"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineManualJudgmentStageConfigBasic(pipeName, master, 2),

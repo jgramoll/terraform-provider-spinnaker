@@ -19,13 +19,11 @@ func (n *notification) toClientNotification(level client.NotificationLevel) (*cl
 		return nil, err
 	}
 	return &client.Notification{
-		SerializableNotification: client.SerializableNotification{
-			ID:      n.ID,
-			Address: n.Address,
-			Level:   level,
-			Type:    n.Type,
-			When:    *toClientWhen(level, (*n.When)[0]),
-		},
+		ID:      n.ID,
+		Address: n.Address,
+		Level:   level,
+		Type:    n.Type,
+		When:    *toClientWhen(level, (*n.When)[0]),
 		Message: message,
 	}, nil
 }

@@ -23,24 +23,7 @@ func pipelinePipelineTriggerResource() *schema.Resource {
 			State: resourceTriggerImporter,
 		},
 
-		Schema: map[string]*schema.Schema{
-			PipelineKey: &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Id of the pipeline to trigger",
-				Required:    true,
-				ForceNew:    true,
-			},
-			"enabled": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "If the trigger is enabled",
-				Optional:    true,
-				Default:     true,
-			},
-			"run_as_user": &schema.Schema{
-				Type:        schema.TypeString,
-				Description: "Name of user to run pipeline as",
-				Optional:    true,
-			},
+		Schema: triggerResource(map[string]*schema.Schema{
 			"triggering_application": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of the spinnaker application",
@@ -59,6 +42,6 @@ func pipelinePipelineTriggerResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-		},
+		}),
 	}
 }

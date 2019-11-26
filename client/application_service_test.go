@@ -18,7 +18,7 @@ func init() {
 
 func TestCreateDeleteApplication(t *testing.T) {
 	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
-		return
+		t.Skip("skipping application tests.")
 	}
 	appName := fmt.Sprintf("mytestapp%d", rand.Int())
 	app := NewApplication()
@@ -42,7 +42,7 @@ func TestCreateDeleteApplication(t *testing.T) {
 
 func TestApplicationNameWithSpace(t *testing.T) {
 	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
-		return
+		t.Skip("skipping application tests.")
 	}
 	expectedName := fmt.Sprintf("my test app %d", rand.Int())
 	app := NewApplication()

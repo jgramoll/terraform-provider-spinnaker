@@ -11,10 +11,7 @@ func init() {
 
 // Pipeline Trigger for Pipeline
 type PipelineTrigger struct {
-	ID        string      `json:"id"`
-	Enabled   bool        `json:"enabled"`
-	Type      TriggerType `json:"type"`
-	RunAsUser string      `json:"runAsUser,omitempty"`
+	baseTrigger `mapstructure:",squash"`
 
 	Application string   `json:"application"`
 	Pipeline    string   `json:"pipeline"`
@@ -23,18 +20,8 @@ type PipelineTrigger struct {
 
 func NewPipelineTrigger() *PipelineTrigger {
 	return &PipelineTrigger{
-		Type: PipelineTriggerType,
+		baseTrigger: *newBaseTrigger(PipelineTriggerType),
 	}
-}
-
-// GetType for Trigger interface
-func (t *PipelineTrigger) GetType() TriggerType {
-	return t.Type
-}
-
-// GetID for Trigger interface
-func (t *PipelineTrigger) GetID() string {
-	return t.ID
 }
 
 func parsePipelineTrigger(triggerMap map[string]interface{}) (Trigger, error) {

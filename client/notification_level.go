@@ -4,8 +4,8 @@ import (
 	"errors"
 )
 
-// ErrInvalidNotificatoinLevel invalid notification level
-var ErrInvalidNotificatoinLevel = errors.New("Invalid notification level")
+// ErrInvalidNotificationLevel invalid notification level
+var ErrInvalidNotificationLevel = errors.New("Invalid notification level")
 
 // NotificationLevel level of notification
 type NotificationLevel string

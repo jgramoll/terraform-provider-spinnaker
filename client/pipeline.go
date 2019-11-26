@@ -19,9 +19,8 @@ type Pipeline struct {
 	ServiceAccount       string                 `json:"serviceAccount,omitempty"`
 	Triggers             []Trigger              `json:"triggers"`
 	Locked               *Locked                `json:"locked,omitempty"`
-
-	Notifications *[]*Notification `json:"notifications"`
-	Stages        *[]Stage         `json:"stages"`
+	Notifications        *[]*Notification       `json:"notifications"`
+	Stages               *[]Stage               `json:"stages"`
 }
 
 // NewPipeline Pipeline with default values

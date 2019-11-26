@@ -11,29 +11,17 @@ func init() {
 
 // Jenkins Trigger for Pipeline
 type JenkinsTrigger struct {
-	ID           string      `json:"id"`
-	Enabled      bool        `json:"enabled"`
-	Job          string      `json:"job"`
-	Master       string      `json:"master"`
-	PropertyFile string      `json:"propertyFile"`
-	RunAsUser    string      `json:"runAsUser,omitempty"`
-	Type         TriggerType `json:"type"`
+	baseTrigger `mapstructure:",squash"`
+
+	Job          string `json:"job"`
+	Master       string `json:"master"`
+	PropertyFile string `json:"propertyFile"`
 }
 
 func NewJenkinsTrigger() *JenkinsTrigger {
 	return &JenkinsTrigger{
-		Type: JenkinsTriggerType,
+		baseTrigger: *newBaseTrigger(JenkinsTriggerType),
 	}
-}
-
-// GetType for Trigger interface
-func (t *JenkinsTrigger) GetType() TriggerType {
-	return t.Type
-}
-
-// GetID for Trigger interface
-func (t *JenkinsTrigger) GetID() string {
-	return t.ID
 }
 
 func parseJenkinsTrigger(triggerMap map[string]interface{}) (Trigger, error) {
