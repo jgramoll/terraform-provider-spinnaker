@@ -63,7 +63,7 @@ func TestParsePipeline(t *testing.T) {
 		"notifications": []interface{}{
 			map[string]interface{}{
 				"address": expectedNotification.Address,
-				"level":   expectedNotification.Level,
+				"level":   string(expectedNotification.Level),
 				"message": map[string]interface{}{
 					PipelineCompleteKey: map[string]string{
 						"text": expectedNotification.Message.CompleteText(),

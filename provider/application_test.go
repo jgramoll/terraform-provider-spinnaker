@@ -19,7 +19,7 @@ func TestAccApplicationBasic(t *testing.T) {
 	resourceName := "spinnaker_application.test"
 
 	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
-		return
+		t.Skip("skipping application tests.")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -65,7 +65,7 @@ func TestAccApplicationPipeline(t *testing.T) {
 	pipeline := "spinnaker_pipeline.test"
 
 	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
-		return
+		t.Skip("skipping application tests.")
 	}
 
 	resource.Test(t, resource.TestCase{
