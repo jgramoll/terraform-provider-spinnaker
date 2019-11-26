@@ -77,20 +77,19 @@ func parseNotifications(notificationsHashInterface interface{}) (*[]*Notificatio
 		}
 		notification := NewNotification()
 
-		level, ok := notificationMap["level"].(NotificationLevel)
+		level, ok := notificationMap["level"].(string)
 		if !ok {
 			return nil, errors.New("invalid or missing notification level")
 		}
 
 		messageMap, ok := notificationMap["message"]
-		if !ok {
-			return nil, errors.New("invalid or missing notification level")
+		if ok {
+			message, err := parseMessage(NotificationLevel(level), messageMap.(map[string]interface{}))
+			if err != nil {
+				return nil, err
+			}
+			notification.Message = message
 		}
-		message, err := parseMessage(level, messageMap.(map[string]interface{}))
-		if err != nil {
-			return nil, err
-		}
-		notification.Message = message
 		delete(notificationMap, "message")
 
 		if err := mapstructure.Decode(notificationMap, notification); err != nil {
