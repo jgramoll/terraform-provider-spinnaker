@@ -9,8 +9,7 @@ import (
 
 // Docker trigger for Pipeline
 type dockerTrigger struct {
-	Enabled   bool   `mapstructure:"enabled"`
-	RunAsUser string `mapstructure:"run_as_user"`
+	baseTrigger `mapstructure:",squash"`
 
 	Account      string `mapstructure:"account"`
 	Organization string `mapstructure:"organization"`
@@ -27,7 +26,6 @@ func (t *dockerTrigger) toClientTrigger(id string) (client.Trigger, error) {
 	clientTrigger := client.NewDockerTrigger()
 	clientTrigger.ID = id
 	clientTrigger.Enabled = t.Enabled
-	clientTrigger.RunAsUser = t.RunAsUser
 
 	clientTrigger.Account = t.Account
 	clientTrigger.Organization = t.Organization
@@ -43,7 +41,6 @@ func (*dockerTrigger) fromClientTrigger(clientTriggerInterface client.Trigger) (
 		return nil, errors.New("Expected docker trigger")
 	}
 	t := newDockerTrigger()
-	t.RunAsUser = clientTrigger.RunAsUser
 	t.Enabled = clientTrigger.Enabled
 
 	t.Account = clientTrigger.Account
@@ -57,10 +54,6 @@ func (*dockerTrigger) fromClientTrigger(clientTriggerInterface client.Trigger) (
 func (t *dockerTrigger) setResourceData(d *schema.ResourceData) error {
 	var err error
 	err = d.Set("enabled", t.Enabled)
-	if err != nil {
-		return err
-	}
-	err = d.Set("run_as_user", t.RunAsUser)
 	if err != nil {
 		return err
 	}

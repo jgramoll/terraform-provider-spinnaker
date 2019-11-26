@@ -70,15 +70,15 @@ func pipelineDataSourceRead(d *schema.ResourceData, m interface{}) error {
 	application := d.Get(ApplicationKey).(string)
 	name := d.Get("name").(string)
 
-	log.Printf("[DEBUG] Importing pipeline %s on application %s", name, application)
+	log.Printf("[DEBUG] Importing pipeline %s on application %s\n", name, application)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipeline(application, name)
 	if err != nil {
-		log.Printf("[WARN] No Pipeline found: %s", err)
+		log.Println("[WARN] No Pipeline found:", err)
 		return err
 	}
 
-	log.Printf("[DEBUG] Imported pipeline %s", pipeline.ID)
+	log.Println("[DEBUG] Imported pipeline", pipeline.ID)
 	d.SetId(pipeline.ID)
 
 	return resourcePipelineRead(d, m)

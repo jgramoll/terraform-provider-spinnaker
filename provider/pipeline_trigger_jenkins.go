@@ -9,8 +9,7 @@ import (
 
 // Jenkins trigger for Pipeline
 type jenkinsTrigger struct {
-	Enabled   bool   `mapstructure:"enabled"`
-	RunAsUser string `mapstructure:"run_as_user"`
+	baseTrigger `mapstructure:",squash"`
 
 	Job          string `mapstructure:"job"`
 	Master       string `mapstructure:"master"`
@@ -28,7 +27,6 @@ func (t *jenkinsTrigger) toClientTrigger(id string) (client.Trigger, error) {
 	clientTrigger.Job = t.Job
 	clientTrigger.Master = t.Master
 	clientTrigger.PropertyFile = t.PropertyFile
-	clientTrigger.RunAsUser = t.RunAsUser
 	return clientTrigger, nil
 }
 
@@ -42,17 +40,12 @@ func (*jenkinsTrigger) fromClientTrigger(clientTriggerInterface client.Trigger) 
 	t.Job = clientTrigger.Job
 	t.Master = clientTrigger.Master
 	t.PropertyFile = clientTrigger.PropertyFile
-	t.RunAsUser = clientTrigger.RunAsUser
 	return t, nil
 }
 
 func (t *jenkinsTrigger) setResourceData(d *schema.ResourceData) error {
 	var err error
 	err = d.Set("enabled", t.Enabled)
-	if err != nil {
-		return err
-	}
-	err = d.Set("run_as_user", t.RunAsUser)
 	if err != nil {
 		return err
 	}

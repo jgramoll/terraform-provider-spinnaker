@@ -9,7 +9,7 @@ import (
 
 // Pipeline trigger for Pipeline
 type pipelineTrigger struct {
-	baseTrigger
+	baseTrigger `mapstructure:",squash"`
 
 	Application string   `mapstructure:"triggering_application"`
 	Pipeline    string   `mapstructure:"triggering_pipeline"`
@@ -24,7 +24,6 @@ func (t *pipelineTrigger) toClientTrigger(id string) (client.Trigger, error) {
 	clientTrigger := client.NewPipelineTrigger()
 	clientTrigger.ID = id
 	clientTrigger.Enabled = t.Enabled
-	clientTrigger.RunAsUser = t.RunAsUser
 
 	clientTrigger.Application = t.Application
 	clientTrigger.Pipeline = t.Pipeline
@@ -39,7 +38,6 @@ func (*pipelineTrigger) fromClientTrigger(clientTriggerInterface client.Trigger)
 	}
 	t := newPipelineTrigger()
 	t.Enabled = clientTrigger.Enabled
-	t.RunAsUser = clientTrigger.RunAsUser
 
 	t.Application = clientTrigger.Application
 	t.Pipeline = clientTrigger.Pipeline
@@ -50,10 +48,6 @@ func (*pipelineTrigger) fromClientTrigger(clientTriggerInterface client.Trigger)
 func (t *pipelineTrigger) setResourceData(d *schema.ResourceData) error {
 	var err error
 	err = d.Set("enabled", t.Enabled)
-	if err != nil {
-		return err
-	}
-	err = d.Set("run_as_user", t.RunAsUser)
 	if err != nil {
 		return err
 	}

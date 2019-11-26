@@ -26,11 +26,6 @@ func triggerResource(in map[string]*schema.Schema) map[string]*schema.Schema {
 			Optional:    true,
 			Default:     true,
 		},
-		"run_as_user": &schema.Schema{
-			Type:        schema.TypeString,
-			Description: "Name of user to run pipeline as",
-			Optional:    true,
-		},
 	}
 
 	// merge input
