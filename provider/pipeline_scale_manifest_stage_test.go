@@ -20,7 +20,7 @@ func TestAccPipelineScaleManifestStageBasic(t *testing.T) {
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	accountName := "my-account"
-	// newAccountName := accountName + "-new"
+	newAccountName := accountName + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
 	stage1 := "spinnaker_pipeline_scale_manifest_stage.s1"
 	stage2 := "spinnaker_pipeline_scale_manifest_stage.s2"

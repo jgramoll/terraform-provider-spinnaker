@@ -24,9 +24,8 @@ func TestAccPipelineCanaryAnalysisStageBasic(t *testing.T) {
 	stage2 := "spinnaker_pipeline_canary_analysis_stage.s2"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineCanaryAnalysisStageConfigBasic(pipeName, 2),

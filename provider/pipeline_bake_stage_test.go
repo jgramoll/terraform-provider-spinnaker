@@ -26,9 +26,8 @@ func TestAccPipelineBakeStageBasic(t *testing.T) {
 	stage2 := "spinnaker_pipeline_bake_stage.s2"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineBakeStageConfigBasic(pipeName, vmType, 2),

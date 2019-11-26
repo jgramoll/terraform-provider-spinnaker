@@ -10,3 +10,8 @@ type trigger interface {
 	fromClientTrigger(client.Trigger) (trigger, error)
 	setResourceData(d *schema.ResourceData) error
 }
+
+type baseTrigger struct {
+	Enabled   bool   `mapstructure:"enabled"`
+	RunAsUser string `mapstructure:"run_as_user"`
+}

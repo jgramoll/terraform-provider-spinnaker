@@ -9,19 +9,18 @@ import (
 // ErrPipelineNotificationNotFound notification not found
 var ErrPipelineNotificationNotFound = errors.New("notification not found")
 
-// SerializableNotification for pipeline
-type SerializableNotification struct {
+// Notification for pipeline
+type Notification struct {
 	ID      string            `json:"id,omitempty"`
 	Address string            `json:"address"`
 	Level   NotificationLevel `json:"level"`
 	Type    string            `json:"type"`
 	When    []string          `json:"when"`
+	Message Message           `json:"message"`
 }
 
-// Notification for pipeline
-type Notification struct {
-	SerializableNotification
-	Message Message `json:"message"`
+func NewNotification() *Notification {
+	return &Notification{}
 }
 
 //GetNotification Get notification by id
@@ -72,23 +71,32 @@ func parseNotifications(notificationsHashInterface interface{}) (*[]*Notificatio
 	notifications := []*Notification{}
 	notificationsToParse := notificationsHashInterface.([]interface{})
 	for _, notificationInterface := range notificationsToParse {
-		notificationMap := notificationInterface.(map[string]interface{})
-		serializableNotification := SerializableNotification{}
-		if err := mapstructure.Decode(notificationMap, &serializableNotification); err != nil {
+		notificationMap, ok := notificationInterface.(map[string]interface{})
+		if !ok {
+			return nil, errors.New("invalid to notification format")
+		}
+		notification := NewNotification()
+
+		level, ok := notificationMap["level"].(NotificationLevel)
+		if !ok {
+			return nil, errors.New("invalid or missing notification level")
+		}
+
+		messageMap, ok := notificationMap["message"]
+		if !ok {
+			return nil, errors.New("invalid or missing notification level")
+		}
+		message, err := parseMessage(level, messageMap.(map[string]interface{}))
+		if err != nil {
 			return nil, err
 		}
+		notification.Message = message
+		delete(notificationMap, "message")
 
-		notification := Notification{SerializableNotification: serializableNotification}
-		messageMap, ok := notificationMap["message"]
-		if ok {
-			message, err := parseMessage(serializableNotification.Level, messageMap.(map[string]interface{}))
-			if err != nil {
-				return nil, err
-			}
-			notification.Message = message
+		if err := mapstructure.Decode(notificationMap, notification); err != nil {
+			return nil, err
 		}
-
-		notifications = append(notifications, &notification)
+		notifications = append(notifications, notification)
 	}
 	return &notifications, nil
 }

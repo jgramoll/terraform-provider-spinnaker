@@ -9,8 +9,7 @@ import (
 
 // Pipeline trigger for Pipeline
 type pipelineTrigger struct {
-	Enabled   bool   `mapstructure:"enabled"`
-	RunAsUser string `mapstructure:"run_as_user"`
+	baseTrigger
 
 	Application string   `mapstructure:"triggering_application"`
 	Pipeline    string   `mapstructure:"triggering_pipeline"`

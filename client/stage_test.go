@@ -33,8 +33,8 @@ func TestUpdateStage(t *testing.T) {
 		t.Fatal(err)
 	}
 	stages := *pipeline.Stages
-	if stages[0].GetName() != expected.Name {
-		t.Fatalf("Stage was not updated. Expected %v, got %v", expected.Name, stages[0].GetName())
+	if stages[0].GetName() != updateStage.Name {
+		t.Fatalf("Stage was not updated. Expected %v, got %v", updateStage.Name, stages[0].GetName())
 	}
 }
 

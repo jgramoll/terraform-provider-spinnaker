@@ -15,14 +15,6 @@ type Stage interface {
 	GetType() StageType
 }
 
-// BaseStage attributes common to all Pipeline stages
-// TODO why does BaseStage not like mapstructure
-// type BaseStage struct {
-// 	Name  string    `json:"name"`
-// 	RefID string    `json:"refId"`
-// 	Type  StageType `json:"type"`
-// }
-
 // GetStage get stage
 func (pipeline *Pipeline) GetStage(stageID string) (Stage, error) {
 	if pipeline.Stages != nil {

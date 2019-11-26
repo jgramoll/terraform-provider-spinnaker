@@ -11,10 +11,7 @@ func init() {
 
 // Docker Trigger for Pipeline
 type DockerTrigger struct {
-	ID        string      `json:"id"`
-	Enabled   bool        `json:"enabled"`
-	RunAsUser string      `json:"runAsUser,omitempty"`
-	Type      TriggerType `json:"type"`
+	baseTrigger `mapstructure:",squash"`
 
 	Account      string `json:"account"`
 	Organization string `json:"organization"`
@@ -25,18 +22,8 @@ type DockerTrigger struct {
 
 func NewDockerTrigger() *DockerTrigger {
 	return &DockerTrigger{
-		Type: DockerTriggerType,
+		baseTrigger: *newBaseTrigger(DockerTriggerType),
 	}
-}
-
-// GetType for Trigger interface
-func (t *DockerTrigger) GetType() TriggerType {
-	return t.Type
-}
-
-// GetID for Trigger interface
-func (t *DockerTrigger) GetID() string {
-	return t.ID
 }
 
 func parseDockerTrigger(triggerMap map[string]interface{}) (Trigger, error) {

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/kylelemons/godebug/pretty"
 )
 
 func TestNewPipeline(t *testing.T) {
@@ -32,14 +34,12 @@ func TestParsePipeline(t *testing.T) {
 	expectedStage.AmiName = "ami-test"
 
 	expectedNotification := Notification{
-		SerializableNotification: SerializableNotification{
-			Address: "test-address",
-			Level:   NotificationLevelPipeline,
-			Type:    "slack",
-			When: []string{
-				PipelineStartingKey,
-				PipelineCompleteKey,
-			},
+		Address: "test-address",
+		Level:   NotificationLevelPipeline,
+		Type:    "slack",
+		When: []string{
+			PipelineStartingKey,
+			PipelineCompleteKey,
 		},
 		Message: &PipelineMessage{
 			Complete: &MessageText{Text: "pipe is complete"},
@@ -115,8 +115,8 @@ func (pipeline *Pipeline) equals(expected *Pipeline) error {
 		}
 	}
 
-	if !reflect.DeepEqual(pipeline, expected) {
-		return fmt.Errorf("Pipeline %v does not match %v", pipeline, expected)
+	if diff := pretty.Compare(expected, pipeline); diff != "" {
+		return fmt.Errorf("Pipeline diff: (-got +want)\n%s", diff)
 	}
 	return nil
 }

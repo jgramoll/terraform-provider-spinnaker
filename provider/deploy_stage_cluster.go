@@ -63,7 +63,7 @@ func (c *deployStageCluster) clientAvailabilityZones() *map[string][]string {
 	return &newAZ
 }
 
-func (c *deployStageCluster) importAvailabilityZones(clientCluster *client.DeployStageCluster) {
+func (c *deployStageCluster) importAvailabilityZones(clientCluster *client.DeploymentCluster) {
 	for region, zones := range clientCluster.AvailabilityZones {
 		newZone := map[string][]string{
 			strings.Replace(region, "-", "_", -1): zones,
@@ -73,9 +73,9 @@ func (c *deployStageCluster) importAvailabilityZones(clientCluster *client.Deplo
 	}
 }
 
-func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
+func (c *deployStageCluster) toClientCluster() *client.DeploymentCluster {
 	// TODO better way?
-	clientCluster := client.NewDeployStageCluster()
+	clientCluster := client.NewDeploymentCluster()
 	clientCluster.Account = c.Account
 	clientCluster.Application = c.Application
 	clientCluster.AvailabilityZones = *c.clientAvailabilityZones()
@@ -118,18 +118,18 @@ func (c *deployStageCluster) toClientCluster() *client.DeployStageCluster {
 	return clientCluster
 }
 
-func (s *deployStageClusters) toClientClusters() *[]*client.DeployStageCluster {
+func (s *deployStageClusters) toClientClusters() *[]*client.DeploymentCluster {
 	if len(*s) == 0 {
 		return nil
 	}
-	clusters := []*client.DeployStageCluster{}
+	clusters := []*client.DeploymentCluster{}
 	for _, c := range *s {
 		clusters = append(clusters, c.toClientCluster())
 	}
 	return &clusters
 }
 
-func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
+func fromClientCluster(c *client.DeploymentCluster) *deployStageCluster {
 	var sgs []string
 	var sgExpression string
 	switch v := c.SecurityGroups.(type) {
@@ -196,7 +196,7 @@ func fromClientCluster(c *client.DeployStageCluster) *deployStageCluster {
 	return &newCluster
 }
 
-func (s *deployStageClusters) fromClientClusters(clientClusters *[]*client.DeployStageCluster) *deployStageClusters {
+func (s *deployStageClusters) fromClientClusters(clientClusters *[]*client.DeploymentCluster) *deployStageClusters {
 	if clientClusters == nil || len(*clientClusters) == 0 {
 		return nil
 	}

@@ -1,8 +1,15 @@
 package client
 
-// TODO rename to more generic
-// DeployStageCluster cluster to deploy
-type DeployStageCluster struct {
+// TODO deprecated remove
+type DeployStageCluster DeploymentCluster
+
+func NewDeployStageCluster() *DeploymentCluster {
+	println("[DEPRECATED] DeployStageCluster will be removed in a future version. Use DeploymentCluster")
+	return NewDeploymentCluster()
+}
+
+// DeploymentCluster cluster to deploy
+type DeploymentCluster struct {
 	Account                             string                 `json:"account"`
 	Application                         string                 `json:"application"`
 	AvailabilityZones                   map[string][]string    `json:"availabilityZones"`
@@ -45,8 +52,8 @@ type DeployStageCluster struct {
 	Base64UserData                      string                 `json:"base64UserData"`
 }
 
-func NewDeployStageCluster() *DeployStageCluster {
-	return &DeployStageCluster{
+func NewDeploymentCluster() *DeploymentCluster {
+	return &DeploymentCluster{
 		DelayBeforeDisableSec:   0,
 		DelayBeforeScaleDownSec: 0,
 		Dirty:                   map[string]interface{}{},

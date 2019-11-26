@@ -27,7 +27,8 @@ type Message interface {
 func NewMessage(level NotificationLevel) (Message, error) {
 	factory := messageFactories[level]
 	if factory == nil {
-		return nil, ErrInvalidNotificatoinLevel
+		println("level", level)
+		return nil, ErrInvalidNotificationLevel
 	}
 	return factory(), nil
 }

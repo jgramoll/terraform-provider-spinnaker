@@ -26,9 +26,8 @@ func TestAccPipelineDestroyServerGroupStageBasic(t *testing.T) {
 	stage2 := "spinnaker_pipeline_destroy_server_group_stage.s2"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineDestroyServerGroupStageConfigBasic(pipeName, target, 2),

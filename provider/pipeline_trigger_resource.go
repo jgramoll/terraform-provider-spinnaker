@@ -12,6 +12,35 @@ import (
 
 var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelineID_triggerID")
 
+func triggerResource(in map[string]*schema.Schema) map[string]*schema.Schema {
+	out := map[string]*schema.Schema{
+		PipelineKey: &schema.Schema{
+			Type:        schema.TypeString,
+			Description: "Id of the pipeline to trigger",
+			Required:    true,
+			ForceNew:    true,
+		},
+		"enabled": &schema.Schema{
+			Type:        schema.TypeBool,
+			Description: "If the trigger is enabled",
+			Optional:    true,
+			Default:     true,
+		},
+		"run_as_user": &schema.Schema{
+			Type:        schema.TypeString,
+			Description: "Name of user to run pipeline as",
+			Optional:    true,
+		},
+	}
+
+	// merge input
+	for k, v := range in {
+		out[k] = v
+	}
+
+	return out
+}
+
 func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}, createTrigger func() trigger) error {
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()

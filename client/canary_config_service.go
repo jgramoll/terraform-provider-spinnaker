@@ -43,7 +43,7 @@ func (service *CanaryConfigService) GetCanaryConfig(id string) (*CanaryConfig, e
 	return config, err
 }
 
-// CreateApplication create an application
+// CreateCanaryConfig create an canary config
 func (service *CanaryConfigService) CreateCanaryConfig(config *CanaryConfig) (configId string, err error) {
 	path := "/v2/canaryConfig"
 	req, err := service.NewRequestWithBody("POST", path, config)

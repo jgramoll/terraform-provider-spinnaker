@@ -26,9 +26,8 @@ func TestAccPipelineRollbackClusterStageBasic(t *testing.T) {
 	stage2 := "spinnaker_pipeline_rollback_cluster_stage.s2"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPipelineStageDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPipelineRollbackClusterStageConfigBasic(pipeName, targetHealthyRollbackPercentage, 2),
