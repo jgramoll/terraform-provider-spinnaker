@@ -27,10 +27,15 @@ func (p *BasePrecondition) GetType() PreconditionType {
 	return p.Type
 }
 
-func ParsePreconditions(toParse []map[string]interface{}) ([]Precondition, error) {
+func ParsePreconditions(toParse []interface{}) ([]Precondition, error) {
 	preconditions := []Precondition{}
 
-	for _, preconditionMap := range toParse {
+	for _, preconditionMapInterface := range toParse {
+		preconditionMap, ok := preconditionMapInterface.(map[string]interface{})
+		if !ok {
+			return nil, errors.New("invalid precondition")
+		}
+
 		typeString, ok := preconditionMap["type"].(string)
 		if !ok {
 			return nil, errors.New("missing or invalid precondition type")

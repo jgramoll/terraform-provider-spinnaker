@@ -33,7 +33,7 @@ func parseCheckPreconditionsStage(stageMap map[string]interface{}) (Stage, error
 		return nil, err
 	}
 
-	preconditionsInterface, ok := stageMap["preconditions"].([]map[string]interface{})
+	preconditionsInterface, ok := stageMap["preconditions"].([]interface{})
 	if !ok {
 		return nil, fmt.Errorf("Could not parse preconditions: %v", reflect.TypeOf(stageMap["preconditions"]))
 	}
