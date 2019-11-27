@@ -65,12 +65,6 @@ func TestCheckPreconditionsStageDeserialize(t *testing.T) {
 	if len(stage.Preconditions) != 3 {
 		t.Fatalf("Should have preconditions")
 	}
-	// manifestString := (*stage.Manifests)[0]
-	// if manifestString != checkPreconditionsYaml {
-	// 	dmp := diffmatchpatch.New()
-	// 	diffs := dmp.DiffMain(checkPreconditionsYaml, manifestString, true)
-	// 	t.Fatalf("manifest not as expected: %s", dmp.DiffPrettyText(diffs))
-	// }
 }
 
 var checkPreconditionsJson = `{
