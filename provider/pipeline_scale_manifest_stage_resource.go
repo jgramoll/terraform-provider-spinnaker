@@ -51,12 +51,6 @@ func pipelineScaleManifestStageResource() *schema.Resource {
 				Description: "The criteria for determining the target cluster",
 				Optional:    true,
 			},
-			"is_new": &schema.Schema{
-				Type:        schema.TypeBool,
-				Description: "The isNew flag",
-				Optional:    true,
-				Default:     true,
-			},
 			"kind": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The kind of manifest to scale",

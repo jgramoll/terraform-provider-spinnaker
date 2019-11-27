@@ -13,7 +13,6 @@ type scaleManifestStage struct {
 	CloudProvider  string                 `mapstructure:"cloud_provider"`
 	Cluster        string                 `mapstructure:"cluster"`
 	Criteria       string                 `mapstructure:"criteria"`
-	IsNew          bool                   `mapstructure:"is_new"`
 	Kind           string                 `mapstructure:"kind"`
 	Kinds          []string               `mapstructure:"kinds"`
 	LabelSelectors map[string]interface{} `mapstructure:"label_selectors"`
@@ -98,10 +97,6 @@ func (s *scaleManifestStage) SetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("criteria", s.Criteria)
-	if err != nil {
-		return err
-	}
-	err = d.Set("is_new", s.IsNew)
 	if err != nil {
 		return err
 	}
