@@ -1,12 +1,14 @@
 package client
 
-import "github.com/mitchellh/mapstructure"
+import (
+	"github.com/mitchellh/mapstructure"
+)
 
 // PreconditionClusterSizeType
 var PreconditionClusterSizeType PreconditionType = "clusterSize"
 
 func init() {
-	preconditionFactories[PreconditionClusterSizeType] = parsePreconditionClusterSize
+	preconditionFactory[PreconditionClusterSizeType] = parsePreconditionClusterSize
 }
 
 type PreconditionClusterSizeContext struct {

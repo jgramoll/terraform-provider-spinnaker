@@ -41,7 +41,6 @@ func (s *scaleManifestStage) toClientStage(config *client.Config, refId string) 
 	cs.CloudProvider = s.CloudProvider
 	cs.Cluster = s.Cluster
 	cs.Criteria = s.Criteria
-	cs.IsNew = s.IsNew
 	cs.Kind = s.Kind
 	cs.Kinds = s.Kinds
 	cs.LabelSelectors = s.LabelSelectors
@@ -62,7 +61,6 @@ func (s *scaleManifestStage) fromClientStage(cs client.Stage) stage {
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.Cluster = clientStage.Cluster
 	newStage.Criteria = clientStage.Criteria
-	newStage.IsNew = clientStage.IsNew
 	newStage.Kind = clientStage.Kind
 	newStage.Kinds = clientStage.Kinds
 	newStage.LabelSelectors = clientStage.LabelSelectors

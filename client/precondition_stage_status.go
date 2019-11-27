@@ -6,7 +6,7 @@ import "github.com/mitchellh/mapstructure"
 var PreconditionStageStatusType PreconditionType = "stageStatus"
 
 func init() {
-	preconditionFactories[PreconditionStageStatusType] = parsePreconditionStageStatus
+	preconditionFactory[PreconditionStageStatusType] = parsePreconditionStageStatus
 }
 
 type PreconditionStageStatusContext struct {
@@ -27,7 +27,7 @@ func NewPreconditionStageStatus() *PreconditionStageStatus {
 }
 
 func parsePreconditionStageStatus(preconditionMap map[string]interface{}) (Precondition, error) {
-	precondition := NewPreconditionClusterSize()
+	precondition := NewPreconditionStageStatus()
 	if err := mapstructure.Decode(preconditionMap, precondition); err != nil {
 		return nil, err
 	}

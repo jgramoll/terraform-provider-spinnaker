@@ -1,12 +1,14 @@
 package client
 
-import "github.com/mitchellh/mapstructure"
+import (
+	"github.com/mitchellh/mapstructure"
+)
 
 // PreconditionExpressionType
 var PreconditionExpressionType PreconditionType = "expression"
 
 func init() {
-	preconditionFactories[PreconditionExpressionType] = parsePreconditionExpression
+	preconditionFactory[PreconditionExpressionType] = parsePreconditionExpression
 }
 
 type PreconditionExpressionContext struct {
@@ -26,7 +28,8 @@ func NewPreconditionExpression() *PreconditionExpression {
 }
 
 func parsePreconditionExpression(preconditionMap map[string]interface{}) (Precondition, error) {
-	precondition := NewPreconditionClusterSize()
+	precondition := NewPreconditionExpression()
+
 	if err := mapstructure.Decode(preconditionMap, precondition); err != nil {
 		return nil, err
 	}

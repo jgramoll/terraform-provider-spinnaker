@@ -384,6 +384,36 @@ resource "spinnaker_pipeline_scale_manifest_stage" "test" {
   mode           = "static"
 }
 
+resource "spinnaker_pipeline_check_preconditions_stage" "test" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Stage Check Preconditions"
+
+  precondition {
+    type = "stageStatus"
+
+    context = {
+      stage_name   = "my-stage"
+      stage_status = "FAILED_CONTINUE"
+    }
+  }
+  precondition {
+    type = "expression"
+
+    context = {
+      expression = "this is myexp"
+    }
+  }
+  precondition {
+    type = "clusterSize"
+
+    context = {
+      credentials = "my-cred"
+      expected = 1
+      regions = "us-east-1,us-east-2"
+    }
+  }
+}
+
 ```
 
 ## Local Dev ##

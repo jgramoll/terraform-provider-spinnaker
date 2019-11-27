@@ -1,6 +1,8 @@
 package client
 
-var preconditionFactories = map[PreconditionType]func(map[string]interface{}) (Precondition, error){}
+type preconditionFactoryFunc func(map[string]interface{}) (Precondition, error)
+
+var preconditionFactory = map[PreconditionType]preconditionFactoryFunc{}
 
 // PreconditionType type of precondition
 type PreconditionType string

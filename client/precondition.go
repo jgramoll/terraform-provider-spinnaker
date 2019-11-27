@@ -1,5 +1,12 @@
 package client
 
+import (
+	"errors"
+	"fmt"
+
+	"github.com/mitchellh/mapstructure"
+)
+
 type Precondition interface {
 	GetType() PreconditionType
 }
@@ -20,13 +27,38 @@ func (p *BasePrecondition) GetType() PreconditionType {
 	return p.Type
 }
 
-// func (stage *BaseStage) parseBasePrecondition(preconditionType map[string]interface{}) error {
-// 	notifications, err := parseNotifications(stageMap["notifications"])
-// 	if err != nil {
-// 		return err
-// 	}
-// 	stage.Notifications = notifications
-// 	delete(stageMap, "notifications")
+func ParsePreconditions(toParse []map[string]interface{}) ([]Precondition, error) {
+	preconditions := []Precondition{}
 
-// 	return nil
-// }
+	for _, preconditionMap := range toParse {
+		typeString, ok := preconditionMap["type"].(string)
+		if !ok {
+			return nil, errors.New("missing or invalid precondition type")
+		}
+		preconditionType := PreconditionType(typeString)
+
+		precondition, err := ParsePrecondition(preconditionMap, preconditionType)
+		if err != nil {
+			return nil, err
+		}
+		preconditions = append(preconditions, precondition)
+	}
+
+	return preconditions, nil
+}
+
+func ParsePrecondition(i map[string]interface{}, t PreconditionType) (Precondition, error) {
+	preconditionFunc, ok := preconditionFactory[t]
+	if !ok {
+		return nil, fmt.Errorf("unknown precondition %s", t)
+	}
+
+	precondition, err := preconditionFunc(i)
+	if err != nil {
+		return nil, err
+	}
+	if err := mapstructure.Decode(i, precondition); err != nil {
+		return nil, err
+	}
+	return precondition, nil
+}
