@@ -89,7 +89,7 @@ func TestAccPipelineScaleManifestStageBasic(t *testing.T) {
 				Config: testAccPipelineScaleManifestStageConfigBasic(pipeName, accountName, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage2, "account", accountName),
+					resource.TestCheckResourceAttr(stage1, "account", accountName),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
