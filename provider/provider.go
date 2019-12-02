@@ -90,6 +90,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_pipeline_stage":             pipelinePipelineResource(),
 			"spinnaker_pipeline_resize_server_group_stage":  pipelineResizeServerGroupStageResource(),
 			"spinnaker_pipeline_rollback_cluster_stage":     pipelineRollbackClusterStageResource(),
+			"spinnaker_pipeline_run_job_manifest_stage":     pipelineRunJobManifestStageResource(),
 			"spinnaker_pipeline_webhook_stage":              pipelineWebhookStageResource(),
 
 			"spinnaker_pipeline_parameter": pipelineParameterResource(),

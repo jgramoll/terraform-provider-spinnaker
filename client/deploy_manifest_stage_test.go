@@ -13,8 +13,8 @@ func init() {
 	deployManifestStage = *NewDeployManifestStage()
 	deployManifestStage.Name = "New Deploy Manifest"
 	deployManifestStage.Source = DeployManifestSourceText
-	*deployManifestStage.Manifests = append(*deployManifestStage.Manifests, deployManifestYaml)
-	*deployManifestStage.Manifests = append(*deployManifestStage.Manifests, anotherManifestYaml)
+	*deployManifestStage.Manifests = append(*deployManifestStage.Manifests, Manifest(deployManifestYaml))
+	*deployManifestStage.Manifests = append(*deployManifestStage.Manifests, Manifest(anotherManifestYaml))
 }
 
 func TestDeployManifestStageGetType(t *testing.T) {
@@ -56,13 +56,13 @@ func TestDeployManifestStageDeserialize(t *testing.T) {
 	if len(*stage.Manifests) == 0 {
 		t.Fatalf("Should have manifest")
 	}
-	manifestString := (*stage.Manifests)[0]
+	manifestString := string((*stage.Manifests)[0])
 	if manifestString != deployManifestYaml {
 		dmp := diffmatchpatch.New()
 		diffs := dmp.DiffMain(deployManifestYaml, manifestString, true)
 		t.Fatalf("manifest not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
-	manifestString = (*stage.Manifests)[1]
+	manifestString = string((*stage.Manifests)[1])
 	if manifestString != anotherManifestYaml {
 		dmp := diffmatchpatch.New()
 		diffs := dmp.DiffMain(anotherManifestYaml, manifestString, true)

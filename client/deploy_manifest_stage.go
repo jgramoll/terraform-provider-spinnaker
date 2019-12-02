@@ -20,7 +20,7 @@ type DeployManifestStage struct {
 	NamespaceOverride        string               `json:"namespaceOverride,omitempty"`
 	CloudProvider            string               `json:"cloudProvider"`
 	ManifestArtifactAccount  string               `json:"manifestArtifactAccount"`
-	Manifests                *DeployManifests     `json:"manifests"`
+	Manifests                *Manifests           `json:"manifests"`
 	Moniker                  *Moniker             `json:"moniker"`
 	Relationships            *Relationships       `json:"relationships"`
 	SkipExpressionEvaluation bool                 `json:"skipExpressionEvaluation"`
@@ -32,7 +32,7 @@ func NewDeployManifestStage() *DeployManifestStage {
 	return &DeployManifestStage{
 		BaseStage: *newBaseStage(DeployManifestStageType),
 
-		Manifests:         NewDeployManifests(),
+		Manifests:         NewManifests(),
 		Relationships:     NewRelationships(),
 		TrafficManagement: NewTrafficManagement(),
 	}
@@ -48,7 +48,7 @@ func parseDeployManifestStage(stageMap map[string]interface{}) (Stage, error) {
 	if !ok {
 		return nil, fmt.Errorf("Could not parse deploy manifest manifests: %v", stageMap["manifests"])
 	}
-	manifests, err := ParseDeployManifests(manifestInterface)
+	manifests, err := ParseManifests(manifestInterface)
 	if err != nil {
 		return nil, err
 	}

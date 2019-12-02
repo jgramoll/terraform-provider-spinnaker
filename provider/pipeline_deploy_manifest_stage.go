@@ -12,7 +12,7 @@ type deployManifestStage struct {
 	NamespaceOverride        string                `mapstructure:"namespace_override"`
 	CloudProvider            string                `mapstructure:"cloud_provider"`
 	ManifestArtifactAccount  string                `mapstructure:"manifest_artifact_account"`
-	Manifests                *deployManifests      `mapstructure:"manifests"`
+	Manifests                *manifests            `mapstructure:"manifests"`
 	Moniker                  *[]*moniker           `mapstructure:"moniker"`
 	Relationships            *[]*relationships     `mapstructure:"relationships"`
 	SkipExpressionEvaluation bool                  `mapstructure:"skip_expression_evaluation"`
@@ -40,7 +40,7 @@ func (s *deployManifestStage) toClientStage(config *client.Config, refId string)
 	cs.NamespaceOverride = s.NamespaceOverride
 	cs.CloudProvider = s.CloudProvider
 	cs.ManifestArtifactAccount = s.ManifestArtifactAccount
-	cs.Manifests = s.Manifests.toClientDeployManifests()
+	cs.Manifests = s.Manifests.toClientManifests()
 	cs.Moniker = toClientMoniker(s.Moniker)
 	cs.Relationships = toClientRelationships(s.Relationships)
 	cs.SkipExpressionEvaluation = s.SkipExpressionEvaluation
@@ -63,7 +63,7 @@ func (s *deployManifestStage) fromClientStage(cs client.Stage) stage {
 	newStage.NamespaceOverride = clientStage.NamespaceOverride
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.ManifestArtifactAccount = clientStage.ManifestArtifactAccount
-	newStage.Manifests = fromClientDeployManifests(clientStage.Manifests)
+	newStage.Manifests = fromClientManifests(clientStage.Manifests)
 	newStage.Moniker = fromClientMoniker(clientStage.Moniker)
 	newStage.Relationships = fromClientRelationships(clientStage.Relationships)
 	newStage.SkipExpressionEvaluation = clientStage.SkipExpressionEvaluation
