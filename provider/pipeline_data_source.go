@@ -62,6 +62,31 @@ func pipelineDataSource() *schema.Resource {
 				Description: "Service account to run pipeline",
 				Computed:    true,
 			},
+			"locked": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Lock options",
+				Computed:    true,
+				MaxItems:    1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ui": &schema.Schema{
+							Type:        schema.TypeBool,
+							Description: "Lock user to edit pipeline over the spinnaker UI",
+							Computed:    true,
+						},
+						"description": &schema.Schema{
+							Type:        schema.TypeString,
+							Description: "Description banner explaining why ui is locked",
+							Computed:    true,
+						},
+						"allow_unlock_ui": &schema.Schema{
+							Type:        schema.TypeBool,
+							Description: "Allow user to unlock ui to edit pipeline",
+							Computed:    true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -70,15 +95,15 @@ func pipelineDataSourceRead(d *schema.ResourceData, m interface{}) error {
 	application := d.Get(ApplicationKey).(string)
 	name := d.Get("name").(string)
 
-	log.Printf("[DEBUG] Importing pipeline %s on application %s", name, application)
+	log.Printf("[DEBUG] Importing pipeline %s on application %s\n", name, application)
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipeline(application, name)
 	if err != nil {
-		log.Printf("[WARN] No Pipeline found: %s", err)
+		log.Println("[WARN] No Pipeline found:", err)
 		return err
 	}
 
-	log.Printf("[DEBUG] Imported pipeline %s", pipeline.ID)
+	log.Println("[DEBUG] Imported pipeline", pipeline.ID)
 	d.SetId(pipeline.ID)
 
 	return resourcePipelineRead(d, m)

@@ -60,7 +60,7 @@ func pipelineScaleManifestStageResource() *schema.Resource {
 			"kind": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The kind of manifest to scale",
-				Required:    true,
+				Optional:    true,
 			},
 			"kinds": &schema.Schema{
 				Type:        schema.TypeList,

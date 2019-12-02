@@ -64,23 +64,23 @@ func canaryConfigDataSource() *schema.Resource {
 func canaryConfigDataSourceRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
-	log.Printf("[DEBUG] Importing canary config %s", name)
+	log.Println("[DEBUG] Importing canary config", name)
 	canaryConfigService := m.(*Services).CanaryConfigService
 	canaryConfigs, err := canaryConfigService.GetCanaryConfigs()
 	if err != nil {
-		log.Printf("[WARN] No canary configs found: %s", err)
+		log.Println("[WARN] No canary configs found:", err)
 		return err
 	}
 
 	for _, c := range *canaryConfigs {
 		if c.Name == name {
-			log.Printf("[DEBUG] Imported canary config %s", c.Id)
+			log.Println("[DEBUG] Imported canary config", c.Id)
 			d.SetId(c.Id)
 
 			return resourceCanaryConfigRead(d, m)
 		}
 	}
 
-	log.Printf("[WARN] No canary config found with name: %s", name)
+	log.Println("[WARN] No canary config found with name:", name)
 	return errors.New("No canary config found")
 }

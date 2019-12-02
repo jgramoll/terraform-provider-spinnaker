@@ -12,6 +12,5 @@ type trigger interface {
 }
 
 type baseTrigger struct {
-	Enabled   bool   `mapstructure:"enabled"`
-	RunAsUser string `mapstructure:"run_as_user"`
+	Enabled bool `mapstructure:"enabled"`
 }

@@ -34,10 +34,20 @@ func pipelineDockerTriggerResource() *schema.Resource {
 				Description: "Name of the organization",
 				Required:    true,
 			},
+			"registry": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "",
+				Optional:    true,
+			},
 			"repository": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "Name of repository",
 				Required:    true,
+			},
+			"tag": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "",
+				Optional:    true,
 			},
 		}),
 	}

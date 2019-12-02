@@ -3,7 +3,6 @@ package provider
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -12,59 +11,13 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func TestAccApplicationBasic(t *testing.T) {
-	var applicationRef client.Application
-	name := fmt.Sprintf("tfacctest%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	newName := name + "_changed"
-	resourceName := "spinnaker_application.test"
-
-	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
-		t.Skip("skipping application tests.")
-	}
-
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckApplicationDestroy,
-		Steps: []resource.TestStep{
-			{
-				Config: testAccApplicationConfigBasic(name),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckApplicationExists(resourceName, &applicationRef),
-					resource.TestCheckResourceAttr(resourceName, "name", name),
-				),
-			},
-			{
-				ResourceName:  resourceName,
-				ImportStateId: "invalid",
-				ImportState:   true,
-				ExpectError:   regexp.MustCompile(`403 Forbidden`),
-			},
-			{
-				ResourceName:      resourceName,
-				ImportStateId:     name,
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
-			{
-				Config: testAccApplicationConfigBasic(newName),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckApplicationExists(resourceName, &applicationRef),
-					resource.TestCheckResourceAttr(resourceName, "name", newName),
-				),
-			},
-		},
-	})
-}
-
 func TestAccApplicationPipeline(t *testing.T) {
 	var applicationRef client.Application
-	name := acctest.RandStringFromCharSet(50, acctest.CharSetAlphaNum)
-	newName := name + "_changed"
+	name := fmt.Sprintf("tfacctest%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	resourceName := "spinnaker_application.test"
-	pipeline := "spinnaker_pipeline.test"
 
 	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
+
 		t.Skip("skipping application tests.")
 	}
 
@@ -78,34 +31,16 @@ func TestAccApplicationPipeline(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckApplicationExists(resourceName, &applicationRef),
 					resource.TestCheckResourceAttr(resourceName, "name", name),
-					resource.TestCheckResourceAttr(pipeline, "application", name),
-					resource.TestCheckResourceAttr(pipeline, "name", fmt.Sprintf("%s-pipeline", name)),
-				),
-			},
-			{
-				Config: testAccApplicationConfigPipeline(newName),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccCheckApplicationExists(resourceName, &applicationRef),
-					resource.TestCheckResourceAttr(resourceName, "name", newName),
-					resource.TestCheckResourceAttr(pipeline, "application", newName),
-					resource.TestCheckResourceAttr(pipeline, "name", fmt.Sprintf("%s-pipeline", newName)),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.execute.0", "spinnakeradmin"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.execute.1", "spinnakerexecute"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.read.0", "spinnakeradmin"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.read.1", "spinnakerread"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.write.0", "spinnakeradmin"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.write.1", "spinnakerwrite"),
 				),
 			},
 		},
 	})
-}
-
-func testAccApplicationConfigBasic(name string) string {
-	return fmt.Sprintf(`
-resource "spinnaker_application" "test" {
-  name  		 = "%s"
-  email 		 = "%s@spin.com"
-  instance_port  = "8080"
-  
-  cloud_providers = [
-	  "aws"
-  ]
-}`, name, name)
 }
 
 func testAccApplicationConfigPipeline(name string) string {
@@ -117,16 +52,24 @@ resource "spinnaker_application" "test" {
 
   cloud_providers = [
 	  "aws"
-  ]
+	]
+	
+	permissions {
+		execute = [
+			"spinnakeradmin",
+			"spinnakerexecute"
+		]
+		read = [
+			"spinnakeradmin",
+			"spinnakerread"
+		]
+		write = [
+			"spinnakeradmin",
+			"spinnakerwrite"
+		]
+	}
 }
-
-resource "spinnaker_pipeline" "test" {
-	application = "%s"
-	name        = "%s-pipeline"
-	index       = 2
-}
-
-`, name, name, name, name)
+`, name, name)
 }
 
 func testAccCheckApplicationExists(resourceName string, a *client.Application) resource.TestCheckFunc {

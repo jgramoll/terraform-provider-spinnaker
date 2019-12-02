@@ -31,9 +31,10 @@ type Application struct {
 	LastModifiedBy string `json:"lastModifiedBy"`
 	Name           string `json:"name"`
 
-	PlatformHealthOnly             bool              `json:"platformHealthOnly"`
-	PlatformHealthOnlyShowOverride bool              `json:"platformHealthOnlyShowOverride"`
-	ProviderSettings               *ProviderSettings `json:"providerSettings"`
+	Permissions                    *ApplicationPermissions `json:"permissions"`
+	PlatformHealthOnly             bool                    `json:"platformHealthOnly"`
+	PlatformHealthOnlyShowOverride bool                    `json:"platformHealthOnlyShowOverride"`
+	ProviderSettings               *ProviderSettings       `json:"providerSettings"`
 
 	RepoProjectKey string   `json:"repoProjectKey"`
 	RepoSlug       string   `json:"repoSlug"`

@@ -127,7 +127,7 @@ func (client *Client) DoWithRetry(retryOnStatus int, maxAttempts int, createReq 
 		if !ok {
 			return nil, respErr
 		}
-		log.Printf("[INFO] spinnakerError.Status %v\n", spinnakerError.Status)
+		log.Println("[INFO] spinnakerError.Status", spinnakerError.Status)
 		if spinnakerError.Status != retryOnStatus {
 			return nil, spinnakerError
 		}
