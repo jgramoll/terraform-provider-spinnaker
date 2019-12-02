@@ -384,6 +384,36 @@ resource "spinnaker_pipeline_scale_manifest_stage" "test" {
   mode           = "static"
 }
 
+resource "spinnaker_pipeline_check_preconditions_stage" "test" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Stage Check Preconditions"
+
+  precondition {
+    type = "stageStatus"
+
+    context = {
+      stage_name   = "my-stage"
+      stage_status = "FAILED_CONTINUE"
+    }
+  }
+  precondition {
+    type = "expression"
+
+    context = {
+      expression = "this is myexp"
+    }
+  }
+  precondition {
+    type = "clusterSize"
+
+    context = {
+      credentials = "my-cred"
+      expected = 1
+      regions = "us-east-1,us-east-2"
+    }
+  }
+}
+
 ```
 
 ## Local Dev ##
@@ -402,8 +432,9 @@ go mod vendor
 ### Link ###
 
 ```sh
+version=v1.7.0
 go clean
 go build
-rm ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_v2.0.0
-ln  ./terraform-provider-spinnaker ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_v2.0.0
+rm ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_$version
+ln  ./terraform-provider-spinnaker ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_$version
 ```

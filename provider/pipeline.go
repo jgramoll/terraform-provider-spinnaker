@@ -126,10 +126,10 @@ func pipelineLockedFromResourceData(d *schema.ResourceData) *client.Locked {
 			return nil
 		}
 
-		allowUnlockUI := lock["allow_unlock_ui"].(bool)
 		return &client.Locked{
 			UI:            ui,
-			AllowUnlockUI: allowUnlockUI,
+			Description:   lock["description"].(string),
+			AllowUnlockUI: lock["allow_unlock_ui"].(bool),
 		}
 	}
 

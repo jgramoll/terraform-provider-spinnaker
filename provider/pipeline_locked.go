@@ -15,6 +15,7 @@ func (array lockedArray) toClientLocked() *client.Locked {
 		l := array[0]
 		return &client.Locked{
 			UI:            l.UI,
+			Description:   l.Description,
 			AllowUnlockUI: l.AllowUnlockUI,
 		}
 	}
@@ -29,6 +30,7 @@ func fromClientLocked(clientLocked *client.Locked) lockedArray {
 	return []locked{
 		locked{
 			UI:            clientLocked.UI,
+			Description:   clientLocked.Description,
 			AllowUnlockUI: clientLocked.AllowUnlockUI,
 		},
 	}

@@ -19,7 +19,6 @@ type ScaleManifestStage struct {
 	CloudProvider  string                 `json:"cloudProvider"`
 	Cluster        string                 `json:"cluster"`
 	Criteria       string                 `json:"criteria"`
-	IsNew          bool                   `json:"isNew"`
 	Kind           string                 `json:"kind"`
 	Kinds          []string               `json:"kinds,omitempty"`
 	LabelSelectors map[string]interface{} `json:"labelSelectors,omitempty"`
