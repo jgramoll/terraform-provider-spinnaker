@@ -1,5 +1,17 @@
 # terraform-provider-spinnaker
 
+## 1.7.0
+
+- `ffc3a41` add run_job_manifest to client (#48)
+- `e3db9c8` Precondition (#47)
+- `c978d77` add permissions to applications (#46)
+- `ee4c984` refactor base stages (#44)
+- `4b5f0be` Andrein traffic management (#43)
+- `8dfb546` override namespace (#41)
+- `7675b11` scale manifest (#42)
+- `446e472` add pipeline ui locked (#38)
+- `2960a84` Add registry and tag to docker trigger (#37)
+
 ## 1.6.0
 
 - `331273b` bump terraform dependency to 0.12.16 (#34)
