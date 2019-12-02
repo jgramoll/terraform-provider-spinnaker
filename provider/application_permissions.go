@@ -26,6 +26,9 @@ func toClientApplicationPermissions(p *[]applicationPermissions) *client.Applica
 }
 
 func fromClientApplicationPermissions(clientPermission *client.ApplicationPermissions) *[]applicationPermissions {
+	if clientPermission == nil {
+		return nil
+	}
 	p := newApplicationPermission()
 
 	p.Execute = clientPermission.Execute
