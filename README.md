@@ -414,6 +414,37 @@ resource "spinnaker_pipeline_check_preconditions_stage" "test" {
   }
 }
 
+resource "spinnaker_pipeline_run_job_manifest_stage" "test" {
+  pipeline    = "${spinnaker_pipeline.test.id}"
+  name        = "Stage Run Job (Manifest)"
+  account     = "my-account"
+  application = "my-app"
+
+  cloud_provider = "kubernetes"
+  source         = "text"
+
+  manifest = <<EOT
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mypi
+  namespace: my-namespace
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+        - command:
+            - perl
+            - '-Mbignum=bpi'
+            - '-wle'
+            - print bpi(2000)
+          image: perl
+          name: mypi
+      restartPolicy: Never
+EOT
+}
+
 ```
 
 ## Local Dev ##

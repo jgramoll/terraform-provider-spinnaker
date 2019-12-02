@@ -1,6 +1,8 @@
 package client
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -19,8 +21,10 @@ type RunJobManifestStage struct {
 	Application           string   `json:"application"`
 	CloudProvider         string   `json:"cloudProvider"`
 	ConsumeArtifactSource string   `json:"consumeArtifactSource"`
-	Credentials           string   `json:"credentails"`
+	Credentials           string   `json:"credentials"`
 	Manifest              Manifest `json:"manifest"`
+	PropertyFile          string   `json:"propertyFile"`
+	Source                string   `json:"source"`
 }
 
 func NewRunJobManifestStage() *RunJobManifestStage {
@@ -36,6 +40,17 @@ func parseRunJobManifestStage(stageMap map[string]interface{}) (Stage, error) {
 	if err := stage.parseBaseStage(stageMap); err != nil {
 		return nil, err
 	}
+
+	manifestInterface, ok := stageMap["manifest"].(interface{})
+	if !ok {
+		return nil, fmt.Errorf("Could not parse run job manifest: %v", stageMap["manifest"])
+	}
+	manifest, err := ParseManifest(manifestInterface)
+	if err != nil {
+		return nil, err
+	}
+	stage.Manifest = manifest
+	delete(stageMap, "manifest")
 
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err

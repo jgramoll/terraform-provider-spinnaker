@@ -4,7 +4,8 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type manifests []string
+type manifest string
+type manifests []manifest
 
 func newManifests() *manifests {
 	return &manifests{}
@@ -24,7 +25,7 @@ func fromClientManifests(clientManifests *client.Manifests) *manifests {
 	}
 	newManifests := newManifests()
 	for _, m := range *clientManifests {
-		*newManifests = append(*newManifests, string(m))
+		*newManifests = append(*newManifests, manifest(m))
 	}
 	return newManifests
 }

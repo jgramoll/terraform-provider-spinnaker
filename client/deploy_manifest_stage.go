@@ -48,7 +48,7 @@ func parseDeployManifestStage(stageMap map[string]interface{}) (Stage, error) {
 	if !ok {
 		return nil, fmt.Errorf("Could not parse deploy manifest manifests: %v", stageMap["manifests"])
 	}
-	manifests, err := ParseDeployManifests(manifestInterface)
+	manifests, err := ParseManifests(manifestInterface)
 	if err != nil {
 		return nil, err
 	}

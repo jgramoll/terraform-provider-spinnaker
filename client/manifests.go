@@ -24,7 +24,7 @@ func (s Manifests) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("[%s]", jsonManifestsString)), nil
 }
 
-func ParseDeployManifests(manifestInterface []interface{}) (*Manifests, error) {
+func ParseManifests(manifestInterface []interface{}) (*Manifests, error) {
 	manifests := NewManifests()
 	for _, m := range manifestInterface {
 		manifest, err := ParseManifest(m)
