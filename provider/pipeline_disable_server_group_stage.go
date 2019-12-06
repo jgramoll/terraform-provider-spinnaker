@@ -5,9 +5,9 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-func pipelineDestroyServerGroupStageResource() *schema.Resource {
+func pipelineDisableServerGroupStageResource() *schema.Resource {
 	stageInterface := func() stage {
-		return newTargetServerGroupStage(client.DestroyServerGroupStageType)
+		return newTargetServerGroupStage(client.DisableServerGroupStageType)
 	}
 	return &schema.Resource{
 		Create: func(d *schema.ResourceData, m interface{}) error {

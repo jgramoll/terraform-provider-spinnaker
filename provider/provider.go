@@ -99,12 +99,12 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_delete_manifest_stage":       pipelineDeleteManifestStageResource(),
 			"spinnaker_pipeline_deploy_cloudformation_stage": pipelineDeployCloudformationStageResource(),
 			"spinnaker_pipeline_deploy_manifest_stage":       pipelineDeployManifestStageResource(),
+			"spinnaker_pipeline_disable_server_group_stage":  pipelineDisableServerGroupStageResource(),
 			"spinnaker_pipeline_scale_manifest_stage":        pipelineScaleManifestStageResource(),
 			"spinnaker_pipeline_deploy_stage":                pipelineDeployStageResource(),
 			"spinnaker_pipeline_destroy_server_group_stage":  pipelineDestroyServerGroupStageResource(),
 			"spinnaker_pipeline_disable_manifest_stage":      pipelineDisableManifestStageResource(),
 			"spinnaker_pipeline_enable_manifest_stage":       pipelineEnableManifestStageResource(),
-			"spinnaker_pipeline_enable_server_group_stage":   pipelineEnableServerGroupStageResource(),
 			"spinnaker_pipeline_evaluate_variables_stage":    pipelineEvaluateVariablesStageResource(),
 
 			"spinnaker_pipeline_find_artifacts_from_resource_stage": pipelineFindArtifactsFromResourceStageResource(),
