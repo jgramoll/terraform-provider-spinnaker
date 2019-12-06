@@ -103,6 +103,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_deploy_stage":               pipelineDeployStageResource(),
 			"spinnaker_pipeline_manual_judgment_stage":      pipelineManualJudgementStageResource(),
 			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),
+			"spinnaker_pipeline_disable_server_group_stage": pipelineDisableServerGroupStageResource(),
 			"spinnaker_pipeline_jenkins_stage":              pipelineJenkinsStageResource(),
 			"spinnaker_pipeline_pipeline_stage":             pipelinePipelineResource(),
 			"spinnaker_pipeline_resize_server_group_stage":  pipelineResizeServerGroupStageResource(),
