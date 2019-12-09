@@ -83,6 +83,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_scale_manifest_stage":       pipelineScaleManifestStageResource(),
 			"spinnaker_pipeline_deploy_stage":               pipelineDeployStageResource(),
 			"spinnaker_pipeline_destroy_server_group_stage": pipelineDestroyServerGroupStageResource(),
+			"spinnaker_pipeline_evaluate_variables_stage":   pipelineEvaluateVariablesStageResource(),
 
 			"spinnaker_pipeline_find_artifacts_from_resource_stage": pipelineFindArtifactsFromResourceStageResource(),
 

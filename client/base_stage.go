@@ -7,6 +7,7 @@ type BaseStage struct {
 	RequisiteStageRefIds []string      `json:"requisiteStageRefIds"`
 	SendNotifications    bool          `json:"sendNotifications"`
 	StageEnabled         *StageEnabled `json:"stageEnabled"`
+	Comments             string        `json:"comments"`
 
 	CompleteOtherBranchesThenFail     bool `json:"completeOtherBranchesThenFail"`
 	ContinuePipeline                  bool `json:"continuePipeline"`
@@ -43,12 +44,12 @@ func (s *BaseStage) GetRefID() string {
 	return s.RefID
 }
 
-func (stage *BaseStage) parseBaseStage(stageMap map[string]interface{}) error {
+func (s *BaseStage) parseBaseStage(stageMap map[string]interface{}) error {
 	notifications, err := parseNotifications(stageMap["notifications"])
 	if err != nil {
 		return err
 	}
-	stage.Notifications = notifications
+	s.Notifications = notifications
 	delete(stageMap, "notifications")
 
 	return nil

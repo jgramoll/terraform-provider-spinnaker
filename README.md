@@ -243,6 +243,16 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
   target = "oldest_asg_dynamic"
 }
 
+resource "spinnaker_pipeline_evaluate_variables_stage" "s%v" {
+	pipeline 	  = "${spinnaker_pipeline.test.id}"
+	name     	  = "Stage %v"
+
+	variables {
+    foo = "bar"
+    baz = "qux"
+  }
+}
+
 resource "spinnaker_pipeline_find_artifacts_from_resource_stage" "main" {
   pipeline = "${spinnaker_pipeline.test.id}"
   name     = "Find Artifacts"
