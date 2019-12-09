@@ -20,9 +20,9 @@ func newPipelineStage() *pipelineStage {
 	}
 }
 
-func (s *pipelineStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *pipelineStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewPipelineStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (s *pipelineStage) toClientStage(config *client.Config, refId string) (clie
 	return cs, nil
 }
 
-func (s *pipelineStage) fromClientStage(cs client.Stage) stage {
+func (*pipelineStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.PipelineStage)
 	newStage := newPipelineStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

@@ -28,9 +28,9 @@ func newResizeServerGroupStage() *resizeServerGroupStage {
 	}
 }
 
-func (s *resizeServerGroupStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *resizeServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewResizeServerGroupStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (s *resizeServerGroupStage) toClientStage(config *client.Config, refId stri
 	return cs, nil
 }
 
-func (s *resizeServerGroupStage) fromClientStage(cs client.Stage) stage {
+func (*resizeServerGroupStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.ResizeServerGroupStage)
 	newStage := newResizeServerGroupStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

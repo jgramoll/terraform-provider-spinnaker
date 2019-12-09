@@ -21,7 +21,7 @@ func (classifiers *canaryConfigClassifiers) toClientClassifier() *client.CanaryC
 	return nil
 }
 
-func (cl *canaryConfigClassifiers) fromClientClassifier(classifier *client.CanaryConfigClassifier) *canaryConfigClassifiers {
+func (*canaryConfigClassifiers) fromClientClassifier(classifier *client.CanaryConfigClassifier) *canaryConfigClassifiers {
 	return &canaryConfigClassifiers{&canaryConfigClassifier{
 		GroupWeights: *fromClientGroupWeights(&classifier.GroupWeights),
 	}}

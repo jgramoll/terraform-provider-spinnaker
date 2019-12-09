@@ -9,7 +9,7 @@ import (
 
 type stage interface {
 	fromClientStage(client.Stage) stage
-	toClientStage(config *client.Config, refId string) (client.Stage, error)
+	toClientStage(config *client.Config, refID string) (client.Stage, error)
 	SetResourceData(*schema.ResourceData) error
 }
 
@@ -34,8 +34,8 @@ func newBaseStage() *baseStage {
 	}
 }
 
-func (s *baseStage) baseToClientStage(cs *client.BaseStage, refId string) error {
-	if refId == "" {
+func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string) error {
+	if refID == "" {
 		return errors.New("Ref Id cannot be empty")
 	}
 	notifications, err := toClientNotifications(s.Notifications)
@@ -44,7 +44,7 @@ func (s *baseStage) baseToClientStage(cs *client.BaseStage, refId string) error 
 	}
 
 	cs.Name = s.Name
-	cs.RefID = refId
+	cs.RefID = refID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
 	cs.Notifications = notifications
 	cs.SendNotifications = notifications != nil && len(*notifications) > 0

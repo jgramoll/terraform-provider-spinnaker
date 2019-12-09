@@ -24,9 +24,9 @@ func newDeleteManifestStage() *deleteManifestStage {
 	}
 }
 
-func (s *deleteManifestStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *deleteManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewDeleteManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (s *deleteManifestStage) toClientStage(config *client.Config, refId string)
 	return cs, nil
 }
 
-func (s *deleteManifestStage) fromClientStage(cs client.Stage) stage {
+func (*deleteManifestStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.DeleteManifestStage)
 	newStage := newDeleteManifestStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

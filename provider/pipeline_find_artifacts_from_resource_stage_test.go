@@ -12,30 +12,30 @@ import (
 )
 
 func init() {
-	stageTypes["spinnaker_pipeline_find_image_from_tags_stage"] = client.FindImageFromTagsStageType
+	stageTypes["spinnaker_pipeline_find_artifacts_from_resource_stage"] = client.FindArtifactsFromResourceStageType
 }
 
-func TestAccPipelineFindImageFromTagsStageBasic(t *testing.T) {
+func TestAccPipelineFindArtifactsFromResourceStageBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	packageName := "ami-000000011111111c"
-	newPackageName := "my-ami"
+	accountName := "my-account"
+	newAccountName := accountName + "-new"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_find_image_from_tags_stage.s1"
-	stage2 := "spinnaker_pipeline_find_image_from_tags_stage.s2"
+	stage1 := "spinnaker_pipeline_find_artifacts_from_resource_stage.s1"
+	stage2 := "spinnaker_pipeline_find_artifacts_from_resource_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineFindImageFromTagsStageConfigBasic(pipeName, packageName, 2),
+				Config: testAccPipelineFindArtifactsFromResourceStageConfigBasic(pipeName, accountName, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "package_name", packageName),
+					resource.TestCheckResourceAttr(stage1, "account", accountName),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "package_name", packageName),
+					resource.TestCheckResourceAttr(stage2, "account", accountName),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -72,12 +72,12 @@ func TestAccPipelineFindImageFromTagsStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineFindImageFromTagsStageConfigBasic(pipeName, newPackageName, 2),
+				Config: testAccPipelineFindArtifactsFromResourceStageConfigBasic(pipeName, newAccountName, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "package_name", newPackageName),
+					resource.TestCheckResourceAttr(stage1, "account", newAccountName),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "package_name", newPackageName),
+					resource.TestCheckResourceAttr(stage2, "account", newAccountName),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -86,10 +86,10 @@ func TestAccPipelineFindImageFromTagsStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineFindImageFromTagsStageConfigBasic(pipeName, newPackageName, 1),
+				Config: testAccPipelineFindArtifactsFromResourceStageConfigBasic(pipeName, accountName, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "package_name", newPackageName),
+					resource.TestCheckResourceAttr(stage1, "account", accountName),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -97,7 +97,7 @@ func TestAccPipelineFindImageFromTagsStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineFindImageFromTagsStageConfigBasic(pipeName, newPackageName, 0),
+				Config: testAccPipelineFindArtifactsFromResourceStageConfigBasic(pipeName, accountName, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
@@ -107,23 +107,25 @@ func TestAccPipelineFindImageFromTagsStageBasic(t *testing.T) {
 	})
 }
 
-func testAccPipelineFindImageFromTagsStageConfigBasic(pipeName string, packageName string, count int) string {
+func testAccPipelineFindArtifactsFromResourceStageConfigBasic(pipeline string, accountName string, count int) string {
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_find_image_from_tags_stage" "s%v" {
+resource "spinnaker_pipeline_find_artifacts_from_resource_stage" "s%v" {
 	pipeline 	  = "${spinnaker_pipeline.test.id}"
 	name     	  = "Stage %v"
-	package_name  = "%v"
 
-	cloud_provider      = "aws"
-	cloud_provider_type = "aws"
-}`, i, i, packageName)
+	account        = "%s"
+	cloud_provider = "kubernetes"
+	location       = "my-ns"
+	mode           = "static"
+	manifest_name  = "my-manifest"
+}`, i, i, accountName)
 	}
 
 	return fmt.Sprintf(`
 resource "spinnaker_pipeline" "test" {
 	application = "app"
 	name        = "%s"
-}`, pipeName) + stages
+}`, pipeline) + stages
 }

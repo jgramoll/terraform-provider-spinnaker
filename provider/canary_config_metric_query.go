@@ -23,7 +23,7 @@ func (q *canaryConfigMetricQueries) toClientMetricsQuery() *client.CanaryConfigM
 	return nil
 }
 
-func (q *canaryConfigMetricQueries) fromClientMetricsQuery(c *client.CanaryConfigMetricQuery) *canaryConfigMetricQueries {
+func (*canaryConfigMetricQueries) fromClientMetricsQuery(c *client.CanaryConfigMetricQuery) *canaryConfigMetricQueries {
 	var query canaryConfigMetricQuery
 	query.Type = c.Type
 	query.ServiceType = c.ServiceType

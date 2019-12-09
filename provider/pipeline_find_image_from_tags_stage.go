@@ -21,9 +21,9 @@ func newFindImageFromTagsStage() *findImageFromTagsStage {
 	}
 }
 
-func (s *findImageFromTagsStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *findImageFromTagsStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewFindImageStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (s *findImageFromTagsStage) toClientStage(config *client.Config, refId stri
 	return cs, nil
 }
 
-func (s *findImageFromTagsStage) fromClientStage(cs client.Stage) stage {
+func (*findImageFromTagsStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.FindImageFromTagsStage)
 	newStage := newFindImageFromTagsStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

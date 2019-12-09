@@ -29,9 +29,9 @@ func newScaleManifestStage() *scaleManifestStage {
 	}
 }
 
-func (s *scaleManifestStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *scaleManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewScaleManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (s *scaleManifestStage) toClientStage(config *client.Config, refId string) 
 	return cs, nil
 }
 
-func (s *scaleManifestStage) fromClientStage(cs client.Stage) stage {
+func (*scaleManifestStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.ScaleManifestStage)
 	newStage := newScaleManifestStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

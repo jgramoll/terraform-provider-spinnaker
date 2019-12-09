@@ -21,7 +21,7 @@ func (judges *canaryConfigJudges) toClientJudge() *client.CanaryConfigJudge {
 	return nil
 }
 
-func (j *canaryConfigJudges) fromClientJudge(judge *client.CanaryConfigJudge) *canaryConfigJudges {
+func (*canaryConfigJudges) fromClientJudge(judge *client.CanaryConfigJudge) *canaryConfigJudges {
 	return &canaryConfigJudges{&canaryConfigJudge{
 		Name: judge.Name,
 	}}

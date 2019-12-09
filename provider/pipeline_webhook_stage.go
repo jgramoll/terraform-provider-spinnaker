@@ -31,9 +31,9 @@ func newWebhookStage() *webhookStage {
 	}
 }
 
-func (s *webhookStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *webhookStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewWebhookStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (s *webhookStage) toClientStage(config *client.Config, refId string) (clien
 	return cs, nil
 }
 
-func (s *webhookStage) fromClientStage(cs client.Stage) stage {
+func (*webhookStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.WebhookStage)
 	newStage := newWebhookStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

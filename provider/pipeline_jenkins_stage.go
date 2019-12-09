@@ -23,9 +23,9 @@ func newJenkinsStage() *jenkinsStage {
 	}
 }
 
-func (s *jenkinsStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *jenkinsStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewJenkinsStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (s *jenkinsStage) toClientStage(config *client.Config, refId string) (clien
 	return cs, nil
 }
 
-func (s *jenkinsStage) fromClientStage(cs client.Stage) stage {
+func (*jenkinsStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.JenkinsStage)
 	newStage := newJenkinsStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

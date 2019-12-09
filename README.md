@@ -243,11 +243,22 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
   target = "oldest_asg_dynamic"
 }
 
+resource "spinnaker_pipeline_find_artifacts_from_resource_stage" "main" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Find Artifacts"
+
+  account        = "my-account"
+  cloud_provider = "kubernetes"
+  location       = "my-ns"
+  mode           = "static"
+  manifest_name  = "my-manifest"
+}
+
 resource "spinnaker_pipeline_find_image_from_tags_stage" "main" {
   pipeline     = "${spinnaker_pipeline.test.id}"
   name         = "Find image"
-  package_name = "my-package"
 
+  package_name        = "my-package"
   cloud_provider      = "aws"
   cloud_provider_type = "aws"
 }
