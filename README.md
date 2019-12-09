@@ -484,7 +484,7 @@ go mod vendor
 ### Link ###
 
 ```sh
-version=v1.7.0
+version=v1.8.0
 go clean
 go build
 rm ~/.terraform.d/plugins/$(uname | tr '[:upper:]' '[:lower:]')_amd64/terraform-provider-spinnaker_$version
