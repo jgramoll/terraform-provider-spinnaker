@@ -1,5 +1,6 @@
 package client
 
+// BaseStage all stages should have these properties
 type BaseStage struct {
 	Name                 string        `json:"name"`
 	RefID                string        `json:"refId"`
@@ -7,7 +8,7 @@ type BaseStage struct {
 	RequisiteStageRefIds []string      `json:"requisiteStageRefIds"`
 	SendNotifications    bool          `json:"sendNotifications"`
 	StageEnabled         *StageEnabled `json:"stageEnabled"`
-	Comments             string        `json:"comments"`
+	Comments             string        `json:"comments,omitempty"`
 
 	CompleteOtherBranchesThenFail     bool `json:"completeOtherBranchesThenFail"`
 	ContinuePipeline                  bool `json:"continuePipeline"`
