@@ -196,7 +196,7 @@ func fromClientCluster(c *client.DeploymentCluster) *deployStageCluster {
 	return &newCluster
 }
 
-func (s *deployStageClusters) fromClientClusters(clientClusters *[]*client.DeploymentCluster) *deployStageClusters {
+func (*deployStageClusters) fromClientClusters(clientClusters *[]*client.DeploymentCluster) *deployStageClusters {
 	if clientClusters == nil || len(*clientClusters) == 0 {
 		return nil
 	}

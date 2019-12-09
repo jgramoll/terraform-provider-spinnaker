@@ -8,7 +8,7 @@ type canaryAnalysisConfigs []*canaryAnalysisConfig
 
 type canaryAnalysisConfig struct {
 	CanaryAnalysisIntervalMins string `mapstructure:"canary_analysis_interval_mins"`
-	CanaryConfigId             string `mapstructure:"canary_config_id"`
+	CanaryConfigID             string `mapstructure:"canary_config_id"`
 	LifetimeDuration           string `mapstructure:"lifetime_duration"`
 	MetricsAccountName         string `mapstructure:"metrics_account_name"`
 
@@ -22,7 +22,7 @@ func (configs *canaryAnalysisConfigs) toClientCanaryConfig() *client.CanaryAnaly
 	for _, c := range *configs {
 		return &client.CanaryAnalysisConfig{
 			CanaryAnalysisIntervalMins: c.CanaryAnalysisIntervalMins,
-			CanaryConfigId:             c.CanaryConfigId,
+			CanaryConfigId:             c.CanaryConfigID,
 			LifetimeDuration:           c.LifetimeDuration,
 			MetricsAccountName:         c.MetricsAccountName,
 			Scopes:                     *c.Scopes.toClientCanaryConfigScopes(),
@@ -33,10 +33,10 @@ func (configs *canaryAnalysisConfigs) toClientCanaryConfig() *client.CanaryAnaly
 	return nil
 }
 
-func (cs *canaryAnalysisConfigs) fromClientCanaryConfig(c *client.CanaryAnalysisConfig) *canaryAnalysisConfigs {
+func (*canaryAnalysisConfigs) fromClientCanaryConfig(c *client.CanaryAnalysisConfig) *canaryAnalysisConfigs {
 	newConfig := canaryAnalysisConfig{
 		CanaryAnalysisIntervalMins: c.CanaryAnalysisIntervalMins,
-		CanaryConfigId:             c.CanaryConfigId,
+		CanaryConfigID:             c.CanaryConfigId,
 		LifetimeDuration:           c.LifetimeDuration,
 		MetricsAccountName:         c.MetricsAccountName,
 		StorageAccountName:         c.StorageAccountName,

@@ -33,9 +33,9 @@ func newBakeStage() *bakeStage {
 	}
 }
 
-func (s *bakeStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *bakeStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewBakeStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s *bakeStage) toClientStage(config *client.Config, refId string) (client.S
 	return cs, nil
 }
 
-func (s *bakeStage) fromClientStage(cs client.Stage) stage {
+func (*bakeStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.BakeStage)
 	newStage := newBakeStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

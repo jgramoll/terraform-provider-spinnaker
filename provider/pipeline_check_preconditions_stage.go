@@ -17,9 +17,9 @@ func newCheckPreconditionsStage() *checkPreconditionsStage {
 	}
 }
 
-func (s *checkPreconditionsStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *checkPreconditionsStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewCheckPreconditionsStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (s *checkPreconditionsStage) toClientStage(config *client.Config, refId str
 	return cs, nil
 }
 
-func (s *checkPreconditionsStage) fromClientStage(cs client.Stage) stage {
+func (*checkPreconditionsStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.CheckPreconditionsStage)
 	newStage := newCheckPreconditionsStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

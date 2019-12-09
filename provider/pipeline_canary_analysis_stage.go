@@ -21,9 +21,9 @@ func newCanaryAnalysisStage() *canaryAnalysisStage {
 	}
 }
 
-func (s *canaryAnalysisStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *canaryAnalysisStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewCanaryAnalysisStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (s *canaryAnalysisStage) toClientStage(config *client.Config, refId string)
 	return cs, nil
 }
 
-func (s *canaryAnalysisStage) fromClientStage(cs client.Stage) stage {
+func (*canaryAnalysisStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.CanaryAnalysisStage)
 	newStage := newCanaryAnalysisStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

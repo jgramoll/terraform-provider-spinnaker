@@ -18,9 +18,9 @@ func newManualJudgmentStage() *manualJudgmentStage {
 	}
 }
 
-func (s *manualJudgmentStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *manualJudgmentStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewManualJudgmentStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -29,14 +29,17 @@ func (s *manualJudgmentStage) toClientStage(config *client.Config, refId string)
 
 	var judgmentInputs []client.JudgmentInputs
 	for _, v := range s.JudgmentInputs {
-		judgmentInputs = append(judgmentInputs, client.JudgmentInputs{v})
+		input := client.JudgmentInputs{
+			Value: v,
+		}
+		judgmentInputs = append(judgmentInputs, input)
 	}
 	cs.JudgmentInputs = judgmentInputs
 
 	return cs, nil
 }
 
-func (s *manualJudgmentStage) fromClientStage(cs client.Stage) stage {
+func (*manualJudgmentStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.ManualJudgmentStage)
 	newStage := newManualJudgmentStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

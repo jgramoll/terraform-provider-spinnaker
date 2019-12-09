@@ -23,9 +23,9 @@ func newDestroyServerGroupStage() *destroyServerGroupStage {
 	}
 }
 
-func (s *destroyServerGroupStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *destroyServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewDestroyServerGroupStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (s *destroyServerGroupStage) toClientStage(config *client.Config, refId str
 	return cs, nil
 }
 
-func (s *destroyServerGroupStage) fromClientStage(cs client.Stage) stage {
+func (*destroyServerGroupStage) fromClientStage(cs client.Stage) stage {
 	clientStage := cs.(*client.DestroyServerGroupStage)
 	newStage := newDestroyServerGroupStage()
 	newStage.baseFromClientStage(&clientStage.BaseStage)

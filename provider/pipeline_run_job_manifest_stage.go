@@ -24,9 +24,9 @@ func newRunJobManifestStage() *runJobManifestStage {
 	}
 }
 
-func (s *runJobManifestStage) toClientStage(config *client.Config, refId string) (client.Stage, error) {
+func (s *runJobManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewRunJobManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refId)
+	err := s.baseToClientStage(&cs.BaseStage, refID)
 	if err != nil {
 		return nil, err
 	}

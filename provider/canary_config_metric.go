@@ -27,7 +27,7 @@ func (m *canaryConfigMetrics) toClientMetrics() *[]*client.CanaryConfigMetric {
 	return &metrics
 }
 
-func (m *canaryConfigMetrics) fromClientMetrics(c *[]*client.CanaryConfigMetric) *canaryConfigMetrics {
+func (*canaryConfigMetrics) fromClientMetrics(c *[]*client.CanaryConfigMetric) *canaryConfigMetrics {
 	metrics := canaryConfigMetrics{}
 	for _, metric := range *c {
 		newMetric := canaryConfigMetric{
