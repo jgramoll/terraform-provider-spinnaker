@@ -1,5 +1,11 @@
 # terraform-provider-spinnaker
 
+## 1.8.0
+
+- `9624ffe` Evalaute variables (#52)
+- `06e005c` add spinnaker_pipeline_find_artifacts_from_resource_stage (#51)
+- `80179b9` fix application import crashing if no permissions defined (#50)
+
 ## 1.7.0
 
 - `ffc3a41` add run_job_manifest to client (#48)
