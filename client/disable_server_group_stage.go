@@ -2,8 +2,8 @@ package client
 
 import "github.com/mitchellh/mapstructure"
 
-func parseDestroyServerGroupStage(stageMap map[string]interface{}) (Stage, error) {
-	stage := newSerializableTargetServerGroupStage(DestroyServerGroupStageType)
+func parseDisableServerGroupStage(stageMap map[string]interface{}) (Stage, error) {
+	stage := newSerializableTargetServerGroupStage(DisableServerGroupStageType)
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err
 	}
