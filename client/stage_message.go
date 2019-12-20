@@ -12,13 +12,13 @@ const StageFailedKey = "stage.failed"
 const StageStartingKey = "stage.starting"
 
 // ManualJudgmentKey for manual judgement
-const ManualJudgmentKey = "manual_judgment"
+const ManualJudgmentKey = "manualJudgment"
 
 // ManualJudgmentContinueKey for manual judgment continue
-const ManualJudgmentContinueKey = "manual_judgment_continue"
+const ManualJudgmentContinueKey = "manualJudgmentContinue"
 
 // ManualJudgmentStopKey for manual judgement stop
-const ManualJudgmentStopKey = "manual_judgment_stop"
+const ManualJudgmentStopKey = "manualJudgmentStop"
 
 func init() {
 	messageFactories[NotificationLevelStage] = func() Message {

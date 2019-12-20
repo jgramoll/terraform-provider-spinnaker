@@ -27,7 +27,7 @@ func (s *manualJudgmentStage) toClientStage(config *client.Config, refID string)
 
 	cs.Instructions = s.Instructions
 
-	var judgmentInputs []client.JudgmentInputs
+	judgmentInputs := []client.JudgmentInputs{}
 	for _, v := range s.JudgmentInputs {
 		input := client.JudgmentInputs{
 			Value: v,

@@ -13,11 +13,15 @@ func toClientManualJudgementNotificationMessage(level client.NotificationLevel, 
 	if m == nil || len(*m) == 0 {
 		return nil, nil
 	}
+	message := (*m)[0]
+	if message == nil {
+		return nil, nil
+	}
+
 	newMessage, err := client.NewMessage(level)
 	if err != nil {
 		return nil, err
 	}
-	message := (*m)[0]
 
 	if message.ManualJudgmentContinue != "" {
 		newMessage.SetManualJudgmentContinueText(message.ManualJudgmentContinue)

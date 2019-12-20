@@ -70,5 +70,14 @@ resource "spinnaker_pipeline_manual_judgment_stage" "s1" {
 			manual_judgment_stop = true
 		}
 	}
+
+	notification {
+		address = "#my-other-channel"
+		message {}
+		type = "slack"
+		when {
+			manual_judgment = false
+		}
+	}
 }`, pipelineName)
 }
