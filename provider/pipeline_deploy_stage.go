@@ -19,7 +19,7 @@ func newDeployStage() *deployStage {
 
 func (s *deployStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewDeployStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +31,17 @@ func (s *deployStage) toClientStage(config *client.Config, refID string) (client
 	return cs, nil
 }
 
-func (*deployStage) fromClientStage(cs client.Stage) stage {
+func (*deployStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.DeployStage)
 	newStage := newDeployStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Clusters = newStage.Clusters.fromClientClusters(clientStage.Clusters)
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *deployStage) SetResourceData(d *schema.ResourceData) error {

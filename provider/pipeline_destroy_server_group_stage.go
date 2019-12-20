@@ -25,7 +25,7 @@ func newDestroyServerGroupStage() *destroyServerGroupStage {
 
 func (s *destroyServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewDestroyServerGroupStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -41,10 +41,13 @@ func (s *destroyServerGroupStage) toClientStage(config *client.Config, refID str
 	return cs, nil
 }
 
-func (*destroyServerGroupStage) fromClientStage(cs client.Stage) stage {
+func (*destroyServerGroupStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.DestroyServerGroupStage)
 	newStage := newDestroyServerGroupStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.CloudProviderType = clientStage.CloudProviderType
@@ -54,7 +57,7 @@ func (*destroyServerGroupStage) fromClientStage(cs client.Stage) stage {
 	newStage.Regions = clientStage.Regions
 	newStage.Target = clientStage.Target
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *destroyServerGroupStage) SetResourceData(d *schema.ResourceData) error {

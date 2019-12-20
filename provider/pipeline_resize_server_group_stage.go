@@ -30,7 +30,7 @@ func newResizeServerGroupStage() *resizeServerGroupStage {
 
 func (s *resizeServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewResizeServerGroupStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +50,13 @@ func (s *resizeServerGroupStage) toClientStage(config *client.Config, refID stri
 	return cs, nil
 }
 
-func (*resizeServerGroupStage) fromClientStage(cs client.Stage) stage {
+func (*resizeServerGroupStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.ResizeServerGroupStage)
 	newStage := newResizeServerGroupStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Action = clientStage.Action
 	newStage.Capacity = fromClientCapacity(clientStage.Capacity)
@@ -67,7 +70,7 @@ func (*resizeServerGroupStage) fromClientStage(cs client.Stage) stage {
 	newStage.Target = clientStage.Target
 	newStage.TargetHealthyDeployPercentage = clientStage.TargetHealthyDeployPercentage
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *resizeServerGroupStage) SetResourceData(d *schema.ResourceData) error {

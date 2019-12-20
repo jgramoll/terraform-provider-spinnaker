@@ -31,7 +31,7 @@ func newScaleManifestStage() *scaleManifestStage {
 
 func (s *scaleManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewScaleManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -51,10 +51,13 @@ func (s *scaleManifestStage) toClientStage(config *client.Config, refID string) 
 	return cs, nil
 }
 
-func (*scaleManifestStage) fromClientStage(cs client.Stage) stage {
+func (*scaleManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.ScaleManifestStage)
 	newStage := newScaleManifestStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Account = clientStage.Account
 	newStage.Application = clientStage.Application
@@ -69,7 +72,7 @@ func (*scaleManifestStage) fromClientStage(cs client.Stage) stage {
 	newStage.Mode = clientStage.Mode
 	newStage.Replicas = clientStage.Replicas
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *scaleManifestStage) SetResourceData(d *schema.ResourceData) error {

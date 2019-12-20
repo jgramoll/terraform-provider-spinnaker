@@ -21,6 +21,12 @@ type Message interface {
 
 	SetStartingText(string)
 	StartingText() string
+
+	SetManualJudgmentContinueText(string)
+	ManualJudgmentContinueText() string
+
+	SetManualJudgmentStopText(string)
+	ManualJudgmentStopText() string
 }
 
 // NewMessage new message

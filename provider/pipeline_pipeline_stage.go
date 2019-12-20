@@ -22,7 +22,7 @@ func newPipelineStage() *pipelineStage {
 
 func (s *pipelineStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewPipelineStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -35,17 +35,20 @@ func (s *pipelineStage) toClientStage(config *client.Config, refID string) (clie
 	return cs, nil
 }
 
-func (*pipelineStage) fromClientStage(cs client.Stage) stage {
+func (*pipelineStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.PipelineStage)
 	newStage := newPipelineStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Application = clientStage.Application
 	newStage.Pipeline = clientStage.Pipeline
 	newStage.PipelineParameters = clientStage.PipelineParameters
 	newStage.WaitForCompletion = clientStage.WaitForCompletion
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *pipelineStage) SetResourceData(d *schema.ResourceData) error {

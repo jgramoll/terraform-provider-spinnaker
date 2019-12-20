@@ -60,3 +60,23 @@ func (m *PipelineMessage) StartingText() string {
 	}
 	return ""
 }
+
+// SetManualJudgmentContinueText for Message interface
+func (m *PipelineMessage) SetManualJudgmentContinueText(text string) {
+	panic("NOT IMPLEMENTED")
+}
+
+// ManualJudgmentContinueText for Message interface
+func (m *PipelineMessage) ManualJudgmentContinueText() string {
+	panic("NOT IMPLEMENTED")
+}
+
+// SetManualJudgmentStopText for Message interface
+func (m *PipelineMessage) SetManualJudgmentStopText(text string) {
+	panic("NOT IMPLEMENTED")
+}
+
+// ManualJudgmentStopText for Message interface
+func (m *PipelineMessage) ManualJudgmentStopText() string {
+	panic("NOT IMPLEMENTED")
+}

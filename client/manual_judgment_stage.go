@@ -16,6 +16,7 @@ type JudgmentInputs struct {
 	Value string `json:"value"`
 }
 
+// ManualJudgmentStage for manual judgements
 type ManualJudgmentStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -26,7 +27,8 @@ type ManualJudgmentStage struct {
 // NewManualJudgmentStage for pipeline
 func NewManualJudgmentStage() *ManualJudgmentStage {
 	return &ManualJudgmentStage{
-		BaseStage: *newBaseStage(ManualJudgmentStageType),
+		BaseStage:      *newBaseStage(ManualJudgmentStageType),
+		JudgmentInputs: []JudgmentInputs{},
 	}
 }
 

@@ -112,9 +112,9 @@ resource "spinnaker_pipeline_manual_judgment_stage" "s%v" {
 	instructions = "Manual Judgment Instructions"
 
 	judgment_inputs = [
-    	"commit",
-    	"rollback",
-  	]
+		"commit",
+		"rollback",
+	]
 }`, i, i)
 	}
 

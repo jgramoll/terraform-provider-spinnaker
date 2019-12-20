@@ -26,7 +26,7 @@ func newRunJobManifestStage() *runJobManifestStage {
 
 func (s *runJobManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewRunJobManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -43,10 +43,13 @@ func (s *runJobManifestStage) toClientStage(config *client.Config, refID string)
 	return cs, nil
 }
 
-func (*runJobManifestStage) fromClientStage(cs client.Stage) stage {
+func (*runJobManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.RunJobManifestStage)
 	newStage := newRunJobManifestStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Account = clientStage.Account
 	newStage.Application = clientStage.Application
@@ -57,7 +60,7 @@ func (*runJobManifestStage) fromClientStage(cs client.Stage) stage {
 	newStage.PropertyFile = clientStage.PropertyFile
 	newStage.Source = clientStage.Source
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *runJobManifestStage) SetResourceData(d *schema.ResourceData) error {

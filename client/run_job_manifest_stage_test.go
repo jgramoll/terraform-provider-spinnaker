@@ -50,12 +50,10 @@ func TestRunJobManifestStageDeserialize(t *testing.T) {
 	}
 	stageInterface, err := parseRunJobManifestStage(stageMap)
 	if err != nil {
-		println("2")
 		t.Fatal(err)
 	}
 	stage := stageInterface.(*RunJobManifestStage)
 	if string(stage.Manifest) != runJobManifestYaml {
-		println("3")
 		t.Fatalf("Manifest should be text")
 	}
 }
