@@ -8,24 +8,24 @@ import (
 )
 
 type stage interface {
-	fromClientStage(client.Stage) stage
+	fromClientStage(client.Stage) (stage, error)
 	toClientStage(config *client.Config, refID string) (client.Stage, error)
 	SetResourceData(*schema.ResourceData) error
 }
 
 type baseStage struct {
-	Name                              string                   `mapstructure:"name"`
-	RequisiteStageRefIds              []string                 `mapstructure:"requisite_stage_ref_ids"`
-	Notifications                     *[]*notification         `mapstructure:"notification"`
-	StageEnabled                      *[]*stageEnabled         `mapstructure:"stage_enabled"`
-	CompleteOtherBranchesThenFail     bool                     `mapstructure:"complete_other_branches_then_fail"`
-	ContinuePipeline                  bool                     `mapstructure:"continue_pipeline"`
-	FailOnFailedExpressions           bool                     `mapstructure:"fail_on_failed_expressions"`
-	FailPipeline                      bool                     `mapstructure:"fail_pipeline"`
-	OverrideTimeout                   bool                     `mapstructure:"override_timeout"`
-	StageTimeoutMS                    int                      `mapstructure:"stage_timeout_ms"`
-	RestrictExecutionDuringTimeWindow bool                     `mapstructure:"restrict_execution_during_time_window"`
-	RestrictedExecutionWindow         *[]*stageExecutionWindow `mapstructure:"restricted_execution_window"`
+	Name                              string                    `mapstructure:"name"`
+	RequisiteStageRefIds              []string                  `mapstructure:"requisite_stage_ref_ids"`
+	Notifications                     *[]map[string]interface{} `mapstructure:"notification"`
+	StageEnabled                      *[]*stageEnabled          `mapstructure:"stage_enabled"`
+	CompleteOtherBranchesThenFail     bool                      `mapstructure:"complete_other_branches_then_fail"`
+	ContinuePipeline                  bool                      `mapstructure:"continue_pipeline"`
+	FailOnFailedExpressions           bool                      `mapstructure:"fail_on_failed_expressions"`
+	FailPipeline                      bool                      `mapstructure:"fail_pipeline"`
+	OverrideTimeout                   bool                      `mapstructure:"override_timeout"`
+	StageTimeoutMS                    int                       `mapstructure:"stage_timeout_ms"`
+	RestrictExecutionDuringTimeWindow bool                      `mapstructure:"restrict_execution_during_time_window"`
+	RestrictedExecutionWindow         *[]*stageExecutionWindow  `mapstructure:"restricted_execution_window"`
 }
 
 func newBaseStage() *baseStage {
@@ -34,11 +34,11 @@ func newBaseStage() *baseStage {
 	}
 }
 
-func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string) error {
+func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string, notificationFactory func() notification) error {
 	if refID == "" {
 		return errors.New("Ref Id cannot be empty")
 	}
-	notifications, err := toClientNotifications(s.Notifications)
+	notifications, err := toClientNotifications(notificationFactory, s.Notifications)
 	if err != nil {
 		return err
 	}
@@ -59,10 +59,18 @@ func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string) error 
 	return nil
 }
 
-func (s *baseStage) baseFromClientStage(clientStage *client.BaseStage) {
+func newDefaultNotificationInterface() notification {
+	return newDefaultNotification()
+}
+
+func (s *baseStage) baseFromClientStage(clientStage *client.BaseStage, notificationFactory func() notification) error {
 	s.Name = clientStage.Name
 	s.RequisiteStageRefIds = clientStage.RequisiteStageRefIds
-	s.Notifications = fromClientNotifications(clientStage.Notifications)
+	notifications, err := fromClientNotifications(notificationFactory, clientStage.Notifications)
+	if err != nil {
+		return err
+	}
+	s.Notifications = notifications
 	s.StageEnabled = fromClientStageEnabled(clientStage.StageEnabled)
 	s.CompleteOtherBranchesThenFail = clientStage.CompleteOtherBranchesThenFail
 	s.ContinuePipeline = clientStage.ContinuePipeline
@@ -71,6 +79,7 @@ func (s *baseStage) baseFromClientStage(clientStage *client.BaseStage) {
 	s.OverrideTimeout = clientStage.OverrideTimeout
 	s.RestrictExecutionDuringTimeWindow = clientStage.RestrictExecutionDuringTimeWindow
 	s.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
+	return nil
 }
 
 func (s *baseStage) baseSetResourceData(d *schema.ResourceData) error {

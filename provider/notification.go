@@ -3,35 +3,23 @@ package provider
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
+	"github.com/mitchellh/mapstructure"
 )
 
-type notification struct {
-	ID      string      `mapstructure:"-"`
-	Address string      `mapstructure:"address"`
-	Message *[]*message `mapstructure:"message"`
-	Type    string      `mapstructure:"type"`
-	When    *[]*when    `mapstructure:"when"`
+type notification interface {
+	toClientNotification(level client.NotificationLevel) (*client.Notification, error)
+	fromClientNotification(cn *client.Notification) notification
+	setNotificationResourceData(d *schema.ResourceData) error
 }
 
-func (n *notification) toClientNotification(level client.NotificationLevel) (*client.Notification, error) {
-	message, err := toClientMessage(level, n.Message)
-	if err != nil {
-		return nil, err
-	}
-	return &client.Notification{
-		ID:      n.ID,
-		Address: n.Address,
-		Level:   level,
-		Type:    n.Type,
-		When:    *toClientWhen(level, (*n.When)[0]),
-		Message: message,
-	}, nil
-}
-
-func toClientNotifications(notifications *[]*notification) (*[]*client.Notification, error) {
+func toClientNotifications(notificationFactory func() notification, notifications *[]map[string]interface{}) (*[]*client.Notification, error) {
 	clientNotifications := []*client.Notification{}
 	if notifications != nil {
-		for _, n := range *notifications {
+		for _, notificationMap := range *notifications {
+			n := notificationFactory()
+			if err := mapstructure.Decode(notificationMap, n); err != nil {
+				return nil, err
+			}
 			cn, err := n.toClientNotification(client.NotificationLevelStage)
 			if err != nil {
 				return nil, err
@@ -42,40 +30,18 @@ func toClientNotifications(notifications *[]*notification) (*[]*client.Notificat
 	return &clientNotifications, nil
 }
 
-func fromClientNotifications(notifications *[]*client.Notification) *[]*notification {
+func fromClientNotifications(notificationFactory func() notification, notifications *[]*client.Notification) (*[]map[string]interface{}, error) {
 	if notifications == nil {
-		return nil
+		return nil, nil
 	}
 
-	newNotifications := []*notification{}
+	newNotifications := []map[string]interface{}{}
 	for _, cn := range *notifications {
-		newNotifications = append(newNotifications, fromClientNotification(cn))
+		notificationMap := map[string]interface{}{}
+		if err := mapstructure.Decode(notificationFactory().fromClientNotification(cn), &notificationMap); err != nil {
+			return nil, err
+		}
+		newNotifications = append(newNotifications, notificationMap)
 	}
-	return &newNotifications
-}
-
-func fromClientNotification(cn *client.Notification) *notification {
-	return &notification{
-		ID:      cn.ID,
-		Address: cn.Address,
-		Message: &[]*message{fromClientMessage(cn.Message)},
-		Type:    cn.Type,
-		When:    &[]*when{fromClientWhen(cn)},
-	}
-}
-
-func (n *notification) setNotificationResourceData(d *schema.ResourceData) error {
-	err := d.Set("address", n.Address)
-	if err != nil {
-		return err
-	}
-	err = d.Set("message", n.Message)
-	if err != nil {
-		return err
-	}
-	err = d.Set("type", n.Type)
-	if err != nil {
-		return err
-	}
-	return d.Set("when", n.When)
+	return &newNotifications, nil
 }

@@ -23,7 +23,7 @@ func newCanaryAnalysisStage() *canaryAnalysisStage {
 
 func (s *canaryAnalysisStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewCanaryAnalysisStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -37,16 +37,19 @@ func (s *canaryAnalysisStage) toClientStage(config *client.Config, refID string)
 	return cs, nil
 }
 
-func (*canaryAnalysisStage) fromClientStage(cs client.Stage) stage {
+func (*canaryAnalysisStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.CanaryAnalysisStage)
 	newStage := newCanaryAnalysisStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.AnalysisType = clientStage.AnalysisType
 	newStage.CanaryConfig = newStage.CanaryConfig.fromClientCanaryConfig(clientStage.CanaryConfig)
 	newStage.Deployments = newStage.Deployments.fromClientClusters(clientStage.Deployments)
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *canaryAnalysisStage) SetResourceData(d *schema.ResourceData) error {

@@ -20,7 +20,7 @@ func newManualJudgmentStage() *manualJudgmentStage {
 
 func (s *manualJudgmentStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewManualJudgmentStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newManualJudgementNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -39,10 +39,13 @@ func (s *manualJudgmentStage) toClientStage(config *client.Config, refID string)
 	return cs, nil
 }
 
-func (*manualJudgmentStage) fromClientStage(cs client.Stage) stage {
+func (*manualJudgmentStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.ManualJudgmentStage)
 	newStage := newManualJudgmentStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newManualJudgementNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Instructions = clientStage.Instructions
 
@@ -52,7 +55,7 @@ func (*manualJudgmentStage) fromClientStage(cs client.Stage) stage {
 	}
 	newStage.JudgmentInputs = judgmentInputs
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *manualJudgmentStage) SetResourceData(d *schema.ResourceData) error {

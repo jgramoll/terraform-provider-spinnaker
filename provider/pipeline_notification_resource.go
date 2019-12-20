@@ -103,7 +103,7 @@ func resourcePipelineNotificationCreate(d *schema.ResourceData, m interface{}) e
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var notification notification
+	var notification defaultNotification
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err
@@ -154,7 +154,7 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 	} else {
 		d.SetId(notification.ID)
-		fromClientNotification(notification).setNotificationResourceData(d)
+		newDefaultNotification().fromClientNotification(notification).setNotificationResourceData(d)
 	}
 
 	return nil
@@ -164,7 +164,7 @@ func resourcePipelineNotificationUpdate(d *schema.ResourceData, m interface{}) e
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var notification notification
+	var notification defaultNotification
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err
@@ -200,7 +200,7 @@ func resourcePipelineNotificationDelete(d *schema.ResourceData, m interface{}) e
 	pipelineLock.Lock()
 	defer pipelineLock.Unlock()
 
-	var notification notification
+	var notification defaultNotification
 	configRaw := d.Get("").(map[string]interface{})
 	if err := mapstructure.Decode(configRaw, &notification); err != nil {
 		return err

@@ -35,7 +35,7 @@ func newBakeStage() *bakeStage {
 
 func (s *bakeStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewBakeStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,13 @@ func (s *bakeStage) toClientStage(config *client.Config, refID string) (client.S
 	return cs, nil
 }
 
-func (*bakeStage) fromClientStage(cs client.Stage) stage {
+func (*bakeStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.BakeStage)
 	newStage := newBakeStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.AmiName = clientStage.AmiName
 	newStage.AmiSuffix = clientStage.AmiSuffix
@@ -92,7 +95,7 @@ func (*bakeStage) fromClientStage(cs client.Stage) stage {
 	newStage.VarFileName = clientStage.VarFileName
 	newStage.VMType = clientStage.VMType
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *bakeStage) SetResourceData(d *schema.ResourceData) error {

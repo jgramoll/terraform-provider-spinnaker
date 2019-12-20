@@ -23,7 +23,7 @@ func newFindImageFromTagsStage() *findImageFromTagsStage {
 
 func (s *findImageFromTagsStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewFindImageStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -37,10 +37,13 @@ func (s *findImageFromTagsStage) toClientStage(config *client.Config, refID stri
 	return cs, nil
 }
 
-func (*findImageFromTagsStage) fromClientStage(cs client.Stage) stage {
+func (*findImageFromTagsStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.FindImageFromTagsStage)
 	newStage := newFindImageFromTagsStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.CloudProviderType = clientStage.CloudProviderType
@@ -48,7 +51,7 @@ func (*findImageFromTagsStage) fromClientStage(cs client.Stage) stage {
 	newStage.Regions = clientStage.Regions
 	newStage.Tags = clientStage.Tags
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *findImageFromTagsStage) SetResourceData(d *schema.ResourceData) error {

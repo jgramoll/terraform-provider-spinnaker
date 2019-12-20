@@ -19,7 +19,7 @@ func newEvaluateVariablesStage() *evaluateVariablesStage {
 
 func (s *evaluateVariablesStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewEvaluateVariablesStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -35,16 +35,19 @@ func (s *evaluateVariablesStage) toClientStage(config *client.Config, refID stri
 	return cs, nil
 }
 
-func (*evaluateVariablesStage) fromClientStage(cs client.Stage) stage {
+func (*evaluateVariablesStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.EvaluateVariablesStage)
 	newStage := newEvaluateVariablesStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, clientVariable := range clientStage.Variables {
 		newStage.Variables[clientVariable.Key] = clientVariable.Value
 	}
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *evaluateVariablesStage) SetResourceData(d *schema.ResourceData) error {

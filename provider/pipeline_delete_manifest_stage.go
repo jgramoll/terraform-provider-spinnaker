@@ -26,7 +26,7 @@ func newDeleteManifestStage() *deleteManifestStage {
 
 func (s *deleteManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewDeleteManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -46,10 +46,13 @@ func (s *deleteManifestStage) toClientStage(config *client.Config, refID string)
 	return cs, nil
 }
 
-func (*deleteManifestStage) fromClientStage(cs client.Stage) stage {
+func (*deleteManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.DeleteManifestStage)
 	newStage := newDeleteManifestStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Account = clientStage.Account
 	newStage.App = clientStage.App
@@ -59,7 +62,7 @@ func (*deleteManifestStage) fromClientStage(cs client.Stage) stage {
 	newStage.Mode = clientStage.Mode.String()
 	newStage.Options = fromClientDeleteManifestOptions(clientStage.Options)
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *deleteManifestStage) SetResourceData(d *schema.ResourceData) error {

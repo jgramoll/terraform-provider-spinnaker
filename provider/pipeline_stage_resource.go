@@ -178,7 +178,12 @@ func resourcePipelineStageRead(d *schema.ResourceData, m interface{}, createStag
 	}
 
 	s := createStage().(stage)
-	s = s.fromClientStage(cStage)
+	s, err = s.fromClientStage(cStage)
+	if err != nil {
+		log.Println("[ERROR] Error on reading pipeline stage:", err)
+		d.SetId("")
+		return err
+	}
 	log.Println("[INFO] Updating from stage", cStage)
 	return s.SetResourceData(d)
 

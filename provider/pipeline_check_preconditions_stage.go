@@ -19,7 +19,7 @@ func newCheckPreconditionsStage() *checkPreconditionsStage {
 
 func (s *checkPreconditionsStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewCheckPreconditionsStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -33,14 +33,17 @@ func (s *checkPreconditionsStage) toClientStage(config *client.Config, refID str
 	return cs, nil
 }
 
-func (*checkPreconditionsStage) fromClientStage(cs client.Stage) stage {
+func (*checkPreconditionsStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.CheckPreconditionsStage)
 	newStage := newCheckPreconditionsStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Preconditions = *fromClientPreconditions(&clientStage.Preconditions)
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *checkPreconditionsStage) SetResourceData(d *schema.ResourceData) error {

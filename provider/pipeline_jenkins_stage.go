@@ -25,7 +25,7 @@ func newJenkinsStage() *jenkinsStage {
 
 func (s *jenkinsStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewJenkinsStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +50,13 @@ func (s *jenkinsStage) toClientStage(config *client.Config, refID string) (clien
 	return cs, nil
 }
 
-func (*jenkinsStage) fromClientStage(cs client.Stage) stage {
+func (*jenkinsStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.JenkinsStage)
 	newStage := newJenkinsStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Job = clientStage.Job
 	newStage.MarkUnstableAsSuccessful = clientStage.MarkUnstableAsSuccessful
@@ -68,7 +71,7 @@ func (*jenkinsStage) fromClientStage(cs client.Stage) stage {
 		}
 	}
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *jenkinsStage) SetResourceData(d *schema.ResourceData) error {

@@ -143,6 +143,20 @@ resource "spinnaker_pipeline_manual_judgment_stage" "main" {
     "commit",
     "rollback",
   ]
+
+  notification {
+    address = "#my-slack-channel"
+    message {
+      manual_judgment_continue = "Manual judgement continue"
+      manual_judgment_stop = "Manual judgement stop"
+    }
+    type = "slack"
+    when {
+      manual_judgment = true
+      manual_judgment_continue = true
+      manual_judgment_stop = true
+    }
+  }
 }
 
 resource "spinnaker_pipeline_deploy_stage" "deploy" {
@@ -244,10 +258,10 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
 }
 
 resource "spinnaker_pipeline_evaluate_variables_stage" "s%v" {
-	pipeline 	  = "${spinnaker_pipeline.test.id}"
-	name     	  = "Stage %v"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Stage %v"
 
-	variables {
+  variables {
     foo = "bar"
     baz = "qux"
   }

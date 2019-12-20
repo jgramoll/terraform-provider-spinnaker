@@ -31,7 +31,7 @@ func newDeployManifestStage() *deployManifestStage {
 
 func (s *deployManifestStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewDeployManifestStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +54,13 @@ func (s *deployManifestStage) toClientStage(config *client.Config, refID string)
 	return cs, nil
 }
 
-func (*deployManifestStage) fromClientStage(cs client.Stage) stage {
+func (*deployManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.DeployManifestStage)
 	newStage := newDeployManifestStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Account = clientStage.Account
 	newStage.NamespaceOverride = clientStage.NamespaceOverride
@@ -70,7 +73,7 @@ func (*deployManifestStage) fromClientStage(cs client.Stage) stage {
 	newStage.Source = clientStage.Source.String()
 	newStage.TrafficManagement = fromClientTrafficManagement(clientStage.TrafficManagement)
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *deployManifestStage) SetResourceData(d *schema.ResourceData) error {

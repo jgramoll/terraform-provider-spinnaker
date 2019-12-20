@@ -33,7 +33,7 @@ func newWebhookStage() *webhookStage {
 
 func (s *webhookStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewWebhookStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -67,10 +67,13 @@ func (s *webhookStage) toClientStage(config *client.Config, refID string) (clien
 	return cs, nil
 }
 
-func (*webhookStage) fromClientStage(cs client.Stage) stage {
+func (*webhookStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.WebhookStage)
 	newStage := newWebhookStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.CanceledStatuses = clientStage.CanceledStatuses
 	newStage.CustomHeaders = clientStage.CustomHeaders
@@ -97,7 +100,7 @@ func (*webhookStage) fromClientStage(cs client.Stage) stage {
 	newStage.TerminalStatuses = clientStage.TerminalStatuses
 	newStage.URL = clientStage.URL
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *webhookStage) SetResourceData(d *schema.ResourceData) error {

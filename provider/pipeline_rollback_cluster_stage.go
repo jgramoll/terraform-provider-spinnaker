@@ -26,7 +26,7 @@ func newRollbackClusterStage() *rollbackClusterStage {
 
 func (s *rollbackClusterStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewRollbackClusterStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -42,10 +42,13 @@ func (s *rollbackClusterStage) toClientStage(config *client.Config, refID string
 	return cs, nil
 }
 
-func (*rollbackClusterStage) fromClientStage(cs client.Stage) stage {
+func (*rollbackClusterStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.RollbackClusterStage)
 	newStage := newRollbackClusterStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.CloudProviderType = clientStage.CloudProviderType
@@ -55,7 +58,7 @@ func (*rollbackClusterStage) fromClientStage(cs client.Stage) stage {
 	newStage.Regions = clientStage.Regions
 	newStage.TargetHealthyRollbackPercentage = clientStage.TargetHealthyRollbackPercentage
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *rollbackClusterStage) SetResourceData(d *schema.ResourceData) error {

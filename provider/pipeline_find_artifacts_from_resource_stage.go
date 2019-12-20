@@ -23,7 +23,7 @@ func newFindArtifactsFromResourceStage() *findArtifactsFromResourceStage {
 
 func (s *findArtifactsFromResourceStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
 	cs := client.NewFindArtifactsFromResourceStage()
-	err := s.baseToClientStage(&cs.BaseStage, refID)
+	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -37,10 +37,13 @@ func (s *findArtifactsFromResourceStage) toClientStage(config *client.Config, re
 	return cs, nil
 }
 
-func (*findArtifactsFromResourceStage) fromClientStage(cs client.Stage) stage {
+func (*findArtifactsFromResourceStage) fromClientStage(cs client.Stage) (stage, error) {
 	clientStage := cs.(*client.FindArtifactsFromResourceStage)
 	newStage := newFindArtifactsFromResourceStage()
-	newStage.baseFromClientStage(&clientStage.BaseStage)
+	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
+	if err != nil {
+		return nil, err
+	}
 
 	newStage.Account = clientStage.Account
 	newStage.CloudProvider = clientStage.CloudProvider
@@ -48,7 +51,7 @@ func (*findArtifactsFromResourceStage) fromClientStage(cs client.Stage) stage {
 	newStage.ManifestName = clientStage.ManifestName
 	newStage.Mode = clientStage.Mode
 
-	return newStage
+	return newStage, nil
 }
 
 func (s *findArtifactsFromResourceStage) SetResourceData(d *schema.ResourceData) error {

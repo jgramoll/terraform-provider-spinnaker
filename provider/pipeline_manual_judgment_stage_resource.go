@@ -39,6 +39,12 @@ func pipelineManualJudgementStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"notification": &schema.Schema{
+				Type:        schema.TypeList,
+				Description: "Notifications to send for stage results",
+				Optional:    true,
+				Elem:        manualJudementNotificationResource(),
+			},
 		}),
 	}
 }
