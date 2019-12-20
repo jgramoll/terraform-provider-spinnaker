@@ -58,7 +58,7 @@ func pipelineDeployManifestStageResource() *schema.Resource {
 			"moniker": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Name to attach to manifest",
-				Optional:    true,
+				Required:    true,
 				MaxItems:    1,
 				Elem:        monikerResource(),
 			},
