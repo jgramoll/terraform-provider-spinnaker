@@ -1,5 +1,10 @@
 # terraform-provider-spinnaker
 
+## 2.1.0
+
+- `ab4d008` Enable disable manifest (#59)
+- `bfcb538` add undo rollout and enable server group stages (#58)
+
 ## 2.0.0
 
 Breaking change:
@@ -8,6 +13,12 @@ Spinnaker was causing null pointer exceptions if it wasn't provided
 
 - `70aa566` make sure deploy manifest moniker is required (#56)
 - `3ed0849` add notifications to manual judgement (#55)
+
+## 1.8.0
+
+- `9624ffe` Evalaute variables (#52)
+- `06e005c` add spinnaker_pipeline_find_artifacts_from_resource_stage (#51)
+- `80179b9` fix application import crashing if no permissions defined (#50)
 
 ## 1.7.0
 
