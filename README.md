@@ -536,7 +536,6 @@ resource "spinnaker_pipeline_enable_manifest_stage" "test" {
 	location       = "my-k8s-ns"
 	mode           = "dynamic"
 }
-
 ```
 
 ## Local Dev ##
