@@ -4,22 +4,22 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func pipelineDeleteManifestStageResource() *schema.Resource {
-	newDeleteManifestStageInterface := func() stage {
-		return newDeleteManifestStage()
+func pipelineDisableManifestStageResource() *schema.Resource {
+	newDisableManifestStageInterface := func() stage {
+		return newDisableManifestStage()
 	}
 	return &schema.Resource{
 		Create: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageCreate(d, m, newDeleteManifestStageInterface)
+			return resourcePipelineStageCreate(d, m, newDisableManifestStageInterface)
 		},
 		Read: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageRead(d, m, newDeleteManifestStageInterface)
+			return resourcePipelineStageRead(d, m, newDisableManifestStageInterface)
 		},
 		Update: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageUpdate(d, m, newDeleteManifestStageInterface)
+			return resourcePipelineStageUpdate(d, m, newDisableManifestStageInterface)
 		},
 		Delete: func(d *schema.ResourceData, m interface{}) error {
-			return resourcePipelineStageDelete(d, m, newDeleteManifestStageInterface)
+			return resourcePipelineStageDelete(d, m, newDisableManifestStageInterface)
 		},
 		Importer: &schema.ResourceImporter{
 			State: resourcePipelineImporter,
@@ -41,6 +41,21 @@ func pipelineDeleteManifestStageResource() *schema.Resource {
 				Description: "The cloud provider name",
 				Required:    true,
 			},
+			"cluster": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "The name of the manifest to enable (e.g. replicatSet my-service)",
+				Required:    true,
+			},
+			"criteria": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "The target cluster (e.g. newest)",
+				Required:    true,
+			},
+			"kind": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "The cluster kind (e.g. replicaSet)",
+				Required:    true,
+			},
 			"location": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The location name",
@@ -49,27 +64,12 @@ func pipelineDeleteManifestStageResource() *schema.Resource {
 			"manifest_name": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The manifest name",
-				Required:    true,
+				Optional:    true,
 			},
 			"mode": &schema.Schema{
 				Type:        schema.TypeString,
 				Description: "The mode name",
 				Required:    true,
-			},
-			"options": &schema.Schema{
-				Type:        schema.TypeList,
-				Description: "Options for delete",
-				Optional:    true,
-				MaxItems:    1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"cascading": &schema.Schema{
-							Type:     schema.TypeBool,
-							Optional: true,
-							Default:  false,
-						},
-					},
-				},
 			},
 		}),
 	}

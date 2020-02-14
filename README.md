@@ -509,6 +509,33 @@ resource "spinnaker_pipeline_undo_rollout_manifest_stage" "test" {
   num_revisions_back = 1
 }
 
+resource "spinnaker_pipeline_disable_manifest_stage" "test" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Stage %v"
+
+	account        = "%v"
+	app            = "my-app"
+	cloud_provider = "kubernetes"
+	cluster        = "replicaSet my-service"
+	criteria       = "newest"
+	kind           = "replicaSet"
+	location       = "my-k8s-ns"
+	mode           = "dynamic"
+}
+
+resource "spinnaker_pipeline_enable_manifest_stage" "test" {
+	pipeline = "${spinnaker_pipeline.test.id}"
+	name     = "Stage %v"
+
+	account        = "%v"
+	app            = "app"
+	cloud_provider = "provider"
+	cluster        = "replicaSet my-service"
+	criteria       = "oldest"
+	kind           = "replicaSet"
+	location       = "my-k8s-ns"
+	mode           = "dynamic"
+}
 ```
 
 ## Local Dev ##
