@@ -480,6 +480,35 @@ spec:
 EOT
 }
 
+resource "spinnaker_pipeline_enable_server_group_stage" "test" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Enable Server Group"
+
+  cloud_provider      = "kubernetes"
+  cloud_provider_type = "kubernetes"
+  cluster             = "my-k8s-account"
+  credentials         = "my-k8s-creds"
+  interesting_health_provider_names = [
+    "KubernetesService"
+  ]
+  namespaces = [
+    "my-k8s-ns"
+  ]
+  target = "ancestor_asg_dynamic"
+}
+
+resource "spinnaker_pipeline_undo_rollout_manifest_stage" "test" {
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Undo Rollout (Manifest)"
+
+  account        = "my-k8s-account"
+  cloud_provider = "kubernetes"
+  location       = "my-k8s-ns"
+  manifest_name  = "replicatSet my-service"
+
+  num_revisions_back = 1
+}
+
 ```
 
 ## Local Dev ##
