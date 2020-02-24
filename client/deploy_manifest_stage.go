@@ -17,6 +17,7 @@ type DeployManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
 	Account                  string               `json:"account"`
+	Credentials              string               `json:"credentials,omitempty"`
 	NamespaceOverride        string               `json:"namespaceOverride,omitempty"`
 	CloudProvider            string               `json:"cloudProvider"`
 	ManifestArtifactAccount  string               `json:"manifestArtifactAccount"`
