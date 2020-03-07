@@ -83,6 +83,39 @@ func applicationResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"permissions": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"read": &schema.Schema{
+							Type:        schema.TypeList,
+							Description: "Read access group/user list",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"execute": &schema.Schema{
+							Type:        schema.TypeList,
+							Description: "Execute access group/user list. Non before spin v1.14.*",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"write": &schema.Schema{
+							Type:        schema.TypeList,
+							Description: "Write access group/user list",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 			"provider_settings": &schema.Schema{
 				Type:     schema.TypeList,
 				MaxItems: 1,
