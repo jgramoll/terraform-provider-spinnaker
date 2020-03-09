@@ -152,10 +152,12 @@ func providerConfigure(d *schema.ResourceData, terraformVersion string) (interfa
 		},
 	}
 	if v := os.Getenv("SPINNAKER_CERT"); v != "" {
+		clientConfig.Auth.Enabled = true
 		clientConfig.Auth.CertPath = v
 		clientConfig.Auth.KeyPath = os.Getenv("SPINNAKER_KEY")
 	}
 	if v := os.Getenv("SPINNAKER_CERT_CONTENT"); v != "" {
+		clientConfig.Auth.Enabled = true
 		clientConfig.Auth.CertContent = v
 		clientConfig.Auth.KeyContent = os.Getenv("SPINNAKER_KEY_CONTENT")
 	}

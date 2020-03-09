@@ -15,6 +15,12 @@ type providerSettings struct {
 	AWS *[]awsProviderSettings `mapstructure:"aws`
 }
 
+type permissions struct {
+	Read    []string `mapstructure:"read"`
+	Execute []string `mapstructure:"execute"`
+	Write   []string `mapstructure:"write"`
+}
+
 // Application deploy application in application
 type application struct {
 	ID                             string              `mapstructure:"id"`
@@ -24,6 +30,7 @@ type application struct {
 	RepoProjectKey                 string              `mapstructure:"repo_project_key"`
 	RepoSlug                       string              `mapstructure:"repo_slug"`
 	CloudProviders                 []string            `mapstructure:"cloud_providers"`
+	Permissions                    *[]permissions      `mapstructure:"permissions"`
 	ProviderSettings               *[]providerSettings `mapstructure:"provider_settings"`
 	InstancePort                   int                 `mapstructure:"instance_port"`
 	PlatformHealthOnly             bool                `mapstructure:"platform_health_only"`
@@ -39,11 +46,24 @@ func (a *application) toClientApplication() *client.Application {
 		RepoType:                       a.RepoType,
 		RepoProjectKey:                 a.RepoProjectKey,
 		RepoSlug:                       a.RepoSlug,
+		Permissions:                    a.toPermissions(),
 		ProviderSettings:               a.toClientProviderSettigns(a.ProviderSettings),
 		InstancePort:                   a.InstancePort,
 		PlatformHealthOnly:             a.PlatformHealthOnly,
 		PlatformHealthOnlyShowOverride: a.PlatformHealthOnlyShowOverride,
 		EnableRestartRunningExecutions: a.EnableRestartRunningExecutions,
+	}
+}
+
+func (a *application) toPermissions() *client.Permissions {
+	if a.Permissions == nil || len(*a.Permissions) == 0 {
+		return nil
+	}
+	p := *a.Permissions
+	return &client.Permissions{
+		Read:    p[0].Read,
+		Execute: p[0].Execute,
+		Write:   p[0].Write,
 	}
 }
 
@@ -74,12 +94,24 @@ func fromClientApplication(a *client.Application) *application {
 		RepoProjectKey:                 a.RepoProjectKey,
 		RepoSlug:                       a.RepoSlug,
 		CloudProviders:                 strings.Split(a.CloudProviders, ","),
+		Permissions:                    fromClientPermissions(a.Permissions),
 		ProviderSettings:               fromClientProviderSettings(a.ProviderSettings),
 		InstancePort:                   a.InstancePort,
 		PlatformHealthOnly:             a.PlatformHealthOnly,
 		PlatformHealthOnlyShowOverride: a.PlatformHealthOnlyShowOverride,
 		EnableRestartRunningExecutions: a.EnableRestartRunningExecutions,
 	}
+}
+
+func fromClientPermissions(p *client.Permissions) *[]permissions {
+	if p == nil {
+		return nil
+	}
+	return &[]permissions{{
+		Read:    p.Read,
+		Execute: p.Execute,
+		Write:   p.Write,
+	}}
 }
 
 func fromClientProviderSettings(settings *client.ProviderSettings) *[]providerSettings {

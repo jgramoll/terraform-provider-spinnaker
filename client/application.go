@@ -20,6 +20,7 @@ type Application struct {
 	RepoType                       string            `json:"repoType"`
 	RepoProjectKey                 string            `json:"repoProjectKey"`
 	RepoSlug                       string            `json:"repoSlug"`
+	Permissions                    *Permissions      `json:"permissions"`
 	PlatformHealthOnly             bool              `json:"platformHealthOnly"`
 	PlatformHealthOnlyShowOverride bool              `json:"platformHealthOnlyShowOverride"`
 	EnableRestartRunningExecutions bool              `json:"enableRestartRunningExecutions"`
@@ -28,6 +29,13 @@ type Application struct {
 // ApplicationAttributes mapping for `application/{appName}`  endpoint
 type ApplicationAttributes struct {
 	Application *Application `json:"attributes"`
+}
+
+// Permissions define the authorized groups access
+type Permissions struct {
+	Read    []string `json:"READ"`
+	Execute []string `json:"EXECUTE"`
+	Write   []string `json:"WRITE"`
 }
 
 // NewAwsProviderSettings return Aws provider settings with default values
