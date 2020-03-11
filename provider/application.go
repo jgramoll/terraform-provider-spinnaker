@@ -177,6 +177,7 @@ func applicationFromResourceData(application *client.Application, d *schema.Reso
 	application.RepoProjectKey = d.Get("repo_project_key").(string)
 	application.RepoSlug = d.Get("repo_slug").(string)
 	application.CloudProviders = applicationCloudProvidersFromResourceData(d)
+	application.Permissions = applicationPermissionsFromResourceData(d)
 	application.ProviderSettings = applicationProviderSettingsFromResourceData(d)
 	application.InstancePort = d.Get("instance_port").(int)
 	application.PlatformHealthOnly = d.Get("platform_health_only").(bool)
@@ -195,6 +196,35 @@ func applicationCloudProvidersFromResourceData(d *schema.ResourceData) string {
 		cloudProviders = append(cloudProviders, cloudProvider.(string))
 	}
 	return strings.Join(cloudProviders, ",")
+}
+
+func applicationPermissionsFromResourceData(d *schema.ResourceData) *client.Permissions {
+	PermissionsInterface, ok := d.GetOk("permissions")
+	if !ok {
+		return nil
+	}
+
+	clientPermissions := &client.Permissions{}
+	for _, permissionsInterface := range PermissionsInterface.([]interface{}) {
+		permissions := permissionsInterface.(map[string]interface{})
+		clientPermissions.Read = typePermissionsFromResourceData(permissions["read"])
+		clientPermissions.Write = typePermissionsFromResourceData(permissions["write"])
+		clientPermissions.Execute = typePermissionsFromResourceData(permissions["execute"])
+	}
+	return clientPermissions
+}
+
+func typePermissionsFromResourceData(accesssListInterface interface{}) []string {
+	listInterface, ok := accesssListInterface.([]interface{})
+	if !ok || len(listInterface) == 0 {
+		return nil
+	}
+
+	accessList := []string{}
+	for _, accessInterface := range listInterface {
+		accessList = append(accessList, accessInterface.(string))
+	}
+	return accessList
 }
 
 func applicationProviderSettingsFromResourceData(d *schema.ResourceData) *client.ProviderSettings {

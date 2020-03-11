@@ -76,37 +76,54 @@ func TestAccApplicationTrigger(t *testing.T) {
 func TestAccApplicationPermissions(t *testing.T) {
 	var applicationRef client.Application
 	name := acctest.RandStringFromCharSet(50, acctest.CharSetAlphaNum)
-	resourceName := "spinnaker_application.permissions"
+	resourceName := "spinnaker_application.test"
+
+	createNewWithoutPermissions := &resource.TestStep{
+		Config:  testAccApplicationConfigBasic(name),
+		Destroy: false,
+		Check: resource.ComposeAggregateTestCheckFunc(
+			testAccCheckApplicationExists(resourceName, &applicationRef),
+			resource.TestCheckResourceAttr(resourceName, "name", name),
+			resource.TestCheckResourceAttr(resourceName, "permissions.#", "0"),
+		),
+	}
+	permissionStep := &resource.TestStep{
+		Config: fmt.Sprintf(`resource "spinnaker_application" "test" {
+				name  		 = "%s"
+				email 		 = "%s@spin.com"
+				instance_port  = "8080"
+				
+				cloud_providers = [
+					"aws"
+				]
+				
+				permissions {
+					read  = ["qa"]
+					write = ["dev"]
+				}
+			}`, name, name),
+		Check: resource.ComposeAggregateTestCheckFunc(
+			testAccCheckApplicationExists(resourceName, &applicationRef),
+			resource.TestCheckResourceAttr(resourceName, "name", name),
+			resource.TestCheckResourceAttr(resourceName, "permissions.#", "1"),
+			resource.TestCheckResourceAttr(resourceName, "permissions.0.read.#", "1"),
+			resource.TestCheckResourceAttr(resourceName, "permissions.0.read.0", "qa"),
+			resource.TestCheckResourceAttr(resourceName, "permissions.0.write.#", "1"),
+			resource.TestCheckResourceAttr(resourceName, "permissions.0.write.0", "dev"),
+		),
+	}
+	createNewWithPermissions := permissionStep
+	addPermissions := permissionStep
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckApplicationDestroy,
-		Steps: []resource.TestStep{{
-			Config: fmt.Sprintf(`resource "spinnaker_application" "permissions" {
-					name  		 = "%s"
-					email 		 = "%s@spin.com"
-					instance_port  = "8080"
-					
-					cloud_providers = [
-						"aws"
-					]
-					
-					permissions {
-						read  = ["qa"]
-						write = ["dev"]
-					}
-				}`, name, name),
-			Check: resource.ComposeAggregateTestCheckFunc(
-				testAccCheckApplicationExists(resourceName, &applicationRef),
-				resource.TestCheckResourceAttr(resourceName, "name", name),
-				resource.TestCheckResourceAttr(resourceName, "permissions.#", "1"),
-				resource.TestCheckResourceAttr(resourceName, "permissions.0.read.#", "1"),
-				resource.TestCheckResourceAttr(resourceName, "permissions.0.read.0", "qa"),
-				resource.TestCheckResourceAttr(resourceName, "permissions.0.write.#", "1"),
-				resource.TestCheckResourceAttr(resourceName, "permissions.0.write.0", "dev"),
-			),
-		}},
+		Steps: []resource.TestStep{
+			*createNewWithPermissions,
+			*createNewWithoutPermissions,
+			*addPermissions,
+		},
 	})
 }
 
