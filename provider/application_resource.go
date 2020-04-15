@@ -34,7 +34,7 @@ func applicationResource() *schema.Resource {
 			"accounts": &schema.Schema{
 				Type:        schema.TypeList,
 				Description: "Accounts",
-				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
