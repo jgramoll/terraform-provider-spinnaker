@@ -53,23 +53,6 @@ resource "spinnaker_pipeline" "edge" {
   application = "career"
   name        = "My New Pipeline"
   index       = 4
-  parameter {
-    name = "My Parameter"
-  }
-
-  parameter {
-    name        = "Detailed Parameter"
-    description = "Setting options"
-    default     = "Default value"
-    label       = "Trigger label"
-
-    option {
-      value = 1
-    }
-    option {
-      value = "two"
-    }
-  }
 }
 
 resource "spinnaker_pipeline_docker_trigger" "docker" {
@@ -88,11 +71,22 @@ resource "spinnaker_pipeline_jenkins_trigger" "jenkins" {
 }
 
 resource "spinnaker_pipeline_pipeline_trigger" "pipeline" {
-  pipeline = "${spinnaker_pipeline.edge.id}"
+  pipeline = spinnaker_pipeline.edge.id
 
   triggering_application = "app"
   triggering_pipeline = "my-other-pipeline"
   status = ["successful"]
+}
+
+resource "spinnaker_pipeline_webhook_trigger" "trigger" {
+  pipeline = spinnaker_pipeline.edge.id
+
+  source = "my-app"
+
+  payload_constraints = {
+    "foo" = "bar"
+    "baz" = "qux"
+  }
 }
 
 resource "spinnaker_pipeline_notification" "edge" {
@@ -322,7 +316,17 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
 
 resource "spinnaker_pipeline_parameter" "version" {
   pipeline = "${spinnaker_pipeline.test.id}"
-  name     = "version"
+  name = "version"
+  description = "deploy version"
+  default = "1"
+  label   = "numbers"
+
+  option {
+    value = 1
+  }
+  option {
+    value = "two"
+  }
 }
 
 resource "spinnaker_pipeline_delete_manifest_stage" "main" {
@@ -510,31 +514,31 @@ resource "spinnaker_pipeline_undo_rollout_manifest_stage" "test" {
 }
 
 resource "spinnaker_pipeline_disable_manifest_stage" "test" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Stage %v"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Stage %v"
 
-	account        = "%v"
-	app            = "my-app"
-	cloud_provider = "kubernetes"
-	cluster        = "replicaSet my-service"
-	criteria       = "newest"
-	kind           = "replicaSet"
-	location       = "my-k8s-ns"
-	mode           = "dynamic"
+  account        = "%v"
+  app            = "my-app"
+  cloud_provider = "kubernetes"
+  cluster        = "replicaSet my-service"
+  criteria       = "newest"
+  kind           = "replicaSet"
+  location       = "my-k8s-ns"
+  mode           = "dynamic"
 }
 
 resource "spinnaker_pipeline_enable_manifest_stage" "test" {
-	pipeline = "${spinnaker_pipeline.test.id}"
-	name     = "Stage %v"
+  pipeline = "${spinnaker_pipeline.test.id}"
+  name     = "Stage %v"
 
-	account        = "%v"
-	app            = "app"
-	cloud_provider = "provider"
-	cluster        = "replicaSet my-service"
-	criteria       = "oldest"
-	kind           = "replicaSet"
-	location       = "my-k8s-ns"
-	mode           = "dynamic"
+  account        = "%v"
+  app            = "app"
+  cloud_provider = "provider"
+  cluster        = "replicaSet my-service"
+  criteria       = "oldest"
+  kind           = "replicaSet"
+  location       = "my-k8s-ns"
+  mode           = "dynamic"
 }
 ```
 
