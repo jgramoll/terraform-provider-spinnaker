@@ -1,5 +1,9 @@
 # terraform-provider-spinnaker
 
+## 2.2.1
+
+- `2671fd` fix goreleaser archive->archives
+
 ## 2.2.0
 
 - `c67b2c6` Webhook trigger (#64)
