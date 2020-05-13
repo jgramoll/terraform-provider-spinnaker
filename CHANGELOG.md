@@ -1,5 +1,11 @@
 # terraform-provider-spinnaker
 
+## 2.2.0
+
+- `c67b2c6` Webhook trigger (#64)
+- `3ac5f60` update application.accounts to be computed for better diffs (#62)
+- `6fb2973` make sure deploy_manifest_stage can set credentials (#61)
+
 ## 2.1.0
 
 - `ab4d008` Enable disable manifest (#59)
