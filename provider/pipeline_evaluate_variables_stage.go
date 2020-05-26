@@ -14,6 +14,7 @@ type evaluateVariablesStage struct {
 func newEvaluateVariablesStage() *evaluateVariablesStage {
 	return &evaluateVariablesStage{
 		baseStage: *newBaseStage(),
+		Variables: make(map[string]string),
 	}
 }
 
