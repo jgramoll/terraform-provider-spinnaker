@@ -1,5 +1,9 @@
 # terraform-provider-spinnaker
 
+## 2.2.2
+
+- `2c8d5f` persist StageTimeoutMS
+
 ## 2.2.1
 
 - `2671fd` fix goreleaser archive->archives
