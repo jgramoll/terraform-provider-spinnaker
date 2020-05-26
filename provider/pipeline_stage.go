@@ -54,6 +54,7 @@ func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string, notifi
 	cs.FailOnFailedExpressions = s.FailOnFailedExpressions
 	cs.FailPipeline = s.FailPipeline
 	cs.OverrideTimeout = s.OverrideTimeout
+	cs.StageTimeoutMS = s.StageTimeoutMS
 	cs.RestrictExecutionDuringTimeWindow = s.RestrictExecutionDuringTimeWindow
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
 	return nil
@@ -77,6 +78,7 @@ func (s *baseStage) baseFromClientStage(clientStage *client.BaseStage, notificat
 	s.FailOnFailedExpressions = clientStage.FailOnFailedExpressions
 	s.FailPipeline = clientStage.FailPipeline
 	s.OverrideTimeout = clientStage.OverrideTimeout
+	s.StageTimeoutMS = clientStage.StageTimeoutMS
 	s.RestrictExecutionDuringTimeWindow = clientStage.RestrictExecutionDuringTimeWindow
 	s.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
 	return nil
@@ -116,6 +118,10 @@ func (s *baseStage) baseSetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("override_timeout", s.OverrideTimeout)
+	if err != nil {
+		return err
+	}
+	err = d.Set("stage_timeout_ms", s.StageTimeoutMS)
 	if err != nil {
 		return err
 	}
