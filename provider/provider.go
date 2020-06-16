@@ -100,6 +100,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_run_job_manifest_stage":      pipelineRunJobManifestStageResource(),
 			"spinnaker_pipeline_undo_rollout_manifest_stage": pipelineUndoRolloutManifestStageResource(),
 			"spinnaker_pipeline_webhook_stage":               pipelineWebhookStageResource(),
+			"spinnaker_pipeline_script_stage":                pipelineScriptStageResource(),
 
 			"spinnaker_pipeline_parameter": pipelineParameterResource(),
 
