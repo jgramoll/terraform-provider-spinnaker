@@ -1,8 +1,15 @@
 # terraform-provider-spinnaker
 
+## 2.3.0
+
+- [341ee64] Patch manifest (#72)
+- [ec0d831] add bake manifest stage (#71)
+- [cbb5078] Stage expected artifacts (#70)
+- [6d185f7] Initializing Variables (#67)
+
 ## 2.2.2
 
-- `2c8d5f` persist StageTimeoutMS
+- `2c8d5f` persist StageTimeoutMS (#66)
 
 ## 2.2.1
 
