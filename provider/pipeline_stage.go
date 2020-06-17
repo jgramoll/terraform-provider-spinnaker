@@ -16,6 +16,7 @@ type stage interface {
 type baseStage struct {
 	Name                              string                    `mapstructure:"name"`
 	RequisiteStageRefIds              []string                  `mapstructure:"requisite_stage_ref_ids"`
+	ExpectedArtifacts                 *[]*expectedArtifact      `mapstructure:"expected_artifact"`
 	Notifications                     *[]map[string]interface{} `mapstructure:"notification"`
 	StageEnabled                      *[]*stageEnabled          `mapstructure:"stage_enabled"`
 	CompleteOtherBranchesThenFail     bool                      `mapstructure:"complete_other_branches_then_fail"`
@@ -46,6 +47,7 @@ func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string, notifi
 	cs.Name = s.Name
 	cs.RefID = refID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
+	cs.ExpectedArtifacts = toClientExpectedArtifacts(s.ExpectedArtifacts)
 	cs.Notifications = notifications
 	cs.SendNotifications = notifications != nil && len(*notifications) > 0
 	cs.StageEnabled = toClientStageEnabled(s.StageEnabled)
@@ -71,6 +73,7 @@ func (s *baseStage) baseFromClientStage(clientStage *client.BaseStage, notificat
 	if err != nil {
 		return err
 	}
+	s.ExpectedArtifacts = fromClientExpectedArtifacts(clientStage.ExpectedArtifacts)
 	s.Notifications = notifications
 	s.StageEnabled = fromClientStageEnabled(clientStage.StageEnabled)
 	s.CompleteOtherBranchesThenFail = clientStage.CompleteOtherBranchesThenFail
@@ -89,7 +92,11 @@ func (s *baseStage) baseSetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-	err = d.Set("requisite_stage_ref_ids", s.RequisiteStageRefIds)
+	err = d.Set("expected_artifact", s.ExpectedArtifacts)
+	if err != nil {
+		return err
+	}
+	err = d.Set("notification", s.Notifications)
 	if err != nil {
 		return err
 	}

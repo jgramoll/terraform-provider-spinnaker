@@ -82,6 +82,7 @@ var checkPreconditionsJson = `{
 	"restrictExecutionDuringTimeWindow": false,
 	"restrictedExecutionWindow": null,
 	"notifications": null,
+	"expectedArtifacts": [],
 	"preconditions": [
 		{
 			"failPipeline": true,

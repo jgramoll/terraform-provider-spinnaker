@@ -20,6 +20,7 @@ type BaseStage struct {
 
 	RestrictedExecutionWindow *StageExecutionWindow `json:"restrictedExecutionWindow"`
 	Notifications             *[]*Notification      `json:"notifications"`
+	ExpectedArtifacts         *[]*ExpectedArtifact  `json:"expectedArtifacts"`
 }
 
 func newBaseStage(t StageType) *BaseStage {
@@ -27,6 +28,7 @@ func newBaseStage(t StageType) *BaseStage {
 		Type:                 t,
 		FailPipeline:         true,
 		RequisiteStageRefIds: []string{},
+		ExpectedArtifacts:    &[]*ExpectedArtifact{},
 	}
 }
 
