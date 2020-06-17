@@ -15,18 +15,18 @@ var errInvalidStageImportKey = errors.New("Invalid import key, must be pipelineI
 
 func stageResource(in map[string]*schema.Schema) map[string]*schema.Schema {
 	out := map[string]*schema.Schema{
-		PipelineKey: &schema.Schema{
+		PipelineKey: {
 			Type:        schema.TypeString,
-			Description: "Id of the pipeline to send notification",
+			Description: "Id of the pipeline",
 			Required:    true,
 			ForceNew:    true,
 		},
-		"name": &schema.Schema{
+		"name": {
 			Type:        schema.TypeString,
 			Description: "Name of the stage",
 			Required:    true,
 		},
-		"requisite_stage_ref_ids": &schema.Schema{
+		"requisite_stage_ref_ids": {
 			Type:        schema.TypeList,
 			Description: "Stage(s) that must be complete before this one",
 			Optional:    true,
@@ -34,61 +34,67 @@ func stageResource(in map[string]*schema.Schema) map[string]*schema.Schema {
 				Type: schema.TypeString,
 			},
 		},
-		"notification": &schema.Schema{
+		"expected_artifact": {
+			Type:        schema.TypeList,
+			Description: "Expected artifacts for stage",
+			Optional:    true,
+			Elem:        expectedArtifactResource(),
+		},
+		"notification": {
 			Type:        schema.TypeList,
 			Description: "Notifications to send for stage results",
 			Optional:    true,
 			Elem:        notificationResource(),
 		},
-		"complete_other_branches_then_fail": &schema.Schema{
+		"complete_other_branches_then_fail": {
 			Type:        schema.TypeBool,
 			Description: "halt this branch and fail the pipeline once other branches complete. Prevents any stages that depend on this stage from running, but allows other branches of the pipeline to run. The pipeline will be marked as failed once complete.",
 			Optional:    true,
 			Default:     false,
 		},
-		"continue_pipeline": &schema.Schema{
+		"continue_pipeline": {
 			Type:        schema.TypeBool,
 			Description: "If false, marks the stage as successful right away without waiting for the jenkins job to complete",
 			Optional:    true,
 			Default:     false,
 		},
-		"fail_pipeline": &schema.Schema{
+		"fail_pipeline": {
 			Type:        schema.TypeBool,
 			Description: "If the stage fails, immediately halt execution of all running stages and fails the entire execution",
 			Optional:    true,
 			Default:     true,
 		},
-		"fail_on_failed_expressions": &schema.Schema{
+		"fail_on_failed_expressions": {
 			Type:        schema.TypeBool,
 			Description: "The stage will be marked as failed if it contains any failed expressions",
 			Optional:    true,
 			Default:     false,
 		},
-		"override_timeout": &schema.Schema{
+		"override_timeout": {
 			Type:        schema.TypeBool,
 			Description: "[Deprecated, use stage_timeout_ms] Allows you to override the amount of time the stage can run before failing.\nNote: this represents the overall time the stage has to complete (the sum of all the task times).",
 			Optional:    true,
 			Default:     false,
 		},
-		"stage_timeout_ms": &schema.Schema{
+		"stage_timeout_ms": {
 			Type:        schema.TypeInt,
 			Description: "Allows you to declare the amount of time the stage can run before failing, if override timeout is enabled.\nNote: this represents the overall time the stage has to complete (the sum of all the task times).",
 			Optional:    true,
 		},
-		"restrict_execution_during_time_window": &schema.Schema{
+		"restrict_execution_during_time_window": {
 			Type:        schema.TypeBool,
 			Description: "Restrict execution to specific time windows",
 			Optional:    true,
 			Default:     false,
 		},
-		"restricted_execution_window": &schema.Schema{
+		"restricted_execution_window": {
 			Type:        schema.TypeList,
 			Description: "Time windows to restrict execution",
 			Optional:    true,
 			MaxItems:    1,
 			Elem:        restrictedExecutionWindowResource(),
 		},
-		"stage_enabled": &schema.Schema{
+		"stage_enabled": {
 			Type:        schema.TypeList,
 			Description: "Stage will only execute when the supplied expression evaluates true.\nThe expression does not need to be wrapped in ${ and }.\nIf this expression evaluates to false, the stages following this stage will still execute.",
 			Optional:    true,

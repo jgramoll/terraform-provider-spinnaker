@@ -13,6 +13,7 @@ func init() {
 	stageFactories[RunJobManifestStageType] = parseRunJobManifestStage
 }
 
+// RunJobManifestStage run job manifest stage
 type RunJobManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -27,6 +28,7 @@ type RunJobManifestStage struct {
 	Source                string   `json:"source"`
 }
 
+// NewRunJobManifestStage new RunJobManifestStage
 func NewRunJobManifestStage() *RunJobManifestStage {
 	return &RunJobManifestStage{
 		BaseStage: *newBaseStage(RunJobManifestStageType),
