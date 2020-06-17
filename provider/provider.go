@@ -76,6 +76,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline":            pipelineResource(),
 			"spinnaker_pipeline_bake_stage": pipelineBakeStageResource(),
 
+			"spinnaker_pipeline_bake_manifest_stage":        pipelineBakeManifestStageResource(),
 			"spinnaker_pipeline_canary_analysis_stage":      pipelineCanaryAnalysisStageResource(),
 			"spinnaker_pipeline_check_preconditions_stage":  pipelineCheckPreconditionsStageResource(),
 			"spinnaker_pipeline_delete_manifest_stage":      pipelineDeleteManifestStageResource(),

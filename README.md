@@ -106,12 +106,12 @@ resource "spinnaker_pipeline_notification" "edge" {
 }
 
 resource "spinnaker_pipeline_bake_stage" "bake" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Stage Bake"
 }
 
 resource "spinnaker_pipeline_jenkins_stage" "bake" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Stage Jenkins"
 
   requisite_stage_ref_ids = ["${spinnaker_pipeline_bake_stage.bake.id}"]
@@ -129,7 +129,7 @@ resource "spinnaker_pipeline_jenkins_stage" "bake" {
 }
 
 resource "spinnaker_pipeline_manual_judgment_stage" "main" {
-  pipeline     = "${spinnaker_pipeline.test.id}"
+  pipeline     = spinnaker_pipeline.test.id
   name         = "Judgment"
   instructions = "Manual Judgment Instructions"
 
@@ -154,7 +154,7 @@ resource "spinnaker_pipeline_manual_judgment_stage" "main" {
 }
 
 resource "spinnaker_pipeline_deploy_stage" "deploy" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Stage Deploy"
   restricted_execution_window {
     days = [1,3]
@@ -213,7 +213,7 @@ resource "spinnaker_pipeline_deploy_stage" "deploy" {
 }
 
 resource "spinnaker_pipeline_rollback_cluster_stage" "deploy" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Rollback Cluster"
 
   cloud_provider      = "aws"
@@ -232,7 +232,7 @@ resource "spinnaker_pipeline_rollback_cluster_stage" "deploy" {
 }
 
 resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Destroy Server Group"
 
   cloud_provider      = "aws"
@@ -252,7 +252,7 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
 }
 
 resource "spinnaker_pipeline_evaluate_variables_stage" "s%v" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Stage %v"
 
   variables {
@@ -262,7 +262,7 @@ resource "spinnaker_pipeline_evaluate_variables_stage" "s%v" {
 }
 
 resource "spinnaker_pipeline_find_artifacts_from_resource_stage" "main" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Find Artifacts"
 
   account        = "my-account"
@@ -273,7 +273,7 @@ resource "spinnaker_pipeline_find_artifacts_from_resource_stage" "main" {
 }
 
 resource "spinnaker_pipeline_find_image_from_tags_stage" "main" {
-  pipeline     = "${spinnaker_pipeline.test.id}"
+  pipeline     = spinnaker_pipeline.test.id
   name         = "Find image"
 
   package_name        = "my-package"
@@ -282,7 +282,7 @@ resource "spinnaker_pipeline_find_image_from_tags_stage" "main" {
 }
 
 resource "spinnaker_pipeline_resize_server_group_stage" "deploy" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Resize Server Group"
 
   action              = "scale_exact"
@@ -304,7 +304,7 @@ resource "spinnaker_pipeline_resize_server_group_stage" "deploy" {
 }
 
 resource "spinnaker_pipeline_pipeline_stage" "main" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Start prod deploy"
 
   application      = "my-other-app"
@@ -315,7 +315,7 @@ resource "spinnaker_pipeline_pipeline_stage" "main" {
 }
 
 resource "spinnaker_pipeline_parameter" "version" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name = "version"
   description = "deploy version"
   default = "1"
@@ -330,7 +330,7 @@ resource "spinnaker_pipeline_parameter" "version" {
 }
 
 resource "spinnaker_pipeline_delete_manifest_stage" "main" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Delete manifest"
   account  = "account"
   app      = "app"
@@ -342,7 +342,7 @@ resource "spinnaker_pipeline_delete_manifest_stage" "main" {
 }
 
 resource "spinnaker_pipeline_deploy_manifest_stage" "main" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Deploy Manifest"
   account  = "account"
 
@@ -367,7 +367,7 @@ EOT
 }
 
 resource "spinnaker_pipeline_webhook_stage" "main" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Webhook"
   url      = "http://my-webhook.io/"
 }
@@ -395,7 +395,7 @@ resource "spinnaker_canary_config" "test" {
 }
 
 resource "spinnaker_pipeline_canary_analysis_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Canary Analysis"
 
   analysis_type  = "realTimeAutomatic"
@@ -415,7 +415,7 @@ resource "spinnaker_pipeline_canary_analysis_stage" "test" {
 }
 
 resource "spinnaker_pipeline_scale_manifest_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Stage Scale (Manifest)"
 
   account        = "my-k8s-account"
@@ -424,7 +424,7 @@ resource "spinnaker_pipeline_scale_manifest_stage" "test" {
 }
 
 resource "spinnaker_pipeline_check_preconditions_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Stage Check Preconditions"
 
   precondition {
@@ -454,7 +454,7 @@ resource "spinnaker_pipeline_check_preconditions_stage" "test" {
 }
 
 resource "spinnaker_pipeline_run_job_manifest_stage" "test" {
-  pipeline    = "${spinnaker_pipeline.test.id}"
+  pipeline    = spinnaker_pipeline.test.id
   name        = "Stage Run Job (Manifest)"
   account     = "my-account"
   application = "my-app"
@@ -485,7 +485,7 @@ EOT
 }
 
 resource "spinnaker_pipeline_enable_server_group_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Enable Server Group"
 
   cloud_provider      = "kubernetes"
@@ -502,7 +502,7 @@ resource "spinnaker_pipeline_enable_server_group_stage" "test" {
 }
 
 resource "spinnaker_pipeline_undo_rollout_manifest_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
+  pipeline = spinnaker_pipeline.test.id
   name     = "Undo Rollout (Manifest)"
 
   account        = "my-k8s-account"
@@ -514,8 +514,8 @@ resource "spinnaker_pipeline_undo_rollout_manifest_stage" "test" {
 }
 
 resource "spinnaker_pipeline_disable_manifest_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
-  name     = "Stage %v"
+  pipeline = spinnaker_pipeline.test.id
+  name     = "Disable Manifest"
 
   account        = "%v"
   app            = "my-app"
@@ -528,8 +528,8 @@ resource "spinnaker_pipeline_disable_manifest_stage" "test" {
 }
 
 resource "spinnaker_pipeline_enable_manifest_stage" "test" {
-  pipeline = "${spinnaker_pipeline.test.id}"
-  name     = "Stage %v"
+  pipeline = spinnaker_pipeline.test.id
+  name     = "Enable Manifest"
 
   account        = "%v"
   app            = "app"
@@ -539,6 +539,13 @@ resource "spinnaker_pipeline_enable_manifest_stage" "test" {
   kind           = "replicaSet"
   location       = "my-k8s-ns"
   mode           = "dynamic"
+}
+
+resource "spinnaker_pipeline_bake_manifest_stage" "test" {
+  pipeline  = spinnaker_pipeline.test.id
+  name      = "Bake Manifest"
+
+  template_renderer = "HELM2"
 }
 ```
 
