@@ -95,6 +95,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_jenkins_stage":               pipelineJenkinsStageResource(),
 			"spinnaker_pipeline_manual_judgment_stage":       pipelineManualJudgementStageResource(),
 			"spinnaker_pipeline_notification":                pipelineNotificationResource(),
+			"spinnaker_pipeline_patch_manifest_stage":        pipelinePatchManifestStageResource(),
 			"spinnaker_pipeline_pipeline_stage":              pipelinePipelineResource(),
 			"spinnaker_pipeline_resize_server_group_stage":   pipelineResizeServerGroupStageResource(),
 			"spinnaker_pipeline_rollback_cluster_stage":      pipelineRollbackClusterStageResource(),
