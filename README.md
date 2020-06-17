@@ -251,9 +251,9 @@ resource "spinnaker_pipeline_destroy_server_group_stage" "deploy" {
   target = "oldest_asg_dynamic"
 }
 
-resource "spinnaker_pipeline_evaluate_variables_stage" "s%v" {
+resource "spinnaker_pipeline_evaluate_variables_stage" "test" {
   pipeline = spinnaker_pipeline.test.id
-  name     = "Stage %v"
+  name     = "Evaluate Variables"
 
   variables {
     foo = "bar"
@@ -517,7 +517,7 @@ resource "spinnaker_pipeline_disable_manifest_stage" "test" {
   pipeline = spinnaker_pipeline.test.id
   name     = "Disable Manifest"
 
-  account        = "%v"
+  account        = "my-account"
   app            = "my-app"
   cloud_provider = "kubernetes"
   cluster        = "replicaSet my-service"
@@ -531,7 +531,7 @@ resource "spinnaker_pipeline_enable_manifest_stage" "test" {
   pipeline = spinnaker_pipeline.test.id
   name     = "Enable Manifest"
 
-  account        = "%v"
+  account        = "my-account"
   app            = "app"
   cloud_provider = "provider"
   cluster        = "replicaSet my-service"
@@ -546,6 +546,16 @@ resource "spinnaker_pipeline_bake_manifest_stage" "test" {
   name      = "Bake Manifest"
 
   template_renderer = "HELM2"
+}
+
+resource "spinnaker_pipeline_patch_manifest_stage" "test" {
+  pipeline  = spinnaker_pipeline.test.id
+  name      = "Patch Manifest"
+  account    = "my-account"
+
+  options {
+    merge_strategy = "strategic"
+  }
 }
 ```
 
