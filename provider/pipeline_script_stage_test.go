@@ -19,8 +19,7 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 	var pipelineRef client.Pipeline
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
-	accountName := "my-account"
-	newAccountName := accountName + "-new"
+	command := "ls"
 	pipelineResourceName := "spinnaker_pipeline.test"
 	stage1 := "spinnaker_pipeline_script_stage.s1"
 	stage2 := "spinnaker_pipeline_script_stage.s2"
@@ -30,12 +29,12 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPipelineScriptStageConfigBasic(pipeName, accountName, 2),
+				Config: testAccPipelineScriptStageConfigBasic(pipeName, command, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "account", accountName),
+					resource.TestCheckResourceAttr(stage1, "command", command),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "account", accountName),
+					resource.TestCheckResourceAttr(stage2, "command", command),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -72,12 +71,12 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineScriptStageConfigBasic(pipeName, newAccountName, 2),
+				Config: testAccPipelineScriptStageConfigBasic(pipeName, command, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "account", newAccountName),
+					resource.TestCheckResourceAttr(stage1, "command", command),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "account", newAccountName),
+					resource.TestCheckResourceAttr(stage2, "command", command),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -86,10 +85,10 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineScriptStageConfigBasic(pipeName, accountName, 1),
+				Config: testAccPipelineScriptStageConfigBasic(pipeName, command, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "account", accountName),
+					resource.TestCheckResourceAttr(stage1, "command", command),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -97,7 +96,7 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineScriptStageConfigBasic(pipeName, accountName, 0),
+				Config: testAccPipelineScriptStageConfigBasic(pipeName, command, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
@@ -107,7 +106,7 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 	})
 }
 
-func testAccPipelineScriptStageConfigBasic(pipeName string, account string, count int) string {
+func testAccPipelineScriptStageConfigBasic(pipeName string, command string, count int) string {
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
@@ -115,8 +114,8 @@ resource "spinnaker_pipeline_script_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	script_path = "/usr/bin"
-	command           = "ls"
-}`, i, i)
+	command           = "%v"
+}`, i, i, command)
 	}
 
 	return fmt.Sprintf(`
