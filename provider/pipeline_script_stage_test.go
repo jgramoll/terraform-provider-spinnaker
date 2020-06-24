@@ -20,6 +20,7 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 	var stages []client.Stage
 	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	command := "ls"
+	newCommand := "echo"
 	pipelineResourceName := "spinnaker_pipeline.test"
 	stage1 := "spinnaker_pipeline_script_stage.s1"
 	stage2 := "spinnaker_pipeline_script_stage.s2"
@@ -71,12 +72,12 @@ func TestAccPipelineScriptStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineScriptStageConfigBasic(pipeName, command, 2),
+				Config: testAccPipelineScriptStageConfigBasic(pipeName, newCommand, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "command", command),
+					resource.TestCheckResourceAttr(stage1, "command", newCommand),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "command", command),
+					resource.TestCheckResourceAttr(stage2, "command", newCommand),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
