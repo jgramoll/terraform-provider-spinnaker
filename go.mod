@@ -10,4 +10,6 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/sergi/go-diff v1.0.0
+	gopkg.in/yaml.v2 v2.2.8
+	k8s.io/apimachinery v0.19.0
 )
