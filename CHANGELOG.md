@@ -1,5 +1,11 @@
 # terraform-provider-spinnaker
 
+## 2.4.0
+
+- [e5a25c2] Fixing Patch Manifest encoding issue (#74)
+- [8bfb848] add github action to publish with goreleaser (#75)
+- [7d51e72] Add script stage (#73)
+
 ## 2.3.0
 
 - [341ee64] Patch manifest (#72)
