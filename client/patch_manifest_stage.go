@@ -29,12 +29,12 @@ type PatchManifestStage struct {
 	Kind          string `json:"kind"`
 	// kinds string `json:"kinds"`
 	// labelSelectors string `json:"labelSelectors"`
-	Location     string               `json:"location"`
-	ManifestName string               `json:"manifestName"`
-	Mode         string               `json:"mode"`
-	Options      PatchManifestOptions `json:"options"`
-	PatchBody    []string             `json:"patchBody"`
-	Source       string               `json:"source"`
+	Location     string                   `json:"location"`
+	ManifestName string                   `json:"manifestName"`
+	Mode         string                   `json:"mode"`
+	Options      PatchManifestOptions     `json:"options"`
+	PatchBody    []map[string]interface{} `json:"patchBody"`
+	Source       string                   `json:"source"`
 }
 
 // NewPatchManifestStage bake manifest

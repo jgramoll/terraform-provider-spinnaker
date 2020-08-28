@@ -1,8 +1,12 @@
 package provider
 
 import (
+	"bytes"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
+	"gopkg.in/yaml.v2"
+	kyaml "k8s.io/apimachinery/pkg/util/yaml"
 )
 
 type patchManifestOptions struct {
@@ -54,7 +58,15 @@ func (s *patchManifestStage) toClientStage(config *client.Config, refID string) 
 	if len(s.Options) > 0 {
 		cs.Options = client.PatchManifestOptions(s.Options[0])
 	}
-	cs.PatchBody = s.PatchBody
+	cs.PatchBody = []map[string]interface{}{}
+	for _, ps := range s.PatchBody {
+		var p map[string]interface{}
+		if err := kyaml.NewYAMLOrJSONDecoder(bytes.NewReader([]byte(ps)), 50).Decode(&p); err != nil {
+			return nil, err
+		}
+		cs.PatchBody = append(cs.PatchBody, p)
+	}
+
 	cs.Source = s.Source
 
 	return cs, nil
@@ -78,7 +90,14 @@ func (*patchManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	newStage.ManifestName = clientStage.ManifestName
 	newStage.Mode = clientStage.Mode
 	newStage.Options = []patchManifestOptions{patchManifestOptions(clientStage.Options)}
-	newStage.PatchBody = clientStage.PatchBody
+	newStage.PatchBody = []string{}
+	for _, ps := range clientStage.PatchBody {
+		p := bytes.NewBuffer(nil)
+		if err := yaml.NewEncoder(p).Encode(ps); err != nil {
+			return nil, err
+		}
+		newStage.PatchBody = append(newStage.PatchBody, p.String())
+	}
 	newStage.Source = clientStage.Source
 
 	return newStage, nil
