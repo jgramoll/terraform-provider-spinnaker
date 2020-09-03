@@ -24,10 +24,9 @@ type deployManifestStage struct {
 
 func newDeployManifestStage() *deployManifestStage {
 	return &deployManifestStage{
-		baseStage:               *newBaseStage(),
-		ManifestArtifactAccount: "docker-registry",
-		Relationships:           &[]*relationships{},
-		TrafficManagement:       &[]*trafficManagement{},
+		baseStage:         *newBaseStage(),
+		Relationships:     &[]*relationships{},
+		TrafficManagement: &[]*trafficManagement{},
 	}
 }
 

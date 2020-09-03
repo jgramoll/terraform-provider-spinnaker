@@ -50,7 +50,6 @@ func pipelineDeployManifestStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The manifest artifact account",
 				Optional:    true,
-				Default:     "docker-registry",
 			},
 			"manifest_artifact_id": &schema.Schema{
 				Type:        schema.TypeString,
