@@ -106,8 +106,6 @@ var deployManifestJson = `{
 	"expectedArtifacts": [],
 	"account": "",
 	"cloudProvider": "",
-	"manifestArtifactAccount": "",
-	"manifestArtifactId": "",
 	"manifests": [
 		{
 			"apiVersion": "batch/v1",

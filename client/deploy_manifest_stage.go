@@ -21,8 +21,8 @@ type DeployManifestStage struct {
 	Credentials              string               `json:"credentials,omitempty"`
 	NamespaceOverride        string               `json:"namespaceOverride,omitempty"`
 	CloudProvider            string               `json:"cloudProvider"`
-	ManifestArtifactAccount  string               `json:"manifestArtifactAccount"`
-	ManifestArtifactID       string               `json:"manifestArtifactId"`
+	ManifestArtifactAccount  string               `json:"manifestArtifactAccount,omitempty"`
+	ManifestArtifactID       string               `json:"manifestArtifactId,omitempty"`
 	Manifests                *Manifests           `json:"manifests"`
 	Moniker                  *Moniker             `json:"moniker"`
 	Relationships            *Relationships       `json:"relationships"`
