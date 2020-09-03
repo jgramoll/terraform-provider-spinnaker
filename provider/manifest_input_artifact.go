@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"github.com/google/uuid"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
@@ -25,16 +24,7 @@ func fromClientInputArtifact(ca *client.ManifestInputArtifact) *manifestInputArt
 
 func (a *manifestInputArtifact) toClientInputArtifact() (*client.ManifestInputArtifact, error) {
 	clientArtifact := &client.ManifestInputArtifact{}
-	if a.ID != "" {
-		clientArtifact.ID = a.ID
-	} else {
-		id, err := uuid.NewRandom()
-		if err != nil {
-			return nil, err
-		}
-		clientArtifact.ID = id.String()
-	}
-
+	clientArtifact.ID = a.ID
 	clientArtifact.Account = a.Account
 
 	art, err := a.Artifact[0].toClientManifestArtifact()
