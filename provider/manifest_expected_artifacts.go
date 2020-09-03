@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"github.com/google/uuid"
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
@@ -16,26 +17,42 @@ type manifestExpectedArtifact struct {
 	UsePriorArtifact   bool `mapstructure:"use_prior_artifact"`
 }
 
-func toClientExpectedArtifacts(artifacts *[]*manifestExpectedArtifact) *[]*client.ManifestExpectedArtifact {
+func toClientExpectedArtifacts(artifacts *[]*manifestExpectedArtifact) (*[]*client.ManifestExpectedArtifact, error) {
 	if artifacts == nil || len(*artifacts) == 0 {
-		return nil
+		return nil, nil
 	}
 	newList := []*client.ManifestExpectedArtifact{}
 	for _, a := range *artifacts {
 		newExpectedArtifact := client.NewManifestExpectedArtifact()
 		if a.DefaultArtifact != nil && len(a.DefaultArtifact) > 0 {
-			newExpectedArtifact.DefaultArtifact = client.ManifestArtifact(a.DefaultArtifact[0])
+			clientArt, err := a.DefaultArtifact[0].toClientManifestArtifact()
+			if err != nil {
+				return nil, err
+			}
+			newExpectedArtifact.DefaultArtifact = *clientArt
 		}
 		newExpectedArtifact.DisplayName = a.DisplayName
-		newExpectedArtifact.ID = a.ID
+		if a.ID != "" {
+			newExpectedArtifact.ID = a.ID
+		} else {
+			id, err := uuid.NewRandom()
+			if err != nil {
+				return nil, err
+			}
+			newExpectedArtifact.ID = id.String()
+		}
 		if a.MatchArtifact != nil && len(a.MatchArtifact) > 0 {
-			newExpectedArtifact.MatchArtifact = client.ManifestArtifact(a.MatchArtifact[0])
+			clientArt, err := a.MatchArtifact[0].toClientManifestArtifact()
+			if err != nil {
+				return nil, err
+			}
+			newExpectedArtifact.MatchArtifact = *clientArt
 		}
 		newExpectedArtifact.UseDefaultArtifact = a.UseDefaultArtifact
 		newExpectedArtifact.UsePriorArtifact = a.UsePriorArtifact
 		newList = append(newList, newExpectedArtifact)
 	}
-	return &newList
+	return &newList, nil
 }
 
 func fromClientExpectedArtifacts(artifacts *[]*client.ManifestExpectedArtifact) *[]*manifestExpectedArtifact {

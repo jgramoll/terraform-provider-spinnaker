@@ -1,10 +1,5 @@
 package client
 
-// NewManifestExpectedArtifact new expected artifact
-func NewManifestExpectedArtifact() *ManifestExpectedArtifact {
-	return &ManifestExpectedArtifact{}
-}
-
 // ManifestExpectedArtifact artifacts expected from
 type ManifestExpectedArtifact struct {
 	DefaultArtifact    ManifestArtifact `json:"defaultArtifact"`
@@ -13,4 +8,9 @@ type ManifestExpectedArtifact struct {
 	MatchArtifact      ManifestArtifact `json:"matchArtifact"`
 	UseDefaultArtifact bool             `json:"useDefaultArtifact"`
 	UsePriorArtifact   bool             `json:"usePriorArtifact"`
+}
+
+// NewManifestExpectedArtifact new expected artifact
+func NewManifestExpectedArtifact() *ManifestExpectedArtifact {
+	return &ManifestExpectedArtifact{}
 }

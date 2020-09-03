@@ -47,7 +47,11 @@ func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string, notifi
 	cs.Name = s.Name
 	cs.RefID = refID
 	cs.RequisiteStageRefIds = s.RequisiteStageRefIds
-	cs.ExpectedArtifacts = toClientExpectedArtifacts(s.ExpectedArtifacts)
+	art, err := toClientExpectedArtifacts(s.ExpectedArtifacts)
+	if err != nil {
+		return err
+	}
+	cs.ExpectedArtifacts = art
 	cs.Notifications = notifications
 	cs.SendNotifications = notifications != nil && len(*notifications) > 0
 	cs.StageEnabled = toClientStageEnabled(s.StageEnabled)

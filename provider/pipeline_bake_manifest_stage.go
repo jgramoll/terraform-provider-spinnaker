@@ -34,10 +34,18 @@ func (s *bakeManifestStage) toClientStage(config *client.Config, refID string) (
 
 	cs.EvaluateOverrideExpressions = s.EvaluateOverrideExpressions
 	if len(s.InputArtifacts) == 1 {
-		cs.InputArtifact = s.InputArtifacts[0].toClientInputArtifact()
+		art, err := s.InputArtifacts[0].toClientInputArtifact()
+		if err != nil {
+			return nil, err
+		}
+		cs.InputArtifact = art
 	} else {
 		for _, a := range s.InputArtifacts {
-			cs.InputArtifacts = append(cs.InputArtifacts, *a.toClientInputArtifact())
+			art, err := a.toClientInputArtifact()
+			if err != nil {
+				return nil, err
+			}
+			cs.InputArtifacts = append(cs.InputArtifacts, *art)
 		}
 	}
 	cs.Namespace = s.Namespace
