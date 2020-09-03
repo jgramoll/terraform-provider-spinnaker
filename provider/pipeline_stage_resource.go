@@ -38,7 +38,7 @@ func stageResource(in map[string]*schema.Schema) map[string]*schema.Schema {
 			Type:        schema.TypeList,
 			Description: "Expected artifacts for stage",
 			Optional:    true,
-			Elem:        expectedArtifactResource(),
+			Elem:        manifestExpectedArtifactResource(),
 		},
 		"notification": {
 			Type:        schema.TypeList,

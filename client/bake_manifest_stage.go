@@ -11,24 +11,20 @@ func init() {
 	stageFactories[BakeManifestStageType] = parseBakeManifestStage
 }
 
-// ManifestInputArtifact bake manifest stage
-type ManifestInputArtifact struct {
-	Account string `json:"account"`
-	ID      string `json:"id"`
-}
-
 // BakeManifestStage bake manifest
 type BakeManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
 	EvaluateOverrideExpressions bool `json:"evaluateOverrideExpressions"`
 
-	InputArtifacts   []ManifestInputArtifact `json:"inputArtifacts"`
-	Namespace        string                  `json:"namespace"`
-	OutputName       string                  `json:"outputName"`
-	Overrides        map[string]string       `json:"overrides"`
-	RawOverrides     bool                    `json:"rawOverrides"`
-	TemplateRenderer string                  `json:"templateRenderer"`
+	InputArtifacts    []ManifestInputArtifact `json:"inputArtifacts"`
+	Namespace         string                  `json:"namespace"`
+	OutputName        string                  `json:"outputName"`
+	Overrides         map[string]string       `json:"overrides"`
+	RawOverrides      bool                    `json:"rawOverrides"`
+	TemplateRenderer  string                  `json:"templateRenderer"`
+	InputArtifact     *ManifestInputArtifact  `json:"inputArtifact,omitempty"`
+	KustomizeFilePath string                  `json:"kustomizeFilePath,omitempty"`
 }
 
 // NewBakeManifestStage bake manifest

@@ -13,6 +13,7 @@ func init() {
 	stageFactories[DeployManifestStageType] = parseDeployManifestStage
 }
 
+// DeployManifestStage deploy manifest stage
 type DeployManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -21,6 +22,7 @@ type DeployManifestStage struct {
 	NamespaceOverride        string               `json:"namespaceOverride,omitempty"`
 	CloudProvider            string               `json:"cloudProvider"`
 	ManifestArtifactAccount  string               `json:"manifestArtifactAccount"`
+	ManifestArtifactID       string               `json:"manifestArtifactId"`
 	Manifests                *Manifests           `json:"manifests"`
 	Moniker                  *Moniker             `json:"moniker"`
 	Relationships            *Relationships       `json:"relationships"`
@@ -29,6 +31,7 @@ type DeployManifestStage struct {
 	TrafficManagement        *TrafficManagement   `json:"trafficManagement"`
 }
 
+// NewDeployManifestStage deploy manifest stage
 func NewDeployManifestStage() *DeployManifestStage {
 	return &DeployManifestStage{
 		BaseStage: *newBaseStage(DeployManifestStageType),

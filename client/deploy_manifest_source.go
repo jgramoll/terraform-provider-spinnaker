@@ -7,10 +7,11 @@ type DeployManifestSource int
 const (
 	DeployManifestSourceUnknown DeployManifestSource = iota
 	DeployManifestSourceText
+	DeployManifestSourceArtifact
 )
 
 func (t DeployManifestSource) String() string {
-	return [...]string{"UNKNOWN", "text"}[t]
+	return [...]string{"UNKNOWN", "text", "artifact"}[t]
 }
 
 func ParseDeployManifestSource(s string) (DeployManifestSource, error) {
@@ -20,6 +21,8 @@ func ParseDeployManifestSource(s string) (DeployManifestSource, error) {
 		return DeployManifestSourceUnknown, nil
 	case "text":
 		return DeployManifestSourceText, nil
+	case "artifact":
+		return DeployManifestSourceArtifact, nil
 	}
 }
 

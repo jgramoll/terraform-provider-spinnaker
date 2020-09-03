@@ -10,7 +10,7 @@ import (
 var expectedArtifactsStage RunJobManifestStage
 
 func init() {
-	expectedArtifact := NewExpectedArtifact()
+	expectedArtifact := NewManifestExpectedArtifact()
 	expectedArtifact.DefaultArtifact.CustomKind = true
 	expectedArtifact.DefaultArtifact.ID = "ck"
 	expectedArtifact.DisplayName = "dname"
@@ -80,6 +80,7 @@ var expectedArtifactsJSON = `{
 			"displayName": "dname",
 			"id": "aid",
 			"matchArtifact": {
+				"customKind": false,
 				"id": "mad",
 				"location": "mloc",
 				"name": "mname",

@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func expectedArtifactResource() *schema.Resource {
+func manifestExpectedArtifactResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"default_artifact": {
@@ -12,18 +12,7 @@ func expectedArtifactResource() *schema.Resource {
 				Description: "Default Artifacts",
 				Optional:    true,
 				MaxItems:    1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"custom_kind": {
-							Type:     schema.TypeBool,
-							Optional: true,
-						},
-						"id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
+				Elem:        manifestArtifactResource(),
 			},
 			"display_name": {
 				Type:        schema.TypeString,
@@ -40,30 +29,7 @@ func expectedArtifactResource() *schema.Resource {
 				Description: "Artifact to match",
 				Required:    true,
 				MaxItems:    1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"location": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"name": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"reference": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
+				Elem:        manifestArtifactResource(),
 			},
 			"use_default_artifact": {
 				Type:        schema.TypeBool,

@@ -45,6 +45,12 @@ func pipelineBakeManifestStageResource() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"artifact": &schema.Schema{
+							Type:     schema.TypeList,
+							MaxItems: 1,
+							Optional: true,
+							Elem:     manifestArtifactResource(),
+						},
 					},
 				},
 			},
@@ -72,6 +78,11 @@ func pipelineBakeManifestStageResource() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Required:    true,
+			},
+			"kustomize_file_path": &schema.Schema{
+				Type:        schema.TypeString,
+				Description: "Path to kustomization file (if using kustomize engine)",
+				Optional:    true,
 			},
 		}),
 	}
