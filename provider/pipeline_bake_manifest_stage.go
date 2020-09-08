@@ -5,22 +5,18 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type manifestInputArtifact struct {
-	Account string `json:"account"`
-	ID      string `json:"id"`
-}
-
 type bakeManifestStage struct {
 	baseStage `mapstructure:",squash"`
 
 	EvaluateOverrideExpressions bool `mapstructure:"evaluate_override_expressions"`
 
-	InputArtifacts   []manifestInputArtifact `mapstructure:"input_artifact"`
-	Namespace        string                  `mapstructure:"namespace"`
-	OutputName       string                  `mapstructure:"output_name"`
-	Overrides        map[string]string       `mapstructure:"overrides"`
-	RawOverrides     bool                    `mapstructure:"raw_overrides"`
-	TemplateRenderer string                  `mapstructure:"template_renderer"`
+	InputArtifacts    []manifestInputArtifact `mapstructure:"input_artifact"`
+	Namespace         string                  `mapstructure:"namespace"`
+	OutputName        string                  `mapstructure:"output_name"`
+	Overrides         map[string]string       `mapstructure:"overrides"`
+	RawOverrides      bool                    `mapstructure:"raw_overrides"`
+	TemplateRenderer  string                  `mapstructure:"template_renderer"`
+	KustomizeFilePath string                  `mapstructure:"kustomize_file_path"`
 }
 
 func newBakeManifestStage() *bakeManifestStage {
@@ -37,14 +33,27 @@ func (s *bakeManifestStage) toClientStage(config *client.Config, refID string) (
 	}
 
 	cs.EvaluateOverrideExpressions = s.EvaluateOverrideExpressions
-	for _, a := range s.InputArtifacts {
-		cs.InputArtifacts = append(cs.InputArtifacts, client.ManifestInputArtifact(a))
+	if len(s.InputArtifacts) == 1 {
+		art, err := s.InputArtifacts[0].toClientInputArtifact()
+		if err != nil {
+			return nil, err
+		}
+		cs.InputArtifact = art
+	} else {
+		for _, a := range s.InputArtifacts {
+			art, err := a.toClientInputArtifact()
+			if err != nil {
+				return nil, err
+			}
+			cs.InputArtifacts = append(cs.InputArtifacts, *art)
+		}
 	}
 	cs.Namespace = s.Namespace
 	cs.OutputName = s.OutputName
 	cs.Overrides = s.Overrides
 	cs.RawOverrides = s.RawOverrides
 	cs.TemplateRenderer = s.TemplateRenderer
+	cs.KustomizeFilePath = s.KustomizeFilePath
 
 	return cs, nil
 }
@@ -58,14 +67,20 @@ func (*bakeManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	}
 
 	newStage.EvaluateOverrideExpressions = clientStage.EvaluateOverrideExpressions
-	for _, a := range clientStage.InputArtifacts {
-		newStage.InputArtifacts = append(newStage.InputArtifacts, manifestInputArtifact(a))
+	if len(clientStage.InputArtifacts) == 0 && clientStage.InputArtifact != nil {
+		a := clientStage.InputArtifact
+		newStage.InputArtifacts = append(newStage.InputArtifacts, *fromClientInputArtifact(a))
+	} else {
+		for _, a := range clientStage.InputArtifacts {
+			newStage.InputArtifacts = append(newStage.InputArtifacts, *fromClientInputArtifact(&a))
+		}
 	}
 	newStage.Namespace = clientStage.Namespace
 	newStage.OutputName = clientStage.OutputName
 	newStage.Overrides = clientStage.Overrides
 	newStage.RawOverrides = clientStage.RawOverrides
 	newStage.TemplateRenderer = clientStage.TemplateRenderer
+	newStage.KustomizeFilePath = clientStage.KustomizeFilePath
 
 	return newStage, nil
 }
@@ -104,5 +119,10 @@ func (s *bakeManifestStage) SetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
+	err = d.Set("kustomize_file_path", s.KustomizeFilePath)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

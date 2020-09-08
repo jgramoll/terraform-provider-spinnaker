@@ -13,6 +13,7 @@ type deployManifestStage struct {
 	NamespaceOverride        string                `mapstructure:"namespace_override"`
 	CloudProvider            string                `mapstructure:"cloud_provider"`
 	ManifestArtifactAccount  string                `mapstructure:"manifest_artifact_account"`
+	ManifestArtifactID       string                `mapstructure:"manifest_artifact_id"`
 	Manifests                *manifests            `mapstructure:"manifests"`
 	Moniker                  *[]*moniker           `mapstructure:"moniker"`
 	Relationships            *[]*relationships     `mapstructure:"relationships"`
@@ -23,10 +24,9 @@ type deployManifestStage struct {
 
 func newDeployManifestStage() *deployManifestStage {
 	return &deployManifestStage{
-		baseStage:               *newBaseStage(),
-		ManifestArtifactAccount: "docker-registry",
-		Relationships:           &[]*relationships{},
-		TrafficManagement:       &[]*trafficManagement{},
+		baseStage:         *newBaseStage(),
+		Relationships:     &[]*relationships{},
+		TrafficManagement: &[]*trafficManagement{},
 	}
 }
 
@@ -42,6 +42,7 @@ func (s *deployManifestStage) toClientStage(config *client.Config, refID string)
 	cs.NamespaceOverride = s.NamespaceOverride
 	cs.CloudProvider = s.CloudProvider
 	cs.ManifestArtifactAccount = s.ManifestArtifactAccount
+	cs.ManifestArtifactID = s.ManifestArtifactID
 	cs.Manifests = s.Manifests.toClientManifests()
 	cs.Moniker = toClientMoniker(s.Moniker)
 	cs.Relationships = toClientRelationships(s.Relationships)
@@ -69,6 +70,7 @@ func (*deployManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	newStage.NamespaceOverride = clientStage.NamespaceOverride
 	newStage.CloudProvider = clientStage.CloudProvider
 	newStage.ManifestArtifactAccount = clientStage.ManifestArtifactAccount
+	newStage.ManifestArtifactID = clientStage.ManifestArtifactID
 	newStage.Manifests = fromClientManifests(clientStage.Manifests)
 	newStage.Moniker = fromClientMoniker(clientStage.Moniker)
 	newStage.Relationships = fromClientRelationships(clientStage.Relationships)
@@ -102,6 +104,10 @@ func (s *deployManifestStage) SetResourceData(d *schema.ResourceData) error {
 		return err
 	}
 	err = d.Set("manifest_artifact_account", s.ManifestArtifactAccount)
+	if err != nil {
+		return err
+	}
+	err = d.Set("manifest_artifact_id", s.ManifestArtifactID)
 	if err != nil {
 		return err
 	}

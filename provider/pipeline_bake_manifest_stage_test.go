@@ -107,6 +107,28 @@ func TestAccPipelineBakeManifestStageBasic(t *testing.T) {
 	})
 }
 
+func TestAccPipelineBakeManifestStageKustomize(t *testing.T) {
+	var pipelineRef client.Pipeline
+	pipeName := fmt.Sprintf("tf-acc-test-%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
+	pipelineResourceName := "spinnaker_pipeline.test"
+	stage1 := "spinnaker_pipeline_bake_manifest_stage.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccPipelineBakeManifestStageConfigKustomize(pipeName),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(stage1, "name", "Build kustomize"),
+					resource.TestCheckResourceAttr(stage1, "template_renderer", "KUSTOMIZE"),
+					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
+				),
+			},
+		},
+	})
+}
+
 func testAccPipelineBakeManifestStageConfigBasic(pipeName string, accountName string, count int) string {
 	stages := ""
 	for i := 1; i <= count; i++ {
@@ -125,4 +147,43 @@ resource "spinnaker_pipeline" "test" {
 	application = "app"
 	name        = "%s"
 }`, pipeName) + stages
+}
+
+func testAccPipelineBakeManifestStageConfigKustomize(pipeName string) string {
+	stage := fmt.Sprintf(`
+resource "spinnaker_pipeline_bake_manifest_stage" "test" {
+	pipeline  = spinnaker_pipeline.test.id
+	name      = "Build kustomize"
+
+	template_renderer = "KUSTOMIZE"
+	expected_artifact {
+		default_artifact {
+			custom_kind = true
+		}
+		display_name = "deploy-kustomize"
+		match_artifact {
+			artifact_account = "embedded-artifact"
+			custom_kind = false
+			type = "embedded/base64"
+		}
+		use_default_artifact = false
+		use_prior_artifact = false
+	}
+	input_artifact {
+		account = "test-account"
+		artifact {
+			artifact_account = "test-account"
+			custom_kind = true
+			metadata = {
+				subPath = "checkout/path"
+			}
+			reference = "mygithub.repo"
+			type = "git/repo"
+			version = "github_auth"
+		}
+	}
+	kustomize_file_path = "deploy/kustomize/nonprod/kustomization.yaml"
+}`)
+
+	return testAccPipelineConfigBasic("app", pipeName) + stage
 }
