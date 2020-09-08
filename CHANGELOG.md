@@ -1,5 +1,9 @@
 # terraform-provider-spinnaker
 
+## 3.0.0
+
+- [8e8cbdb] add support for artifacts with deploy/bake manifest (#77)
+
 ## 2.4.0
 
 - [e5a25c2] Fixing Patch Manifest encoding issue (#74)
