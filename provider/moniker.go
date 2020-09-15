@@ -24,6 +24,9 @@ func fromClientMoniker(clientMoniker *client.Moniker) *[]*moniker {
 func toClientMoniker(moniker *[]*moniker) *client.Moniker {
 	if moniker != nil && len(*moniker) > 0 {
 		for _, m := range *moniker {
+			if m == nil {
+				return nil
+			}
 			newMoniker := client.Moniker(*m)
 			return &newMoniker
 		}
