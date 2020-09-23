@@ -101,6 +101,14 @@ func stageResource(in map[string]*schema.Schema) map[string]*schema.Schema {
 			MaxItems:    1,
 			Elem:        stageEnabledResource(),
 		},
+		"required_artifact_ids": {
+			Type:        schema.TypeList,
+			Description: "These artifacts must be present in the context for this stage to successfully complete. Artifacts specified will be bound to the deployed manifest.",
+			Optional:    true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 	}
 
 	// merge input
