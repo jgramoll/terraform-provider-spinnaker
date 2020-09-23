@@ -27,6 +27,7 @@ type baseStage struct {
 	StageTimeoutMS                    int                          `mapstructure:"stage_timeout_ms"`
 	RestrictExecutionDuringTimeWindow bool                         `mapstructure:"restrict_execution_during_time_window"`
 	RestrictedExecutionWindow         *[]*stageExecutionWindow     `mapstructure:"restricted_execution_window"`
+	RequiredArtifactIds               *[]string                    `mapstructure:"required_artifact_ids"`
 }
 
 func newBaseStage() *baseStage {
@@ -63,6 +64,7 @@ func (s *baseStage) baseToClientStage(cs *client.BaseStage, refID string, notifi
 	cs.StageTimeoutMS = s.StageTimeoutMS
 	cs.RestrictExecutionDuringTimeWindow = s.RestrictExecutionDuringTimeWindow
 	cs.RestrictedExecutionWindow = toClientExecutionWindow(s.RestrictedExecutionWindow)
+	cs.RequiredArtifactIds = s.RequiredArtifactIds
 	return nil
 }
 
@@ -88,6 +90,7 @@ func (s *baseStage) baseFromClientStage(clientStage *client.BaseStage, notificat
 	s.StageTimeoutMS = clientStage.StageTimeoutMS
 	s.RestrictExecutionDuringTimeWindow = clientStage.RestrictExecutionDuringTimeWindow
 	s.RestrictedExecutionWindow = fromClientExecutionWindow(clientStage.RestrictedExecutionWindow)
+	s.RequiredArtifactIds = clientStage.RequiredArtifactIds
 	return nil
 }
 
@@ -144,5 +147,10 @@ func (s *baseStage) baseSetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
+	err = d.Set("required_artifact_ids", s.RequiredArtifactIds)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
