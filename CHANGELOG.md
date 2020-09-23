@@ -1,5 +1,10 @@
 # terraform-provider-spinnaker
 
+## 3.1.0
+
+- [527e6bc] Merge pull request #80 from jgramoll/required_artifact_ids
+- [35b479e] Merge pull request #79 from jgramoll/empty_moniker
+
 ## 3.0.0
 
 - [8e8cbdb] add support for artifacts with deploy/bake manifest (#77)
