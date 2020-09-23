@@ -1,5 +1,5 @@
-version=v3.1.0
+VERSION := v3.1.0
 
 tag:
-	@git tag -a "${version}" -m "${version}"
-	@git push origin "${version}"	
+	@git tag -a ${VERSION} -m ${VERSION}
+	@git push origin ${VERSION}
