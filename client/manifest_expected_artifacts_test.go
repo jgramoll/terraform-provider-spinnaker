@@ -91,6 +91,7 @@ var expectedArtifactsJSON = `{
 			"usePriorArtifact": false
 		}
 	],
+	"requiredArtifactIds": [],
 	"account": "",
 	"alias": "runJob",
 	"application": "",

@@ -104,6 +104,7 @@ var deployManifestJson = `{
 	"restrictedExecutionWindow": null,
 	"notifications": null,
 	"expectedArtifacts": [],
+	"requiredArtifactIds": [],
 	"account": "",
 	"cloudProvider": "",
 	"manifests": [
