@@ -11,26 +11,24 @@ func init() {
 	stageFactories[DeployCloudformationStageType] = parseDeployCloudformationStage
 }
 
-type CloudformationTemplate string
-
 // DeployCloudformationStage deploy cloudforamtion stage
 type DeployCloudformationStage struct {
 	BaseStage `mapstructure:",squash"`
 
-	ActionOnReplacement string                             `json:"actionOnReplacement"`
-	Capabilities        []string                           `json:"capabilities"`
-	ChangeSetName       string                             `json:"changeSetName"`
-	Credentials         string                             `json:"credentials"`
-	ExecuteChangeSet    bool                               `json:"executeChangeSet"`
-	IsChangeSet         bool                               `json:"isChangeSet"`
-	Parameters          map[string]string                  `json:"parameters"`
-	Regions             map[string]string                  `json:"regions"`
-	RoleARN             string                             `json:"roleARN"`
-	Source              DeployCloudformationSource         `json:"source"`
-	StackArtifact       *DeployCloudformationStackArtifact `json:"stackArtifact"`
-	StackName           string                             `json:"stackName"`
-	Tags                map[string]string                  `json:"tags"`
-	TemplateBody        []CloudformationTemplate           `json:"templateBody"`
+	ActionOnReplacement string                     `json:"actionOnReplacement"`
+	Capabilities        []string                   `json:"capabilities"`
+	ChangeSetName       string                     `json:"changeSetName"`
+	Credentials         string                     `json:"credentials"`
+	ExecuteChangeSet    bool                       `json:"executeChangeSet"`
+	IsChangeSet         bool                       `json:"isChangeSet"`
+	Parameters          map[string]string          `json:"parameters"`
+	Regions             []string                   `json:"regions"`
+	RoleARN             string                     `json:"roleARN"`
+	Source              DeployCloudformationSource `json:"source"`
+	StackArtifact       *StackArtifact             `json:"stackArtifact"`
+	StackName           string                     `json:"stackName"`
+	Tags                map[string]string          `json:"tags"`
+	TemplateBody        []string                   `json:"templateBody"`
 }
 
 // NewDeployCloudformationStage deploy cloudformation stage

@@ -1,7 +1,7 @@
 package client
 
-// DeployCloudformationStackArtifact stack artifact
-type DeployCloudformationStackArtifact struct {
+// StackArtifact stack artifact
+type StackArtifact struct {
 	ArtifactAccount string `json:"artifactAccount"`
 	ID              string `json:"id"`
 	Name            string `json:"name"`

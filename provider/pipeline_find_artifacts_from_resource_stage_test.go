@@ -123,9 +123,5 @@ resource "spinnaker_pipeline_find_artifacts_from_resource_stage" "s%v" {
 }`, i, i, accountName)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeline) + stages
+	return testAccPipelineConfigBasic("app", pipeline) + stages
 }

@@ -158,11 +158,7 @@ EOT
 }`, i, i, accountName)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + stages
+	return testAccPipelineConfigBasic("app", pipeName) + stages
 }
 
 func testAccPipelineDeployManifestStageConfigArtifact(pipeName string) string {

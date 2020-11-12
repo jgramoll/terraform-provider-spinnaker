@@ -126,9 +126,5 @@ resource "spinnaker_pipeline_webhook_trigger" "t%v" {
 }`, i, source)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + triggers
+	return testAccPipelineConfigBasic("app", pipeName) + triggers
 }

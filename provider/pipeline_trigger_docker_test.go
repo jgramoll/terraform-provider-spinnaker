@@ -121,9 +121,5 @@ resource "spinnaker_pipeline_docker_trigger" "t%v" {
 }`, i, master)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + triggers
+	return testAccPipelineConfigBasic("app", pipeName) + triggers
 }
