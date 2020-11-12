@@ -558,7 +558,7 @@ resource "spinnaker_pipeline_patch_manifest_stage" "test" {
   }
 }
 
-resource "spinnaker_pipeline_deploy_cloudformation_stage" "s%v" {
+resource "spinnaker_pipeline_deploy_cloudformation_stage" "test" {
   pipeline  = spinnaker_pipeline.test.id
   name      = "Deploy Cloudformation"
 
