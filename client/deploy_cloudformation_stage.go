@@ -1,6 +1,8 @@
 package client
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -35,6 +37,7 @@ type DeployCloudformationStage struct {
 func NewDeployCloudformationStage() *DeployCloudformationStage {
 	return &DeployCloudformationStage{
 		BaseStage: *newBaseStage(DeployCloudformationStageType),
+		Source:    DeployCloudformationSourceText,
 	}
 }
 
@@ -43,6 +46,17 @@ func parseDeployCloudformationStage(stageMap map[string]interface{}) (Stage, err
 	if err := stage.parseBaseStage(stageMap); err != nil {
 		return nil, err
 	}
+
+	sourceString, ok := stageMap["source"].(string)
+	if !ok {
+		return nil, fmt.Errorf("Could not parse cloudformation source %v", stageMap["source"])
+	}
+	source, err := ParseDeployCloudformationSource(sourceString)
+	if err != nil {
+		return nil, err
+	}
+	stage.Source = source
+	delete(stageMap, "source")
 
 	if err := mapstructure.Decode(stageMap, stage); err != nil {
 		return nil, err

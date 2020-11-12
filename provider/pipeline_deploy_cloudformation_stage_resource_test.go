@@ -112,7 +112,7 @@ func testAccPipelineDeployCloudformationStageConfigBasic(pipeName string, stackN
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
 resource "spinnaker_pipeline_deploy_cloudformation_stage" "s%v" {
-	pipeline  = "spinnaker_pipeline.test.id"
+	pipeline  = spinnaker_pipeline.test.id
 	name      = "Stage %v"
 
 	credentials = "my-aws-account"
