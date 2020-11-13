@@ -41,12 +41,7 @@ func TestAccPipelineManualJudgementNotificationBasic(t *testing.T) {
 }
 
 func testAccPipelineManualJudgmentNotificationConfigBasic(pipelineName string) string {
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}
-
+	var stages = `
 resource "spinnaker_pipeline_manual_judgment_stage" "s1" {
 	pipeline 	 = "${spinnaker_pipeline.test.id}"
 	name     	 = "Stage 1"
@@ -79,5 +74,7 @@ resource "spinnaker_pipeline_manual_judgment_stage" "s1" {
 			manual_judgment = false
 		}
 	}
-}`, pipelineName)
+}`
+
+	return testAccPipelineConfigBasic("app", pipelineName) + stages
 }

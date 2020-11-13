@@ -118,9 +118,5 @@ resource "spinnaker_pipeline_webhook_stage" "s%d" {
 }`, i, i, url)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + stages
+	return testAccPipelineConfigBasic("app", pipeName) + stages
 }

@@ -19,6 +19,9 @@ func toClientMessage(level client.NotificationLevel, m *[]*message) (client.Mess
 		return nil, err
 	}
 	message := (*m)[0]
+	if message == nil {
+		return nil, nil
+	}
 
 	if message.Complete != "" {
 		newMessage.SetCompleteText(message.Complete)

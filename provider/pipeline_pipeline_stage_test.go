@@ -124,9 +124,5 @@ resource "spinnaker_pipeline_pipeline_stage" "s%v" {
 }`, i, i, targetPipeline)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + stages
+	return testAccPipelineConfigBasic("app", pipeName) + stages
 }

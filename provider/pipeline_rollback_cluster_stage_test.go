@@ -119,9 +119,5 @@ resource "spinnaker_pipeline_rollback_cluster_stage" "s%v" {
 }`, i, i, targetHealthyRollbackPercentage)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + stages
+	return testAccPipelineConfigBasic("app", pipeName) + stages
 }

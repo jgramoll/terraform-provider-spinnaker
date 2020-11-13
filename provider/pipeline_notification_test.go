@@ -125,11 +125,7 @@ resource "spinnaker_pipeline_notification" "n%v" {
 }`, i, address, i, i, i)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + notifications
+	return testAccPipelineConfigBasic("app", pipeName) + notifications
 }
 
 func testAccCheckPipelineNotifications(resourceName string, expected []string, notifications *[]*client.Notification) resource.TestCheckFunc {

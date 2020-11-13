@@ -160,9 +160,5 @@ resource "spinnaker_pipeline_check_preconditions_stage" "s%v" {
 }`, i, i, stageName)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + stages
+	return testAccPipelineConfigBasic("app", pipeName) + stages
 }

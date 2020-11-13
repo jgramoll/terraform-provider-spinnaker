@@ -89,6 +89,7 @@ var runJobManifestJson = `{
 	"restrictedExecutionWindow": null,
 	"notifications": null,
 	"expectedArtifacts": [],
+	"requiredArtifactIds": [],
 	"account": "learn-nonprod",
 	"alias": "runJob",
 	"application": "bridgelearn",

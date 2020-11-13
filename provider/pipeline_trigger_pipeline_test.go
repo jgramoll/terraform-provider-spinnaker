@@ -122,9 +122,5 @@ resource "spinnaker_pipeline_pipeline_trigger" "t%v" {
 }`, i, triggeringPipeline)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + triggers
+	return testAccPipelineConfigBasic("app", pipeName) + triggers
 }

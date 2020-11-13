@@ -557,6 +557,47 @@ resource "spinnaker_pipeline_patch_manifest_stage" "test" {
     merge_strategy = "strategic"
   }
 }
+
+resource "spinnaker_pipeline_deploy_cloudformation_stage" "test" {
+  pipeline  = spinnaker_pipeline.test.id
+  name      = "Deploy Cloudformation"
+
+  credentials = "my-aws-account"
+  stack_name  = "my cf stack"
+  regions = [
+    "us-east-1"
+  ]
+  templateBody = <<EOT
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Sample"
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+Outputs:
+  WebsiteURL:
+    Value:
+      GetAtt:
+      - S3Bucket
+      - WebsiteURL
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value:
+      Join:
+      - ''
+      - - 'https://'
+        -
+          GetAtt:
+          - S3Bucket
+          - DomainName
+    Description: Name of S3 bucket to hold website content
+EOT
+}
 ```
 
 ## Local Dev ##
