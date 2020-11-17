@@ -44,16 +44,16 @@ func TestCheckPreconditionsStageSerialize(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := string(b)
-	if result != checkPreconditionsJson {
+	if result != checkPreconditionsJSON {
 		dmp := diffmatchpatch.New()
-		diffs := dmp.DiffMain(checkPreconditionsJson, result, true)
+		diffs := dmp.DiffMain(checkPreconditionsJSON, result, true)
 		t.Fatalf("Check Preconditions not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
 }
 
 func TestCheckPreconditionsStageDeserialize(t *testing.T) {
 	var stageMap map[string]interface{}
-	err := json.Unmarshal([]byte(checkPreconditionsJson), &stageMap)
+	err := json.Unmarshal([]byte(checkPreconditionsJSON), &stageMap)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func TestCheckPreconditionsStageDeserialize(t *testing.T) {
 	}
 }
 
-var checkPreconditionsJson = `{
+var checkPreconditionsJSON = `{
 	"name": "Check Preconditions",
 	"refId": "",
 	"type": "checkPreconditions",

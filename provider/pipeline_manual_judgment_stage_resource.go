@@ -26,12 +26,12 @@ func pipelineManualJudgementStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"instructions": &schema.Schema{
+			"instructions": {
 				Type:        schema.TypeString,
 				Description: "Instructions",
 				Optional:    true,
 			},
-			"judgment_inputs": &schema.Schema{
+			"judgment_inputs": {
 				Type:        schema.TypeList,
 				Description: "Judgment Inputs",
 				Required:    true,
@@ -39,7 +39,7 @@ func pipelineManualJudgementStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"notification": &schema.Schema{
+			"notification": {
 				Type:        schema.TypeList,
 				Description: "Notifications to send for stage results",
 				Optional:    true,

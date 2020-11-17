@@ -24,17 +24,17 @@ func pipelinePipelineTriggerResource() *schema.Resource {
 		},
 
 		Schema: triggerResource(map[string]*schema.Schema{
-			"triggering_application": &schema.Schema{
+			"triggering_application": {
 				Type:        schema.TypeString,
 				Description: "Name of the spinnaker application",
 				Required:    true,
 			},
-			"triggering_pipeline": &schema.Schema{
+			"triggering_pipeline": {
 				Type:        schema.TypeString,
 				Description: "Name of the spinnaker pipeline",
 				Required:    true,
 			},
-			"status": &schema.Schema{
+			"status": {
 				Type:        schema.TypeList,
 				Description: "Status of pipeline execution",
 				Required:    true,

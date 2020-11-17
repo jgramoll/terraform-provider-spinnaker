@@ -24,27 +24,27 @@ func pipelineDockerTriggerResource() *schema.Resource {
 		},
 
 		Schema: triggerResource(map[string]*schema.Schema{
-			"account": &schema.Schema{
+			"account": {
 				Type:        schema.TypeString,
 				Description: "Name of the account",
 				Required:    true,
 			},
-			"organization": &schema.Schema{
+			"organization": {
 				Type:        schema.TypeString,
 				Description: "Name of the organization",
 				Required:    true,
 			},
-			"registry": &schema.Schema{
+			"registry": {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
 			},
-			"repository": &schema.Schema{
+			"repository": {
 				Type:        schema.TypeString,
 				Description: "Name of repository",
 				Required:    true,
 			},
-			"tag": &schema.Schema{
+			"tag": {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,

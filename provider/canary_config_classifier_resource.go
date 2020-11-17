@@ -7,7 +7,7 @@ import (
 func canaryConfigClassifierResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"group_weights": &schema.Schema{
+			"group_weights": {
 				Type:     schema.TypeMap,
 				Required: true,
 			},

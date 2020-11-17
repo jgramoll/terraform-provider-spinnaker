@@ -7,12 +7,15 @@ import (
 	"github.com/ghodss/yaml"
 )
 
+// ScaleManifests scale
 type ScaleManifests []string
 
+// NewScaleManifests new scale
 func NewScaleManifests() *ScaleManifests {
 	return &ScaleManifests{}
 }
 
+// MarshalJSON marshal
 func (s ScaleManifests) MarshalJSON() ([]byte, error) {
 	var jsonManifests []string
 	for _, manifest := range s {
@@ -26,6 +29,7 @@ func (s ScaleManifests) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("[%s]", jsonManifestsString)), nil
 }
 
+// ParseScaleManifests parse
 func ParseScaleManifests(manifestInterface []interface{}) (*ScaleManifests, error) {
 	manifests := NewScaleManifests()
 	for _, manifest := range manifestInterface {

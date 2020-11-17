@@ -32,16 +32,16 @@ func TestDeployManifestStageSerialize(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := string(b)
-	if result != deployManifestJson {
+	if result != deployManifestJSON {
 		dmp := diffmatchpatch.New()
-		diffs := dmp.DiffMain(deployManifestJson, result, true)
+		diffs := dmp.DiffMain(deployManifestJSON, result, true)
 		t.Fatalf("Deploy Manifest not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
 }
 
 func TestDeployManifestStageDeserialize(t *testing.T) {
 	var stageMap map[string]interface{}
-	err := json.Unmarshal([]byte(deployManifestJson), &stageMap)
+	err := json.Unmarshal([]byte(deployManifestJSON), &stageMap)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,7 +88,7 @@ spec:
 var anotherManifestYaml = `another: 1
 `
 
-var deployManifestJson = `{
+var deployManifestJSON = `{
 	"name": "New Deploy Manifest",
 	"refId": "",
 	"type": "deployManifest",

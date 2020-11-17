@@ -26,24 +26,24 @@ func pipelineCheckPreconditionsStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"precondition": &schema.Schema{
+			"precondition": {
 				Type:        schema.TypeList,
 				Description: "The preconditions for the stage",
 				Required:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"context": &schema.Schema{
+						"context": {
 							Type:        schema.TypeMap,
 							Description: "Map to describe precondition",
 							Required:    true,
 						},
-						"fail_pipeline": &schema.Schema{
+						"fail_pipeline": {
 							Type:        schema.TypeBool,
 							Description: "The pipeline will fail whenever this precondition is false",
 							Optional:    true,
 							Default:     true,
 						},
-						"type": &schema.Schema{
+						"type": {
 							Type:        schema.TypeString,
 							Description: "The type of precondition. (expression, stageStatus, etc)",
 							Required:    true,

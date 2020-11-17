@@ -25,8 +25,8 @@ func (p *Pipeline) GetTrigger(triggerID string) (Trigger, error) {
 }
 
 // AppendTrigger append trigger
-func (pipeline *Pipeline) AppendTrigger(trigger Trigger) {
-	pipeline.Triggers = append(pipeline.Triggers, trigger)
+func (p *Pipeline) AppendTrigger(trigger Trigger) {
+	p.Triggers = append(p.Triggers, trigger)
 }
 
 // UpdateTrigger in pipeline

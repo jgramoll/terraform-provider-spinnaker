@@ -7,12 +7,15 @@ import (
 	"github.com/ghodss/yaml"
 )
 
+// EnableServerGroups groups
 type EnableServerGroups []string
 
+// NewEnableServerGroups new groups
 func NewEnableServerGroups() *EnableServerGroups {
 	return &EnableServerGroups{}
 }
 
+// MarshalJSON marshal
 func (s EnableServerGroups) MarshalJSON() ([]byte, error) {
 	var jsonManifests []string
 	for _, manifest := range s {
@@ -26,6 +29,7 @@ func (s EnableServerGroups) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("[%s]", jsonManifestsString)), nil
 }
 
+// ParseEnableServerGroups parse groups
 func ParseEnableServerGroups(manifestInterface []interface{}) (*EnableServerGroups, error) {
 	manifests := NewEnableServerGroups()
 	for _, manifest := range manifestInterface {

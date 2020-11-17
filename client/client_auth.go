@@ -9,6 +9,7 @@ type Auth struct {
 	Insecure  bool
 }
 
+// NewAuth new auth
 func NewAuth() *Auth {
 	return &Auth{
 		Enabled:  true,

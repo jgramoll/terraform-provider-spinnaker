@@ -11,6 +11,7 @@ func init() {
 	stageFactories[DisableManifestStageType] = parseDisableManifestStage
 }
 
+// DisableManifestStage stage
 type DisableManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -27,6 +28,7 @@ type DisableManifestStage struct {
 	Mode         string `json:"mode"`
 }
 
+// NewDisableManifestStage new stage
 func NewDisableManifestStage() *DisableManifestStage {
 	return &DisableManifestStage{
 		BaseStage: *newBaseStage(DisableManifestStageType),

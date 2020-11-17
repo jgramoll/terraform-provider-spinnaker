@@ -5,16 +5,20 @@ import (
 	"fmt"
 )
 
+// ErrCanaryConfigNotFound config not found
 var ErrCanaryConfigNotFound = errors.New("Could not find canary config")
 
+// CreateCanaryConfigResponse canary config response
 type CreateCanaryConfigResponse struct {
 	CanaryConfigId string `json:"canaryConfigId"`
 }
 
+// CanaryConfigService config service
 type CanaryConfigService struct {
 	*Client
 }
 
+// GetCanaryConfigs get configs
 func (service *CanaryConfigService) GetCanaryConfigs() (*[]*CanaryConfig, error) {
 	path := "/v2/canaryConfig"
 	req, err := service.NewRequest("GET", path)
@@ -31,6 +35,7 @@ func (service *CanaryConfigService) GetCanaryConfigs() (*[]*CanaryConfig, error)
 	return &configs, nil
 }
 
+// GetCanaryConfig get config by id
 func (service *CanaryConfigService) GetCanaryConfig(id string) (*CanaryConfig, error) {
 	path := fmt.Sprintf("/v2/canaryConfig/%s", id)
 	req, err := service.NewRequest("GET", path)
@@ -44,7 +49,7 @@ func (service *CanaryConfigService) GetCanaryConfig(id string) (*CanaryConfig, e
 }
 
 // CreateCanaryConfig create an canary config
-func (service *CanaryConfigService) CreateCanaryConfig(config *CanaryConfig) (configId string, err error) {
+func (service *CanaryConfigService) CreateCanaryConfig(config *CanaryConfig) (configID string, err error) {
 	path := "/v2/canaryConfig"
 	req, err := service.NewRequestWithBody("POST", path, config)
 	if err != nil {
@@ -56,6 +61,7 @@ func (service *CanaryConfigService) CreateCanaryConfig(config *CanaryConfig) (co
 	return response.CanaryConfigId, err
 }
 
+// UpdateCanaryConfig update config
 func (service *CanaryConfigService) UpdateCanaryConfig(config *CanaryConfig) error {
 	path := fmt.Sprintf("/v2/canaryConfig/%s", config.Id)
 	req, err := service.NewRequestWithBody("PUT", path, config)
@@ -67,8 +73,9 @@ func (service *CanaryConfigService) UpdateCanaryConfig(config *CanaryConfig) err
 	return err
 }
 
-func (service *CanaryConfigService) DeleteCanaryConfig(configId string) error {
-	path := fmt.Sprintf("/v2/canaryConfig/%s", configId)
+// DeleteCanaryConfig deleete config
+func (service *CanaryConfigService) DeleteCanaryConfig(configID string) error {
+	path := fmt.Sprintf("/v2/canaryConfig/%s", configID)
 	req, err := service.NewRequest("DELETE", path)
 	if err != nil {
 		return err

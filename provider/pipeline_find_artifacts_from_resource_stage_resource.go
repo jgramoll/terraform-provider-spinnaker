@@ -26,27 +26,27 @@ func pipelineFindArtifactsFromResourceStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"account": &schema.Schema{
+			"account": {
 				Type:        schema.TypeString,
 				Description: "Spinnaker account for cloud provider",
 				Required:    true,
 			},
-			"cloud_provider": &schema.Schema{
+			"cloud_provider": {
 				Type:        schema.TypeString,
 				Description: "Cloud provider to use (kubernetes)",
 				Required:    true,
 			},
-			"location": &schema.Schema{
+			"location": {
 				Type:        schema.TypeString,
 				Description: "Location in cloud provider to search (k8s namespaces)",
 				Required:    true,
 			},
-			"manifest_name": &schema.Schema{
+			"manifest_name": {
 				Type:        schema.TypeString,
 				Description: "If mode is static, resource manifest name",
 				Optional:    true,
 			},
-			"mode": &schema.Schema{
+			"mode": {
 				Type:        schema.TypeString,
 				Description: "Manifest Selector (static, dynamic)",
 				Required:    true,

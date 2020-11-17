@@ -7,15 +7,18 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// Precondition precondition
 type Precondition interface {
 	GetType() PreconditionType
 }
 
+// BasePrecondition base
 type BasePrecondition struct {
 	FailPipeline bool             `json:"failPipeline"`
 	Type         PreconditionType `json:"type"`
 }
 
+// NewBasePrecondition new base
 func NewBasePrecondition(t PreconditionType) *BasePrecondition {
 	return &BasePrecondition{
 		FailPipeline: true,
@@ -23,10 +26,12 @@ func NewBasePrecondition(t PreconditionType) *BasePrecondition {
 	}
 }
 
+// GetType get type
 func (p *BasePrecondition) GetType() PreconditionType {
 	return p.Type
 }
 
+// ParsePreconditions parse
 func ParsePreconditions(toParse []interface{}) ([]Precondition, error) {
 	preconditions := []Precondition{}
 
@@ -52,6 +57,7 @@ func ParsePreconditions(toParse []interface{}) ([]Precondition, error) {
 	return preconditions, nil
 }
 
+// ParsePrecondition parse
 func ParsePrecondition(i map[string]interface{}, t PreconditionType) (Precondition, error) {
 	preconditionFunc, ok := preconditionFactory[t]
 	if !ok {

@@ -7,24 +7,24 @@ import (
 func canaryConfigMetricResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"query": &schema.Schema{
+			"query": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
 				Required: true,
 				Elem:     canaryConfigMetricQueryResource(),
 			},
-			"groups": &schema.Schema{
+			"groups": {
 				Type:     schema.TypeList,
 				Required: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
-			"scope_name": &schema.Schema{
+			"scope_name": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "default",

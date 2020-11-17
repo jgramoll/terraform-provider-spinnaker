@@ -9,7 +9,7 @@ func init() {
 	triggerFactories[PipelineTriggerType] = parsePipelineTrigger
 }
 
-// Pipeline Trigger for Pipeline
+// PipelineTrigger for Pipeline
 type PipelineTrigger struct {
 	baseTrigger `mapstructure:",squash"`
 
@@ -18,6 +18,7 @@ type PipelineTrigger struct {
 	Status      []string `json:"status"`
 }
 
+// NewPipelineTrigger new trigger
 func NewPipelineTrigger() *PipelineTrigger {
 	return &PipelineTrigger{
 		baseTrigger: *newBaseTrigger(PipelineTriggerType),

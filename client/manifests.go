@@ -5,12 +5,15 @@ import (
 	"strings"
 )
 
+// Manifests manifests
 type Manifests []Manifest
 
+// NewManifests new manifests
 func NewManifests() *Manifests {
 	return &Manifests{}
 }
 
+// MarshalJSON marshal
 func (s Manifests) MarshalJSON() ([]byte, error) {
 	var jsonManifests []string
 	for _, manifest := range s {
@@ -24,6 +27,7 @@ func (s Manifests) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("[%s]", jsonManifestsString)), nil
 }
 
+// ParseManifests parse
 func ParseManifests(manifestInterface []interface{}) (*Manifests, error) {
 	manifests := NewManifests()
 	for _, m := range manifestInterface {

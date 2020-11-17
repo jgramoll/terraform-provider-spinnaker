@@ -26,22 +26,22 @@ func pipelineFindImageFromTagsStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"cloud_provider": &schema.Schema{
+			"cloud_provider": {
 				Type:        schema.TypeString,
 				Description: "Cloud provider to use (aws)",
 				Required:    true,
 			},
-			"cloud_provider_type": &schema.Schema{
+			"cloud_provider_type": {
 				Type:        schema.TypeString,
 				Description: "Cloud provider to use (aws)",
 				Required:    true,
 			},
-			"package_name": &schema.Schema{
+			"package_name": {
 				Type:        schema.TypeString,
 				Description: "Label of the base ami to use. If Base AMI is specified, this will be used instead of the Base OS provided",
 				Optional:    true,
 			},
-			"regions": &schema.Schema{
+			"regions": {
 				Type:        schema.TypeList,
 				Description: "regions to target (us-east-1)",
 				Optional:    true,
@@ -49,7 +49,7 @@ func pipelineFindImageFromTagsStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"tags": &schema.Schema{
+			"tags": {
 				Type:        schema.TypeMap,
 				Description: "Tags of base ami to use.",
 				Optional:    true,

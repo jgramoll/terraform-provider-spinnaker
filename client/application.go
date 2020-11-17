@@ -10,6 +10,7 @@ type ProviderSettings struct {
 	AWS *AwsProviderSettings `json:"aws"`
 }
 
+// DataSources data sources for application
 type DataSources struct {
 	Disabled *[]string `json:"disabled"`
 	Enabled  *[]string `json:"enabled"`

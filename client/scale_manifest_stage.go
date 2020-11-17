@@ -11,6 +11,7 @@ func init() {
 	stageFactories[ScaleManifestStageType] = parseScaleManifestStage
 }
 
+// ScaleManifestStage stage
 type ScaleManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -28,6 +29,7 @@ type ScaleManifestStage struct {
 	Replicas       string                 `json:"replicas"`
 }
 
+// NewScaleManifestStage new stage
 func NewScaleManifestStage() *ScaleManifestStage {
 	return &ScaleManifestStage{
 		BaseStage: *newBaseStage(ScaleManifestStageType),

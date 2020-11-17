@@ -7,10 +7,12 @@ import (
 // ErrParameterNotFound parameter not found
 var ErrParameterNotFound = errors.New("could not find parameter")
 
+// PipelineParameterOption option
 type PipelineParameterOption struct {
 	Value string `json:"value"`
 }
 
+// PipelineParameter parameter
 type PipelineParameter struct {
 	ID          string                      `json:"id"`
 	Default     string                      `json:"default"`

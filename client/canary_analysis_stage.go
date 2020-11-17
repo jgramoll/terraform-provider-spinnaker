@@ -4,12 +4,14 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// CanaryAnalysisStageType stage type
 var CanaryAnalysisStageType StageType = "kayentaCanary"
 
 func init() {
 	stageFactories[CanaryAnalysisStageType] = parseCanaryAnalysisStage
 }
 
+// CanaryAnalysisStage canary analysis stage
 type CanaryAnalysisStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -18,6 +20,7 @@ type CanaryAnalysisStage struct {
 	Deployments  *[]*DeploymentCluster `json:"deployments,omitempty"`
 }
 
+// NewCanaryAnalysisStage new canary analysis stage
 func NewCanaryAnalysisStage() *CanaryAnalysisStage {
 	return &CanaryAnalysisStage{
 		BaseStage:    *newBaseStage(CanaryAnalysisStageType),

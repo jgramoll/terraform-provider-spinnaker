@@ -26,37 +26,37 @@ func pipelineScaleManifestStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"account": &schema.Schema{
+			"account": {
 				Type:        schema.TypeString,
 				Description: "The account name",
 				Required:    true,
 			},
-			"application": &schema.Schema{
+			"application": {
 				Type:        schema.TypeString,
 				Description: "The application name",
 				Optional:    true,
 			},
-			"cloud_provider": &schema.Schema{
+			"cloud_provider": {
 				Type:        schema.TypeString,
 				Description: "The cloud provider name",
 				Required:    true,
 			},
-			"cluster": &schema.Schema{
+			"cluster": {
 				Type:        schema.TypeString,
 				Description: "The cluster to scale",
 				Optional:    true,
 			},
-			"criteria": &schema.Schema{
+			"criteria": {
 				Type:        schema.TypeString,
 				Description: "The criteria for determining the target cluster",
 				Optional:    true,
 			},
-			"kind": &schema.Schema{
+			"kind": {
 				Type:        schema.TypeString,
 				Description: "The kind of manifest to scale",
 				Optional:    true,
 			},
-			"kinds": &schema.Schema{
+			"kinds": {
 				Type:        schema.TypeList,
 				Description: "The kinds of manifest to scale",
 				Optional:    true,
@@ -64,27 +64,27 @@ func pipelineScaleManifestStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"label_selectors": &schema.Schema{
+			"label_selectors": {
 				Type:        schema.TypeMap,
 				Description: "The label selectors",
 				Optional:    true,
 			},
-			"location": &schema.Schema{
+			"location": {
 				Type:        schema.TypeString,
 				Description: "The namespace",
 				Optional:    true,
 			},
-			"manifest_name": &schema.Schema{
+			"manifest_name": {
 				Type:        schema.TypeString,
 				Description: "The name of the manifest",
 				Optional:    true,
 			},
-			"mode": &schema.Schema{
+			"mode": {
 				Type:        schema.TypeString,
 				Description: "The selector mode",
 				Optional:    true,
 			},
-			"replicas": &schema.Schema{
+			"replicas": {
 				Type:        schema.TypeString,
 				Description: "The number of replicas",
 				Optional:    true,

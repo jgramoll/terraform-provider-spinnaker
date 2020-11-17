@@ -7,23 +7,23 @@ import (
 func monikerResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"app": &schema.Schema{
+			"app": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"cluster": &schema.Schema{
+			"cluster": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"detail": &schema.Schema{
+			"detail": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"sequence": &schema.Schema{
+			"sequence": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"stack": &schema.Schema{
+			"stack": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

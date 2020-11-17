@@ -25,22 +25,22 @@ func pipelineJenkinsTriggerResource(deprecationMessage string) *schema.Resource 
 		DeprecationMessage: deprecationMessage,
 
 		Schema: triggerResource(map[string]*schema.Schema{
-			"job": &schema.Schema{
+			"job": {
 				Type:        schema.TypeString,
 				Description: "Name of the job",
 				Required:    true,
 			},
-			"master": &schema.Schema{
+			"master": {
 				Type:        schema.TypeString,
 				Description: "Name of the job master",
 				Required:    true,
 			},
-			"property_file": &schema.Schema{
+			"property_file": {
 				Type:        schema.TypeString,
 				Description: "Name of file to use for properties",
 				Optional:    true,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:        schema.TypeString,
 				Description: "[DEPRECATED] Type of trigger, not used use explicit trigger resource",
 				Optional:    true,

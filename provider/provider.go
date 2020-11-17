@@ -21,42 +21,42 @@ type Services struct {
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"address": &schema.Schema{
+			"address": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_ADDRESS", nil),
 				Description: "Address of spinnaker api",
 			},
 
-			"enabled": &schema.Schema{
+			"enabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
 				Description: "Path to cert to authenticate with spinnaker api",
 			},
 
-			"cert_path": &schema.Schema{
+			"cert_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
 				Description: "Path to cert to authenticate with spinnaker api",
 			},
 
-			"key_path": &schema.Schema{
+			"key_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
 				Description: "Path to key to authenticate with spinnaker api",
 			},
 
-			"user_email": &schema.Schema{
+			"user_email": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
 				Description: "Path to user_email to authenticate with spinnaker api",
 			},
 
-			"insecure": &schema.Schema{
+			"insecure": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,

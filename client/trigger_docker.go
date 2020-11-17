@@ -9,7 +9,7 @@ func init() {
 	triggerFactories[DockerTriggerType] = parseDockerTrigger
 }
 
-// Docker Trigger for Pipeline
+// DockerTrigger for Pipeline
 type DockerTrigger struct {
 	baseTrigger `mapstructure:",squash"`
 
@@ -20,6 +20,7 @@ type DockerTrigger struct {
 	Tag          string `json:"tag"`
 }
 
+// NewDockerTrigger new trigger
 func NewDockerTrigger() *DockerTrigger {
 	return &DockerTrigger{
 		baseTrigger: *newBaseTrigger(DockerTriggerType),

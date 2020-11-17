@@ -35,16 +35,16 @@ func TestRunJobManifestStageSerialize(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := string(b)
-	if result != runJobManifestJson {
+	if result != runJobManifestJSON {
 		dmp := diffmatchpatch.New()
-		diffs := dmp.DiffMain(runJobManifestJson, result, true)
+		diffs := dmp.DiffMain(runJobManifestJSON, result, true)
 		t.Fatalf("Run Job Manifest not as expected: %s", dmp.DiffPrettyText(diffs))
 	}
 }
 
 func TestRunJobManifestStageDeserialize(t *testing.T) {
 	var stageMap map[string]interface{}
-	err := json.Unmarshal([]byte(runJobManifestJson), &stageMap)
+	err := json.Unmarshal([]byte(runJobManifestJSON), &stageMap)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,7 +73,7 @@ spec:
         name: halyard
 `
 
-var runJobManifestJson = `{
+var runJobManifestJSON = `{
 	"name": "Run Job (Manifest)",
 	"refId": "",
 	"type": "runJobManifest",

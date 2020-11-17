@@ -26,22 +26,22 @@ func pipelinePipelineResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"application": &schema.Schema{
+			"application": {
 				Type:        schema.TypeString,
 				Description: "Application with target pipeline",
 				Required:    true,
 			},
-			"target_pipeline": &schema.Schema{
+			"target_pipeline": {
 				Type:        schema.TypeString,
 				Description: "Target pipeline",
 				Required:    true,
 			},
-			"pipeline_parameters": &schema.Schema{
+			"pipeline_parameters": {
 				Type:        schema.TypeMap,
 				Description: "Parameters to pass to pipeline",
 				Optional:    true,
 			},
-			"wait_for_completion": &schema.Schema{
+			"wait_for_completion": {
 				Type:        schema.TypeBool,
 				Description: "if false, marks the stage as successful right away without waiting for the pipeline to complete",
 				Optional:    true,

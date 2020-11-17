@@ -23,6 +23,7 @@ type Config struct {
 	Auth    *Auth
 }
 
+// NewConfig new config
 func NewConfig() *Config {
 	return &Config{
 		Auth: NewAuth(),
@@ -40,7 +41,7 @@ func NewClient(config *Config) *Client {
 
 	var httpClient *http.Client
 	if config.Auth.Enabled {
-		httpClient = newTlsHttpClient(config)
+		httpClient = newTLSHTTPClient(config)
 	} else {
 		httpClient = http.DefaultClient
 	}
@@ -51,7 +52,7 @@ func NewClient(config *Config) *Client {
 	}
 }
 
-func newTlsHttpClient(config *Config) *http.Client {
+func newTLSHTTPClient(config *Config) *http.Client {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal("[ERROR]", err)

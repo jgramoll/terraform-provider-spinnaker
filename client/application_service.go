@@ -126,7 +126,7 @@ func (service *ApplicationService) DeleteApplication(app *Application) error {
 func (service *ApplicationService) sendTask(app *Application, jobType string, taskDescription string) error {
 	task := Task{
 		Job: &[]*Job{
-			&Job{
+			{
 				Type:        jobType,
 				Application: app,
 				User:        service.Config.Auth.UserEmail,

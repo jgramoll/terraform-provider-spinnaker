@@ -14,13 +14,13 @@ var errInvalidTriggerImportKey = errors.New("Invalid import key, must be pipelin
 
 func triggerResource(in map[string]*schema.Schema) map[string]*schema.Schema {
 	out := map[string]*schema.Schema{
-		PipelineKey: &schema.Schema{
+		PipelineKey: {
 			Type:        schema.TypeString,
 			Description: "Id of the pipeline to trigger",
 			Required:    true,
 			ForceNew:    true,
 		},
-		"enabled": &schema.Schema{
+		"enabled": {
 			Type:        schema.TypeBool,
 			Description: "If the trigger is enabled",
 			Optional:    true,

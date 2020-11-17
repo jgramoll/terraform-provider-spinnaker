@@ -26,17 +26,17 @@ func pipelineScriptStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"account": &schema.Schema{
+			"account": {
 				Type:        schema.TypeString,
 				Description: "The account name",
 				Optional:    true,
 			},
-			"cluster": &schema.Schema{
+			"cluster": {
 				Type:        schema.TypeString,
 				Description: "The cluster to scale",
 				Optional:    true,
 			},
-			"clusters": &schema.Schema{
+			"clusters": {
 				Type:        schema.TypeList,
 				Description: "The clusters to scale",
 				Optional:    true,
@@ -44,32 +44,32 @@ func pipelineScriptStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"command": &schema.Schema{
+			"command": {
 				Type:        schema.TypeString,
 				Description: "The criteria for determining the target cluster",
 				Required:    true,
 			},
-			"cmc": &schema.Schema{
+			"cmc": {
 				Type:        schema.TypeString,
 				Description: "cmc passed down to script execution as CMC",
 				Optional:    true,
 			},
-			"image": &schema.Schema{
+			"image": {
 				Type:        schema.TypeString,
 				Description: "The label selectors",
 				Optional:    true,
 			},
-			"property_file": &schema.Schema{
+			"property_file": {
 				Type:        schema.TypeString,
 				Description: "The name to the properties file produced by the script execution to be used by later stages of the Spinnaker pipeline.",
 				Optional:    true,
 			},
-			"region": &schema.Schema{
+			"region": {
 				Type:        schema.TypeString,
 				Description: "The kind of manifest to scale",
 				Optional:    true,
 			},
-			"regions": &schema.Schema{
+			"regions": {
 				Type:        schema.TypeList,
 				Description: "The kinds of manifest to scale",
 				Optional:    true,
@@ -77,22 +77,22 @@ func pipelineScriptStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"repo_url": &schema.Schema{
+			"repo_url": {
 				Type:        schema.TypeString,
 				Description: "Path to the repo hosting the scripts in Stash. (e.g. CDL/mimir-scripts). Leave empty to use the default.",
 				Optional:    true,
 			},
-			"repo_branch": &schema.Schema{
+			"repo_branch": {
 				Type:        schema.TypeString,
 				Description: "Git Branch. (e.g. master). Leave empty to use the master branch.",
 				Optional:    true,
 			},
-			"script_path": &schema.Schema{
+			"script_path": {
 				Type:        schema.TypeString,
 				Description: "Path to script to run",
 				Required:    true,
 			},
-			"wait_for_completion": &schema.Schema{
+			"wait_for_completion": {
 				Type:        schema.TypeBool,
 				Description: "if false, marks the stage as successful right away without waiting for the script to complete",
 				Optional:    true,

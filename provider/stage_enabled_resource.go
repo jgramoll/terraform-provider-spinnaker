@@ -7,11 +7,11 @@ import (
 func stageEnabledResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"expression": &schema.Schema{
+			"expression": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

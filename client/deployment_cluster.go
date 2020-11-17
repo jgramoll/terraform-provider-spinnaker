@@ -1,8 +1,10 @@
 package client
 
+// DeployStageCluster cluster
 // TODO deprecated remove
 type DeployStageCluster DeploymentCluster
 
+// NewDeployStageCluster new cluster
 func NewDeployStageCluster() *DeploymentCluster {
 	println("[DEPRECATED] DeployStageCluster will be removed in a future version. Use DeploymentCluster")
 	return NewDeploymentCluster()
@@ -52,6 +54,7 @@ type DeploymentCluster struct {
 	Base64UserData                      string                 `json:"base64UserData"`
 }
 
+// NewDeploymentCluster new cluster
 func NewDeploymentCluster() *DeploymentCluster {
 	return &DeploymentCluster{
 		DelayBeforeDisableSec:   0,

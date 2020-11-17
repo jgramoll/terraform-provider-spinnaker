@@ -19,6 +19,7 @@ type Notification struct {
 	Message Message           `json:"message"`
 }
 
+// NewNotification new notification
 func NewNotification() *Notification {
 	return &Notification{}
 }
