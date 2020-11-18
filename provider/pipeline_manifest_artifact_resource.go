@@ -7,7 +7,7 @@ import (
 func manifestArtifactResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"artifact_account": &schema.Schema{
+			"artifact_account": {
 				Type:        schema.TypeString,
 				Description: "Account of artifact",
 				Optional:    true,
@@ -18,7 +18,7 @@ func manifestArtifactResource() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -26,7 +26,7 @@ func manifestArtifactResource() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"metadata": &schema.Schema{
+			"metadata": {
 				Type:        schema.TypeMap,
 				Description: "Metadata",
 				Optional:    true,
@@ -35,15 +35,15 @@ func manifestArtifactResource() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"reference": &schema.Schema{
+			"reference": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"version": &schema.Schema{
+			"version": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},

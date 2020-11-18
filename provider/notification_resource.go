@@ -7,7 +7,7 @@ import (
 func notificationResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"address": &schema.Schema{
+			"address": {
 				Type:        schema.TypeString,
 				Description: "Address of the notification (slack channel, email, etc)",
 				Required:    true,
@@ -19,42 +19,42 @@ func notificationResource() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"complete": &schema.Schema{
+						"complete": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"failed": &schema.Schema{
+						"failed": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"starting": &schema.Schema{
+						"starting": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
 					},
 				},
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:        schema.TypeString,
 				Description: "Type of notification (slack, email, etc)",
 				Required:    true,
 			},
-			"when": &schema.Schema{
+			"when": {
 				Type:        schema.TypeList,
 				Description: "When to send notification (started, completed, failed)",
 				Required:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"complete": &schema.Schema{
+						"complete": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
-						"failed": &schema.Schema{
+						"failed": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
-						"starting": &schema.Schema{
+						"starting": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},

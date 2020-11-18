@@ -9,7 +9,7 @@ func init() {
 	triggerFactories[JenkinsTriggerType] = parseJenkinsTrigger
 }
 
-// Jenkins Trigger for Pipeline
+// JenkinsTrigger for Pipeline
 type JenkinsTrigger struct {
 	baseTrigger `mapstructure:",squash"`
 
@@ -18,6 +18,7 @@ type JenkinsTrigger struct {
 	PropertyFile string `json:"propertyFile"`
 }
 
+// NewJenkinsTrigger new trigger
 func NewJenkinsTrigger() *JenkinsTrigger {
 	return &JenkinsTrigger{
 		baseTrigger: *newBaseTrigger(JenkinsTriggerType),

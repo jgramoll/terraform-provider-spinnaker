@@ -1,10 +1,12 @@
 package client
 
+// CanaryAnalysisConfigScoreThreadholds thresholds
 type CanaryAnalysisConfigScoreThreadholds struct {
 	Marginal string `json:"marginal"`
 	Pass     string `json:"pass"`
 }
 
+// CanaryAnalysisConfig config
 type CanaryAnalysisConfig struct {
 	CanaryAnalysisIntervalMins string `json:"canaryAnalysisIntervalMins"`
 	CanaryConfigId             string `json:"canaryConfigId"`
@@ -17,6 +19,7 @@ type CanaryAnalysisConfig struct {
 	StorageAccountName string `json:"storageAccountName"`
 }
 
+// NewCanaryAnalysisConfig new config
 func NewCanaryAnalysisConfig() *CanaryAnalysisConfig {
 	return &CanaryAnalysisConfig{
 		ScoreThresholds: CanaryAnalysisConfigScoreThreadholds{},

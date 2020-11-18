@@ -26,7 +26,7 @@ func pipelineEvaluateVariablesStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"variables": &schema.Schema{
+			"variables": {
 				Type:        schema.TypeMap,
 				Description: "List of values to assign as variables",
 				Required:    true,

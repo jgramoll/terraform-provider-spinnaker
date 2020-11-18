@@ -31,7 +31,7 @@ func applicationResource() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"accounts": &schema.Schema{
+			"accounts": {
 				Type:        schema.TypeList,
 				Description: "Accounts",
 				Computed:    true,
@@ -39,7 +39,7 @@ func applicationResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"cloud_providers": &schema.Schema{
+			"cloud_providers": {
 				Type:        schema.TypeList,
 				Description: "Cloud Providers",
 				Optional:    true,
@@ -47,7 +47,7 @@ func applicationResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"email": &schema.Schema{
+			"email": {
 				Type:        schema.TypeString,
 				Description: "Email Address",
 				Required:    true,
@@ -59,13 +59,13 @@ func applicationResource() *schema.Resource {
 					return
 				},
 			},
-			"enable_restart_running_executions": &schema.Schema{
+			"enable_restart_running_executions": {
 				Type:        schema.TypeBool,
 				Description: "Enable restarting running pipelines",
 				Optional:    true,
 				Default:     true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Description: "Application Name",
 				Required:    true,
@@ -82,31 +82,31 @@ func applicationResource() *schema.Resource {
 					return
 				},
 			},
-			"instance_port": &schema.Schema{
+			"instance_port": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
-			"permissions": &schema.Schema{
+			"permissions": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"execute": &schema.Schema{
+						"execute": {
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
 						},
-						"read": &schema.Schema{
+						"read": {
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
 						},
-						"write": &schema.Schema{
+						"write": {
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Schema{
@@ -116,31 +116,31 @@ func applicationResource() *schema.Resource {
 					},
 				},
 			},
-			"platform_health_only": &schema.Schema{
+			"platform_health_only": {
 				Type:        schema.TypeBool,
 				Description: "Consider only cloud provider health when executing tasks",
 				Optional:    true,
 				Default:     true,
 			},
-			"platform_health_only_show_override": &schema.Schema{
+			"platform_health_only_show_override": {
 				Type:        schema.TypeBool,
 				Description: "Show health override option for each operation",
 				Optional:    true,
 				Default:     false,
 			},
-			"provider_settings": &schema.Schema{
+			"provider_settings": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"aws": &schema.Schema{
+						"aws": {
 							Type:     schema.TypeList,
 							Optional: true,
 							MaxItems: 1,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"use_ami_block_device_mappings": &schema.Schema{
+									"use_ami_block_device_mappings": {
 										Description: "Prefer AMI Block Device Mappings",
 										Type:        schema.TypeBool,
 										Optional:    true,
@@ -152,17 +152,17 @@ func applicationResource() *schema.Resource {
 					},
 				},
 			},
-			"repo_project_key": &schema.Schema{
+			"repo_project_key": {
 				Type:        schema.TypeString,
 				Description: "Repository project key",
 				Optional:    true,
 			},
-			"repo_slug": &schema.Schema{
+			"repo_slug": {
 				Type:        schema.TypeString,
 				Description: "Repository slug",
 				Optional:    true,
 			},
-			"repo_type": &schema.Schema{
+			"repo_type": {
 				Type:        schema.TypeString,
 				Description: "Repository type",
 				Optional:    true,

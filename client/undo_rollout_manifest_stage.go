@@ -11,6 +11,7 @@ func init() {
 	stageFactories[UndoRolloutManifestStageType] = parseUndoRolloutManifestStage
 }
 
+// UndoRolloutManifestStage undo stage
 type UndoRolloutManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -22,6 +23,7 @@ type UndoRolloutManifestStage struct {
 	NumRevisionsBack int    `json:"numRevisionsBack"`
 }
 
+// NewUndoRolloutManifestStage new stage
 func NewUndoRolloutManifestStage() *UndoRolloutManifestStage {
 	return &UndoRolloutManifestStage{
 		BaseStage: *newBaseStage(UndoRolloutManifestStageType),

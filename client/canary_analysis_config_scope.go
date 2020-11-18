@@ -1,5 +1,6 @@
 package client
 
+// CanaryAnalysisConfigScope canary analysis
 type CanaryAnalysisConfigScope struct {
 	ControlLocation     string            `json:"controlLocation,omitempty"`
 	ControlScope        string            `json:"controlScope,omitempty"`

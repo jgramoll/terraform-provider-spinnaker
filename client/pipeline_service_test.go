@@ -83,16 +83,16 @@ func TestCreateUpdateDeletePipeline(t *testing.T) {
 		NewBakeStage(),
 	}
 	pipeline.ParameterConfig = &[]*PipelineParameter{
-		&PipelineParameter{Name: "new parameter"},
-		&PipelineParameter{Name: "descriptive parameter", Description: "This is a very descriptive parameter."},
-		&PipelineParameter{
+		{Name: "new parameter"},
+		{Name: "descriptive parameter", Description: "This is a very descriptive parameter."},
+		{
 			Name:        "Options parameter",
 			Default:     "mosdef",
 			Description: "Setting parameter via options.",
 			HasOptions:  true,
 			Label:       "mosdef label",
 			Options: &[]*PipelineParameterOption{
-				&PipelineParameterOption{Value: "something"},
+				{Value: "something"},
 			},
 			Required: true,
 		},

@@ -1,5 +1,6 @@
 package client
 
+// CanaryConfig canary config
 type CanaryConfig struct {
 	Id            string                  `json:"id,omitempty"`
 	Name          string                  `json:"name"`
@@ -12,6 +13,7 @@ type CanaryConfig struct {
 	Judge         *CanaryConfigJudge      `json:"judge"`
 }
 
+// NewCanaryConfig new config
 func NewCanaryConfig(judge *CanaryConfigJudge, name string, application string) *CanaryConfig {
 	return &CanaryConfig{
 		Name:          name,
@@ -24,10 +26,12 @@ func NewCanaryConfig(judge *CanaryConfigJudge, name string, application string) 
 	}
 }
 
+// AddGroup add group
 func (config *CanaryConfig) AddGroup(group string, weight float64) {
 	config.Classifier.GroupWeights[group] = weight
 }
 
+// AddMetric add metric
 func (config *CanaryConfig) AddMetric(metric *CanaryConfigMetric) {
 	config.Metrics = append(config.Metrics, metric)
 }

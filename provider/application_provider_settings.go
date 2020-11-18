@@ -45,7 +45,7 @@ func fromClientProviderSettings(settings *client.ProviderSettings) *[]providerSe
 	}
 
 	return &[]providerSettings{
-		providerSettings{
+		{
 			AWS: &[]awsProviderSettings{
 				{UseAmiBlockDeviceMappings: settings.AWS.UseAmiBlockDeviceMappings},
 			},

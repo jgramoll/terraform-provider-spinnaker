@@ -7,14 +7,14 @@ import (
 func relationshipsResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"load_balancers": &schema.Schema{
+			"load_balancers": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
-			"security_groups": &schema.Schema{
+			"security_groups": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{

@@ -39,30 +39,30 @@ func pipelineResource() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			ApplicationKey: &schema.Schema{
+			ApplicationKey: {
 				Type:        schema.TypeString,
 				Description: "Name of the application where the pipeline lives",
 				Required:    true,
 			},
-			"disabled": &schema.Schema{
+			"disabled": {
 				Type:        schema.TypeBool,
 				Description: "If the pipeline is disabled",
 				Optional:    true,
 				Default:     false,
 			},
-			"keep_waiting_pipelines": &schema.Schema{
+			"keep_waiting_pipelines": {
 				Type:        schema.TypeBool,
 				Description: "Do not automatically cancel pipelines waiting in queue",
 				Optional:    true,
 				Default:     false,
 			},
-			"limit_concurrent": &schema.Schema{
+			"limit_concurrent": {
 				Type:        schema.TypeBool,
 				Description: "Disable concurrent pipeline executions (only run one at a time)",
 				Optional:    true,
 				Default:     true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Description: "Name of the pipeline",
 				Required:    true,
@@ -74,13 +74,13 @@ func pipelineResource() *schema.Resource {
 					return
 				},
 			},
-			"index": &schema.Schema{
+			"index": {
 				Type:        schema.TypeInt,
 				Description: "Index of the pipeline",
 				Optional:    true,
 				Computed:    true,
 			},
-			"roles": &schema.Schema{
+			"roles": {
 				Type:        schema.TypeList,
 				Description: "When the pipeline is triggered using an automated trigger, these roles will be used to decide if the pipeline has permissions to access a protected application or account.\n\nTo read from a protected application or account, the pipeline must have at least one role that has read access to the application or account.\nTo write to a protected application or account, the pipeline must have at least one role that has write access to the application or account.\nNote: To prevent privilege escalation vulnerabilities, a user must be a member of all of the groups specified here in order to modify, and execute the pipeline.",
 				Optional:    true,
@@ -88,30 +88,30 @@ func pipelineResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"service_account": &schema.Schema{
+			"service_account": {
 				Type:        schema.TypeString,
 				Description: "Service account to run pipeline",
 				Optional:    true,
 			},
-			"locked": &schema.Schema{
+			"locked": {
 				Type:        schema.TypeList,
 				Description: "Lock options",
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"ui": &schema.Schema{
+						"ui": {
 							Type:        schema.TypeBool,
 							Description: "Lock user to edit pipeline over the spinnaker UI",
 							Optional:    true,
 							Default:     false,
 						},
-						"description": &schema.Schema{
+						"description": {
 							Type:        schema.TypeString,
 							Description: "Description banner explaining why ui is locked",
 							Optional:    true,
 						},
-						"allow_unlock_ui": &schema.Schema{
+						"allow_unlock_ui": {
 							Type:        schema.TypeBool,
 							Description: "Allow user to unlock ui to edit pipeline",
 							Optional:    true,

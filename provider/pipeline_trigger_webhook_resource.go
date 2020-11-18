@@ -24,12 +24,12 @@ func pipelineWebhookTriggerResource() *schema.Resource {
 		},
 
 		Schema: triggerResource(map[string]*schema.Schema{
-			"source": &schema.Schema{
+			"source": {
 				Type:        schema.TypeString,
 				Description: "Name of the webhook source",
 				Required:    true,
 			},
-			"payload_constraints": &schema.Schema{
+			"payload_constraints": {
 				Type:        schema.TypeMap,
 				Description: "Payload contraints",
 				Optional:    true,

@@ -32,43 +32,43 @@ func pipelineParameterResource() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			PipelineKey: &schema.Schema{
+			PipelineKey: {
 				Type:        schema.TypeString,
 				Description: "Id of the pipeline to add parameter",
 				Required:    true,
 				ForceNew:    true,
 			},
-			"default": &schema.Schema{
+			"default": {
 				Type:        schema.TypeString,
 				Description: "Default value",
 				Optional:    true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"label": &schema.Schema{
+			"label": {
 				Type:        schema.TypeString,
 				Description: "A label to display when users are triggering the pipeline manually",
 				Optional:    true,
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"option": &schema.Schema{
+			"option": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"value": &schema.Schema{
+						"value": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
 					},
 				},
 			},
-			"required": &schema.Schema{
+			"required": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,

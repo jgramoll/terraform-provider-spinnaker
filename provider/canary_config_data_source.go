@@ -12,12 +12,12 @@ func canaryConfigDataSource() *schema.Resource {
 		Read: canaryConfigDataSourceRead,
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Description: "Canary Config Name",
 				Required:    true,
 			},
-			"applications": &schema.Schema{
+			"applications": {
 				Type:        schema.TypeList,
 				Description: "Applications",
 				Optional:    true,
@@ -25,32 +25,32 @@ func canaryConfigDataSource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:        schema.TypeString,
 				Description: "Canary Config Description",
 				Optional:    true,
 			},
-			"metric": &schema.Schema{
+			"metric": {
 				Type:        schema.TypeList,
 				Description: "Canary Metrics",
 				Optional:    true,
 				Elem:        canaryConfigMetricResource(),
 			},
-			"config_version": &schema.Schema{
+			"config_version": {
 				Type:        schema.TypeString,
 				Description: "Canary Config Version",
 				Optional:    true,
 				Default:     "1",
 			},
 			// Templates     map[string]interface{}  `mapstructure:"templates"`
-			"classifier": &schema.Schema{
+			"classifier": {
 				Type:        schema.TypeList,
 				Description: "Canary Classifier",
 				MaxItems:    1,
 				Optional:    true,
 				Elem:        canaryConfigClassifierResource(),
 			},
-			"judge": &schema.Schema{
+			"judge": {
 				Type:        schema.TypeList,
 				Description: "Canary Judge",
 				MaxItems:    1,

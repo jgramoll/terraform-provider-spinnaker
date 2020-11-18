@@ -1,5 +1,6 @@
 package client
 
+// CanaryConfigMetric config metric
 type CanaryConfigMetric struct {
 	// AnalysisConfigurations interface `json:"analysisConfigurations"`
 	Name      string                   `json:"name"`
@@ -8,6 +9,7 @@ type CanaryConfigMetric struct {
 	ScopeName string                   `json:"scopeName"`
 }
 
+// NewCanaryConfigMetric new config metric
 func NewCanaryConfigMetric(
 	group string, name string, metricQuery *CanaryConfigMetricQuery,
 ) *CanaryConfigMetric {

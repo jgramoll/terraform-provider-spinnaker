@@ -7,7 +7,7 @@ import (
 func manualJudementNotificationResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"address": &schema.Schema{
+			"address": {
 				Type:        schema.TypeString,
 				Description: "Address of the notification (slack channel, email, etc)",
 				Required:    true,
@@ -19,38 +19,38 @@ func manualJudementNotificationResource() *schema.Resource {
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"manual_judgment_continue": &schema.Schema{
+						"manual_judgment_continue": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"manual_judgment_stop": &schema.Schema{
+						"manual_judgment_stop": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
 					},
 				},
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:        schema.TypeString,
 				Description: "Type of notification (slack, email, etc)",
 				Required:    true,
 			},
-			"when": &schema.Schema{
+			"when": {
 				Type:        schema.TypeList,
 				Description: "When to send notification (started, completed, failed)",
 				Required:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"manual_judgment": &schema.Schema{
+						"manual_judgment": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
-						"manual_judgment_continue": &schema.Schema{
+						"manual_judgment_continue": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
-						"manual_judgment_stop": &schema.Schema{
+						"manual_judgment_stop": {
 							Type:     schema.TypeBool,
 							Optional: true,
 						},

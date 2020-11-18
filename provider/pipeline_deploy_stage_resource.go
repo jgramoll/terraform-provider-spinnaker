@@ -26,7 +26,7 @@ func pipelineDeployStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"cluster": &schema.Schema{
+			"cluster": {
 				Type:        schema.TypeList,
 				Description: "The clusters to be deployed",
 				Required:    true,

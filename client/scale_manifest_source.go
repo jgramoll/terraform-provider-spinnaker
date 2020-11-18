@@ -2,10 +2,13 @@ package client
 
 import "log"
 
+// ScaleManifestSource source
 type ScaleManifestSource int
 
 const (
+	// ScaleManifestSourceUnknown unknown
 	ScaleManifestSourceUnknown ScaleManifestSource = iota
+	// ScaleManifestSourceText text
 	ScaleManifestSourceText
 )
 
@@ -13,6 +16,7 @@ func (t ScaleManifestSource) String() string {
 	return [...]string{"UNKNOWN", "text"}[t]
 }
 
+// ParseScaleManifestSource parse
 func ParseScaleManifestSource(s string) (ScaleManifestSource, error) {
 	switch s {
 	default:
@@ -23,10 +27,12 @@ func ParseScaleManifestSource(s string) (ScaleManifestSource, error) {
 	}
 }
 
+// MarshalText marshal
 func (t ScaleManifestSource) MarshalText() ([]byte, error) {
 	return []byte(t.String()), nil
 }
 
+// UnmarshalText unmarshal
 func (t *ScaleManifestSource) UnmarshalText(text []byte) error {
 	source, err := ParseScaleManifestSource(string(text))
 	if err != nil {

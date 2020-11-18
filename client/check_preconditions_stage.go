@@ -14,12 +14,14 @@ func init() {
 	stageFactories[CheckPreconditionsStageType] = parseCheckPreconditionsStage
 }
 
+// CheckPreconditionsStage preconditions stage
 type CheckPreconditionsStage struct {
 	BaseStage `mapstructure:",squash"`
 
 	Preconditions []Precondition `json:"preconditions"`
 }
 
+// NewCheckPreconditionsStage new stage
 func NewCheckPreconditionsStage() *CheckPreconditionsStage {
 	return &CheckPreconditionsStage{
 		BaseStage:     *newBaseStage(CheckPreconditionsStageType),

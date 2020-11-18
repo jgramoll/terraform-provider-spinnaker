@@ -11,6 +11,7 @@ func init() {
 	stageFactories[EnableManifestStageType] = parseEnableManifestStage
 }
 
+// EnableManifestStage stage
 type EnableManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -24,6 +25,7 @@ type EnableManifestStage struct {
 	Mode          string `json:"mode"`
 }
 
+// NewEnableManifestStage new stage
 func NewEnableManifestStage() *EnableManifestStage {
 	return &EnableManifestStage{
 		BaseStage: *newBaseStage(EnableManifestStageType),

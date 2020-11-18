@@ -26,42 +26,42 @@ func pipelineEnableManifestStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"account": &schema.Schema{
+			"account": {
 				Type:        schema.TypeString,
 				Description: "The account name",
 				Required:    true,
 			},
-			"app": &schema.Schema{
+			"app": {
 				Type:        schema.TypeString,
 				Description: "The application name",
 				Required:    true,
 			},
-			"cloud_provider": &schema.Schema{
+			"cloud_provider": {
 				Type:        schema.TypeString,
 				Description: "The cloud provider name",
 				Required:    true,
 			},
-			"cluster": &schema.Schema{
+			"cluster": {
 				Type:        schema.TypeString,
 				Description: "The name of the manifest to enable (e.g. replicatSet my-service)",
 				Required:    true,
 			},
-			"criteria": &schema.Schema{
+			"criteria": {
 				Type:        schema.TypeString,
 				Description: "The target cluster (e.g. newest)",
 				Required:    true,
 			},
-			"kind": &schema.Schema{
+			"kind": {
 				Type:        schema.TypeString,
 				Description: "The cluster kind (e.g. replicaSet)",
 				Required:    true,
 			},
-			"location": &schema.Schema{
+			"location": {
 				Type:        schema.TypeString,
 				Description: "The location name",
 				Required:    true,
 			},
-			"mode": &schema.Schema{
+			"mode": {
 				Type:        schema.TypeString,
 				Description: "The mode name",
 				Required:    true,

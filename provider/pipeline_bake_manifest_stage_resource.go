@@ -26,26 +26,26 @@ func pipelineBakeManifestStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"evaluate_override_expressions": &schema.Schema{
+			"evaluate_override_expressions": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
 			},
-			"input_artifact": &schema.Schema{
+			"input_artifact": {
 				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"account": &schema.Schema{
+						"account": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"id": &schema.Schema{
+						"id": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"artifact": &schema.Schema{
+						"artifact": {
 							Type:     schema.TypeList,
 							MaxItems: 1,
 							Optional: true,
@@ -54,32 +54,32 @@ func pipelineBakeManifestStageResource() *schema.Resource {
 					},
 				},
 			},
-			"namespace": &schema.Schema{
+			"namespace": {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
 			},
-			"output_name": &schema.Schema{
+			"output_name": {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
 			},
-			"overrides": &schema.Schema{
+			"overrides": {
 				Type:        schema.TypeMap,
 				Description: "",
 				Optional:    true,
 			},
-			"raw_overrides": &schema.Schema{
+			"raw_overrides": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
 			},
-			"template_renderer": &schema.Schema{
+			"template_renderer": {
 				Type:        schema.TypeString,
 				Description: "",
 				Required:    true,
 			},
-			"kustomize_file_path": &schema.Schema{
+			"kustomize_file_path": {
 				Type:        schema.TypeString,
 				Description: "Path to kustomization file (if using kustomize engine)",
 				Optional:    true,

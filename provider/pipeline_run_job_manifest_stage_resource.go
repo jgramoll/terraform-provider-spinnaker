@@ -26,40 +26,40 @@ func pipelineRunJobManifestStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"account": &schema.Schema{
+			"account": {
 				Type:        schema.TypeString,
 				Description: "A Spinnaker account corresponds to a physical Kubernetes cluster. If you are unsure which account to use, talk to your Spinnaker admin.",
 				Required:    true,
 			},
-			"application": &schema.Schema{
+			"application": {
 				Type:        schema.TypeString,
 				Description: "This is the Spinnaker application that your manifest will be deployed to. An application is generally used to group resources that belong to a single service.",
 				Required:    true,
 			},
-			"cloud_provider": &schema.Schema{
+			"cloud_provider": {
 				Type:        schema.TypeString,
 				Description: "The cloudprovider to handle the manifest",
 				Required:    true,
 			},
-			"consume_artifact_source": &schema.Schema{
+			"consume_artifact_source": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"credentials": &schema.Schema{
+			"credentials": {
 				Type:        schema.TypeString,
 				Description: "Spinnaker credientials to use to talk to cloud provider",
 				Optional:    true,
 			},
-			"manifest": &schema.Schema{
+			"manifest": {
 				Type:        schema.TypeString,
 				Description: "Manifest Yaml as text",
 				Required:    true,
 			},
-			"property_file": &schema.Schema{
+			"property_file": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"source": &schema.Schema{
+			"source": {
 				Type: schema.TypeString,
 				Description: "Where the manifest file content is read from." +
 					"text: The manifest is supplied statically to the pipeline from the below text-box." +

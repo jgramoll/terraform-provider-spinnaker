@@ -26,28 +26,28 @@ func pipelineJenkinsStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"job": &schema.Schema{
+			"job": {
 				Type:        schema.TypeString,
 				Description: "Name of the Jenkins job to execute",
 				Required:    true,
 			},
-			"mark_unstable_as_successful": &schema.Schema{
+			"mark_unstable_as_successful": {
 				Type:        schema.TypeBool,
 				Description: "If Jenkins reports the build status as UNSTABLE, Spinnaker will mark the stage as SUCCEEDED and continue execution of the pipeline",
 				Optional:    true,
 				Default:     false,
 			},
-			"master": &schema.Schema{
+			"master": {
 				Type:        schema.TypeString,
 				Description: "Name of the Jenkins master where the job will be executed",
 				Required:    true,
 			},
-			"parameters": &schema.Schema{
+			"parameters": {
 				Type:        schema.TypeMap,
 				Description: "Parameters to pass to the Jenkins job",
 				Optional:    true,
 			},
-			"property_file": &schema.Schema{
+			"property_file": {
 				Type:        schema.TypeString,
 				Description: "Name of the property file to use for results",
 				Optional:    true,

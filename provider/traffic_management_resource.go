@@ -7,34 +7,34 @@ import (
 func trafficManagementResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"enabled": &schema.Schema{
+			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
 			},
-			"options": &schema.Schema{
+			"options": {
 				Type:     schema.TypeList,
 				Required: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"enable_traffic": &schema.Schema{
+						"enable_traffic": {
 							Type:     schema.TypeBool,
 							Optional: true,
 							Default:  false,
 						},
-						"namespace": &schema.Schema{
+						"namespace": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
-						"services": &schema.Schema{
+						"services": {
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
 						},
-						"strategy": &schema.Schema{
+						"strategy": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},

@@ -26,34 +26,34 @@ func pipelineDestroyServerGroupStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"cloud_provider": &schema.Schema{
+			"cloud_provider": {
 				Type:        schema.TypeString,
 				Description: "Cloud provider to use (aws)",
 				Optional:    true,
 			},
-			"cloud_provider_type": &schema.Schema{
+			"cloud_provider_type": {
 				Type:        schema.TypeString,
 				Description: "Cloud provider to use (aws)",
 				Optional:    true,
 			},
-			"cluster": &schema.Schema{
+			"cluster": {
 				Type:        schema.TypeString,
 				Description: "Name of the cluster",
 				Required:    true,
 			},
-			"credentials": &schema.Schema{
+			"credentials": {
 				Type:        schema.TypeString,
 				Description: "Name of the credentials to use",
 				Optional:    true,
 			},
-			"moniker": &schema.Schema{
+			"moniker": {
 				Type:        schema.TypeList,
 				Description: "Name to attach to cluster",
 				Optional:    true,
 				MaxItems:    1,
 				Elem:        monikerResource(),
 			},
-			"regions": &schema.Schema{
+			"regions": {
 				Type:        schema.TypeList,
 				Description: "regions to target (us-east-1)",
 				Optional:    true,
@@ -61,7 +61,7 @@ func pipelineDestroyServerGroupStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"target": &schema.Schema{
+			"target": {
 				Type:        schema.TypeString,
 				Description: "Which server group to destroy (oldest_asg_dynamic, ancestor_asg_dynamic, current_asg_dynamic)",
 				Optional:    true,

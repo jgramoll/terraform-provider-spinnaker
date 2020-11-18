@@ -26,7 +26,7 @@ func pipelineCanaryAnalysisStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"analysis_type": &schema.Schema{
+			"analysis_type": {
 				Type: schema.TypeString,
 				Description: "Real Time analysis will be performed over a time interval beginning at the moment of execution." +
 					"" +
@@ -35,14 +35,14 @@ func pipelineCanaryAnalysisStageResource() *schema.Resource {
 					"Retrospective analysis will be performed over an explicitly-specified time interval (likely in the past). You are responsible for provisioning and cleaning up the baseline and canary server groups.",
 				Required: true,
 			},
-			"canary_config": &schema.Schema{
+			"canary_config": {
 				Type:        schema.TypeList,
 				Description: "The manifest artifact account",
 				Required:    true,
 				MaxItems:    1,
 				Elem:        pipelineCanaryAnalysisConfigResource(),
 			},
-			"deployments": &schema.Schema{
+			"deployments": {
 				Type:     schema.TypeList,
 				Optional: true,
 				MaxItems: 1,

@@ -26,17 +26,17 @@ func pipelineWebhookStageResource() *schema.Resource {
 		},
 
 		Schema: stageResource(map[string]*schema.Schema{
-			"canceled_statuses": &schema.Schema{
+			"canceled_statuses": {
 				Type:        schema.TypeString,
 				Description: "Comma-separated list of strings that will be considered as CANCELED status.",
 				Optional:    true,
 			},
-			"custom_headers": &schema.Schema{
+			"custom_headers": {
 				Type:        schema.TypeMap,
 				Description: "Key-value pairs to be sent as additional headers to the service.",
 				Optional:    true,
 			},
-			"fail_fast_status_codes": &schema.Schema{
+			"fail_fast_status_codes": {
 				Type:        schema.TypeList,
 				Description: "Comma-separated HTTP status codes (4xx or 5xx) that will cause this webhook stage to fail without retrying.",
 				Optional:    true,
@@ -44,48 +44,48 @@ func pipelineWebhookStageResource() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"method": &schema.Schema{
+			"method": {
 				Type:        schema.TypeString,
 				Description: "Config the HTTP method used for the webhook.",
 				Optional:    true,
 				Default:     "GET",
 			},
-			"payload_string": &schema.Schema{
+			"payload_string": {
 				Type:        schema.TypeString,
 				Description: "JSON payload to be added to the webhook call.",
 				Optional:    true,
 			},
-			"progress_json_path": &schema.Schema{
+			"progress_json_path": {
 				Type:        schema.TypeString,
 				Description: "JSON path to a descriptive message about the progress in the webhook's response JSON. (e.g. $.buildInfo.progress)",
 				Optional:    true,
 			},
-			"status_json_path": &schema.Schema{
+			"status_json_path": {
 				Type:        schema.TypeString,
 				Description: "JSON path to the status information in the webhook's response JSON. (e.g. $.buildInfo.status)",
 				Optional:    true,
 			},
-			"status_url_json_path": &schema.Schema{
+			"status_url_json_path": {
 				Type:        schema.TypeString,
 				Description: "JSON path to the status url in the webhook's response JSON. (i.e. $.buildInfo.url)",
 				Optional:    true,
 			},
-			"status_url_resolution": &schema.Schema{
+			"status_url_resolution": {
 				Type:        schema.TypeString,
 				Description: "Set the technique to lookup the overall status: webhookResponse - GET method against webhook URL; locationHeader - From the Location header; getMethod - From webhook’s response.",
 				Optional:    true,
 			},
-			"success_statuses": &schema.Schema{
+			"success_statuses": {
 				Type:        schema.TypeString,
 				Description: "Comma-separated list of strings that will be considered as SUCCESS status.",
 				Optional:    true,
 			},
-			"terminal_statuses": &schema.Schema{
+			"terminal_statuses": {
 				Type:        schema.TypeString,
 				Description: "Comma-separated list of strings that will be considered as TERMINAL status.",
 				Optional:    true,
 			},
-			"url": &schema.Schema{
+			"url": {
 				Type:        schema.TypeString,
 				Description: "Config the url for the webhook.",
 				Required:    true,

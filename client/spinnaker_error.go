@@ -16,6 +16,7 @@ type SpinnakerError struct {
 	Body      string `json:"body"`
 }
 
+// UnmarshalJSON unmarshal
 func (e *SpinnakerError) UnmarshalJSON(bytes []byte) error {
 	var errorMap map[string]interface{}
 	if err := json.Unmarshal(bytes, &errorMap); err != nil {
@@ -56,8 +57,7 @@ func (e *SpinnakerError) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-// For error interface
-func (r *SpinnakerError) Error() string {
-	return fmt.Sprintf("%d %v: %v%v\n%v", r.Status, r.ErrorMsg, r.Message,
-		r.Body, r.Exception)
+func (e *SpinnakerError) Error() string {
+	return fmt.Sprintf("%d %v: %v%v\n%v", e.Status, e.ErrorMsg, e.Message,
+		e.Body, e.Exception)
 }

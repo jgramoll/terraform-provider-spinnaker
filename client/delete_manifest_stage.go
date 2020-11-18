@@ -13,6 +13,7 @@ func init() {
 	stageFactories[DeleteManifestStageType] = parseDeleteManifestStage
 }
 
+// DeleteManifestStage stage
 type DeleteManifestStage struct {
 	BaseStage `mapstructure:",squash"`
 
@@ -25,6 +26,7 @@ type DeleteManifestStage struct {
 	Options       *DeleteManifestOptions `json:"options"`
 }
 
+// NewDeleteManifestStage new stage
 func NewDeleteManifestStage() *DeleteManifestStage {
 	return &DeleteManifestStage{
 		BaseStage: *newBaseStage(DeleteManifestStageType),
