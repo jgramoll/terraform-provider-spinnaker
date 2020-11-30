@@ -53,7 +53,10 @@ func TestPreconditionClusterSizeTypeFromClientPreconditions(t *testing.T) {
 	cp.Context.Expected = 3
 	clientPreconditions := []client.Precondition{cp}
 
-	p := fromClientPreconditions(&clientPreconditions)
+	p, err := fromClientPreconditions(&clientPreconditions)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(*p) == 0 {
 		t.Fatal("missing precondition")
 	}

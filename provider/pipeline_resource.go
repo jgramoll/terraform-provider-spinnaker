@@ -164,7 +164,7 @@ func resourcePipelineRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[INFO] Got Pipeline", p.ID)
+	log.Printf("[INFO] Got Pipeline: %s\n", p.ID)
 	return fromClientPipeline(p).setResourceData(d)
 }
 

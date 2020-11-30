@@ -99,11 +99,11 @@ func pipelineDataSourceRead(d *schema.ResourceData, m interface{}) error {
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipeline(application, name)
 	if err != nil {
-		log.Println("[WARN] No Pipeline found:", err)
+		log.Printf("[WARN] No Pipeline found: %v\n", err)
 		return err
 	}
 
-	log.Println("[DEBUG] Imported pipeline", pipeline.ID)
+	log.Printf("[DEBUG] Imported pipeline: %s\n", pipeline.ID)
 	d.SetId(pipeline.ID)
 
 	return resourcePipelineRead(d, m)

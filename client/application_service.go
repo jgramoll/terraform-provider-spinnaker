@@ -52,14 +52,14 @@ func (service *ApplicationService) GetApplicationByNameWithRetries(name string) 
 		app, err := service.GetApplicationByName(name)
 		if err != nil {
 			spinnakerError, ok := err.(*SpinnakerError)
-			log.Println("[DEBUG] GetApplicationByName error", err.Error())
+			log.Printf("[DEBUG] GetApplicationByName error: %s\n", err.Error())
 			if !ok || spinnakerError.Status != 403 {
 				errChan <- fmt.Errorf("Error finding app %v.\n %v", name, err)
 			}
 		}
 		if app != nil {
 			appChan <- app
-			log.Println("[DEBUG] Found application", name)
+			log.Printf("[DEBUG] Found application: %s\n", name)
 		}
 	}
 
@@ -165,7 +165,7 @@ func (service *ApplicationService) sendTask(app *Application, jobType string, ta
 		var execution TaskExecution
 		_, err := service.DoWithResponse(req, &execution)
 		if err != nil {
-			log.Println("[ERROR] Error on execute request to check task status.", err)
+			log.Printf("[ERROR] Error on execute request to check task status: %s\n", err)
 			return
 		}
 

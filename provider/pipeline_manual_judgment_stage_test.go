@@ -121,7 +121,7 @@ resource "spinnaker_pipeline_manual_judgment_stage" "s%v" {
 		"commit",
 		"rollback",
 	]
-}`, i, i)
+}`, i, i, master)
 	}
 
 	return testAccPipelineConfigBasic("app", pipeName) + stages

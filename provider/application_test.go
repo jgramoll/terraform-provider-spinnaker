@@ -2,7 +2,6 @@ package provider
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -15,11 +14,6 @@ func TestAccApplicationPipeline(t *testing.T) {
 	var applicationRef client.Application
 	name := fmt.Sprintf("tfacctest%s", acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum))
 	resourceName := "spinnaker_application.test"
-
-	if os.Getenv("SKIP_APPLICATION_TEST") != "" {
-
-		t.Skip("skipping application tests.")
-	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

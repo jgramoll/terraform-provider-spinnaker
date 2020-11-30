@@ -22,20 +22,6 @@ type FindImageFromTagsStage struct {
 	Tags              map[string]string `json:"tags"`
 }
 
-// FindImageFromTagsStage for pipeline
-type FindImageFromTagsStage struct {
-	*serializableFindImageFromTagsStage
-	Notifications *[]*Notification `json:"notifications"`
-}
-
-func newserializableFindImageStage() *serializableFindImageFromTagsStage {
-	return &serializableFindImageFromTagsStage{
-		Type:                 FindImageFromTagsStageType,
-		FailPipeline:         true,
-		RequisiteStageRefIds: []string{},
-	}
-}
-
 // NewFindImageStage for pipeline
 func NewFindImageStage() *FindImageFromTagsStage {
 	return &FindImageFromTagsStage{

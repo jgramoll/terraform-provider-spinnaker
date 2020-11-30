@@ -76,15 +76,15 @@ func toClientPreconditions(p *[]precondition) (*[]client.Precondition, error) {
 	return &clientPreconditions, nil
 }
 
-func fromClientPreconditions(clientPreconditions *[]client.Precondition) *[]precondition {
+func fromClientPreconditions(clientPreconditions *[]client.Precondition) (*[]precondition, error) {
 	p := []precondition{}
 
 	for _, clientPrecondition := range *clientPreconditions {
 		precondition := newPrecondition(clientPrecondition.GetType())
 
 		if err := mapstructure.Decode(clientPrecondition, precondition); err != nil {
-			// TODO fromClientStage can't handle errors
-			log.Println("[ERROR] parsing check precondition stage", err)
+			log.Printf("[ERROR] parsing check precondition stage %s\n", err)
+			return nil, err
 		} else {
 			// TODO is there a better way to data clean up?
 			newContext := map[string]interface{}{}
@@ -109,5 +109,5 @@ func fromClientPreconditions(clientPreconditions *[]client.Precondition) *[]prec
 		}
 	}
 
-	return &p
+	return &p, nil
 }

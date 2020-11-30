@@ -40,13 +40,10 @@ type Client struct {
 // NewClient Return a new client with loaded configuration
 func NewClient(config *Config) (*Client, error) {
 
-	httpClient := http.DefaultClient
-	if config.Auth.Enabled {
-		var err error
-		httpClient, err = newTLSHTTPClient(config)
-		if err != nil {
-			return nil, err
-		}
+	var err error
+	httpClient, err := newTLSHTTPClient(config)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Client{
@@ -56,12 +53,15 @@ func NewClient(config *Config) (*Client, error) {
 }
 
 func newTLSHTTPClient(config *Config) (*http.Client, error) {
+	if config.Auth == nil {
+		return http.DefaultClient, nil
+	}
 
 	var cert tls.Certificate
 	var err error
 	if config.Auth.CertContent != "" {
 		cert, err = decodeBase64KeyPair(config.Auth.CertContent, config.Auth.KeyContent)
-	} else {
+	} else if config.Auth.CertPath != "" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return nil, err
@@ -75,6 +75,8 @@ func newTLSHTTPClient(config *Config) (*http.Client, error) {
 			log.Fatal("[ERROR] Missing Cert Key Path")
 		}
 		cert, err = tls.LoadX509KeyPair(certPath, keyPath)
+	} else {
+		return http.DefaultClient, nil
 	}
 	if err != nil {
 		return nil, err
@@ -150,7 +152,7 @@ func (client *Client) DoWithRetry(retryOnStatus int, maxAttempts int, createReq 
 		if !ok {
 			return nil, respErr
 		}
-		log.Println("[INFO] spinnakerError.Status", spinnakerError.Status)
+		log.Printf("[INFO] spinnakerError.Status: %v\n", spinnakerError.Status)
 		if spinnakerError.Status != retryOnStatus {
 			return nil, spinnakerError
 		}
@@ -204,7 +206,7 @@ func decodeResponse(r *http.Response, v interface{}) error {
 
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
-	log.Println("[DEBUG] Got response body", bodyString)
+	log.Printf("[DEBUG] Got response body: %s\n", bodyString)
 
 	return json.Unmarshal([]byte(bodyString), &v)
 }
@@ -216,7 +218,7 @@ func validateResponse(r *http.Response) error {
 
 	bodyBytes, _ := ioutil.ReadAll(r.Body)
 	bodyString := string(bodyBytes)
-	log.Println("[INFO] Error response body", bodyString)
+	log.Printf("[INFO] Error response body: %s\n", bodyString)
 
 	spinnakerError := SpinnakerError{}
 	err := json.Unmarshal([]byte(bodyString), &spinnakerError)

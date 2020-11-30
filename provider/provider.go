@@ -2,7 +2,6 @@ package provider
 
 import (
 	"log"
-	"os"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
@@ -30,54 +29,46 @@ func Provider() terraform.ResourceProvider {
 				Description: "Address of spinnaker api",
 			},
 
+			"cert_path": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
+				Description: "Path to cert to authenticate with spinnaker api",
+			},
 
-			"auth": &schema.Schema{
-				Type:     schema.TypeMap,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-					"cert_path": {
-						Type:        schema.TypeString,
-						Optional:    true,
-						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT", nil),
-						Description: "Path to cert to authenticate with spinnaker api",
-					},
+			"key_path": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
+				Description: "Path to key to authenticate with spinnaker api",
+			},
 
-					"key_path": {
-						Type:        schema.TypeString,
-						Optional:    true,
-						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY", nil),
-						Description: "Path to key to authenticate with spinnaker api",
-					},
+			"cert_content": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
+				Description: "Cert string in base64 to authenticate with spinnaker api",
+			},
 
-					"cert_content": &schema.Schema{
-						Type:        schema.TypeString,
-						Required:    false,
-						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_CERT_CONTENT", nil),
-						Description: "Cert string in base64 to authenticate with spinnaker api",
-					},
+			"key_content": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
+				Description: "Key string in base64 to authenticate with spinnaker api",
+			},
 
-					"key_content": &schema.Schema{
-						Type:        schema.TypeString,
-						Required:    false,
-						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_KEY_CONTENT", nil),
-						Description: "Key string in base64 to authenticate with spinnaker api",
-					},
+			"user_email": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
+				Description: "Path to user_email to authenticate with spinnaker api",
+			},
 
-					"user_email": {
-						Type:        schema.TypeString,
-						Optional:    true,
-						DefaultFunc: schema.EnvDefaultFunc("SPINNAKER_EMAIL", nil),
-						Description: "Path to user_email to authenticate with spinnaker api",
-					},
-
-					"insecure": {
-						Type:        schema.TypeBool,
-						Optional:    true,
-						Default:     true,
-						Description: "If http client should skip ssl validation",
-					},
-				},
+			"insecure": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "If http client should skip ssl validation",
 			},
 		},
 
@@ -99,18 +90,16 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_delete_manifest_stage":       pipelineDeleteManifestStageResource(),
 			"spinnaker_pipeline_deploy_cloudformation_stage": pipelineDeployCloudformationStageResource(),
 			"spinnaker_pipeline_deploy_manifest_stage":       pipelineDeployManifestStageResource(),
-			"spinnaker_pipeline_disable_server_group_stage":  pipelineDisableServerGroupStageResource(),
-			"spinnaker_pipeline_scale_manifest_stage":        pipelineScaleManifestStageResource(),
 			"spinnaker_pipeline_deploy_stage":                pipelineDeployStageResource(),
 			"spinnaker_pipeline_destroy_server_group_stage":  pipelineDestroyServerGroupStageResource(),
 			"spinnaker_pipeline_disable_manifest_stage":      pipelineDisableManifestStageResource(),
+			"spinnaker_pipeline_disable_server_group_stage":  pipelineDisableServerGroupStageResource(),
 			"spinnaker_pipeline_enable_manifest_stage":       pipelineEnableManifestStageResource(),
 			"spinnaker_pipeline_evaluate_variables_stage":    pipelineEvaluateVariablesStageResource(),
 
 			"spinnaker_pipeline_find_artifacts_from_resource_stage": pipelineFindArtifactsFromResourceStageResource(),
 
 			"spinnaker_pipeline_find_image_from_tags_stage":  pipelineFindImageFromTagsStageResource(),
-			"spinnaker_pipeline_find_image_stage":            pipelineFindImageStageResource(),
 			"spinnaker_pipeline_jenkins_stage":               pipelineJenkinsStageResource(),
 			"spinnaker_pipeline_manual_judgment_stage":       pipelineManualJudgementStageResource(),
 			"spinnaker_pipeline_notification":                pipelineNotificationResource(),
@@ -119,6 +108,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_resize_server_group_stage":   pipelineResizeServerGroupStageResource(),
 			"spinnaker_pipeline_rollback_cluster_stage":      pipelineRollbackClusterStageResource(),
 			"spinnaker_pipeline_run_job_manifest_stage":      pipelineRunJobManifestStageResource(),
+			"spinnaker_pipeline_scale_manifest_stage":        pipelineScaleManifestStageResource(),
 			"spinnaker_pipeline_undo_rollout_manifest_stage": pipelineUndoRolloutManifestStageResource(),
 			"spinnaker_pipeline_webhook_stage":               pipelineWebhookStageResource(),
 			"spinnaker_pipeline_script_stage":                pipelineScriptStageResource(),

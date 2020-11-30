@@ -41,7 +41,11 @@ func (*checkPreconditionsStage) fromClientStage(cs client.Stage) (stage, error) 
 		return nil, err
 	}
 
-	newStage.Preconditions = *fromClientPreconditions(&clientStage.Preconditions)
+	preconditions, err := fromClientPreconditions(&clientStage.Preconditions)
+	if err != nil {
+		return nil, err
+	}
+	newStage.Preconditions = *preconditions
 
 	return newStage, nil
 }

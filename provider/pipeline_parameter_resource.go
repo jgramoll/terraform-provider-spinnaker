@@ -107,7 +107,7 @@ func resourcePipelineParameterCreate(d *schema.ResourceData, m interface{}) erro
 		return err
 	}
 
-	log.Println("[DEBUG] Creating pipeline parameter:", id)
+	log.Printf("[DEBUG] Creating pipeline parameter: %s\n", id)
 	d.SetId(id.String())
 	return resourcePipelineParameterRead(d, m)
 }
@@ -117,7 +117,7 @@ func resourcePipelineParameterRead(d *schema.ResourceData, m interface{}) error 
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
-		log.Println("[WARN] No Pipeline found:", err)
+		log.Printf("[WARN] No Pipeline found: %s\n", err)
 		d.SetId("")
 		return nil
 	}
@@ -125,7 +125,7 @@ func resourcePipelineParameterRead(d *schema.ResourceData, m interface{}) error 
 	var parameter *client.PipelineParameter
 	parameter, err = pipeline.GetParameter(d.Id())
 	if err != nil {
-		log.Println("[WARN] No Pipeline Parameter found:", err)
+		log.Printf("[WARN] No Pipeline Parameter found: %s\n", err)
 		d.SetId("")
 	} else {
 		d.SetId(parameter.ID)
@@ -163,7 +163,7 @@ func resourcePipelineParameterUpdate(d *schema.ResourceData, m interface{}) erro
 		return err
 	}
 
-	log.Println("[DEBUG] Updated pipeline parameter:", d.Id())
+	log.Printf("[DEBUG] Updated pipeline parameter: %s\n", d.Id())
 	return resourcePipelineParameterRead(d, m)
 }
 

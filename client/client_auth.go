@@ -2,7 +2,6 @@ package client
 
 // Auth for login on spinnaker
 type Auth struct {
-	Enabled     bool
 	CertPath    string
 	CertContent string
 	KeyPath     string
@@ -14,7 +13,6 @@ type Auth struct {
 // NewAuth new auth
 func NewAuth() *Auth {
 	return &Auth{
-		Enabled:  true,
 		Insecure: true,
 	}
 }

@@ -20,7 +20,7 @@ func (t ScaleManifestSource) String() string {
 func ParseScaleManifestSource(s string) (ScaleManifestSource, error) {
 	switch s {
 	default:
-		log.Println("[WARN] Unknown scale manifest source:", s)
+		log.Printf("[WARN] Unknown scale manifest source: %s\n", s)
 		return ScaleManifestSourceUnknown, nil
 	case "text":
 		return ScaleManifestSourceText, nil
