@@ -1,15 +1,5 @@
 package client
 
-// DeployStageCluster cluster
-// TODO deprecated remove
-type DeployStageCluster DeploymentCluster
-
-// NewDeployStageCluster new cluster
-func NewDeployStageCluster() *DeploymentCluster {
-	println("[DEPRECATED] DeployStageCluster will be removed in a future version. Use DeploymentCluster")
-	return NewDeploymentCluster()
-}
-
 // DeploymentCluster cluster to deploy
 type DeploymentCluster struct {
 	Account                             string                 `json:"account"`
