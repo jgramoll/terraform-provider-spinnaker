@@ -22,8 +22,8 @@ func TestAccPipelineDisableServerGroupStageBasic(t *testing.T) {
 	target := "my-target"
 	newTarget := "new-my-target"
 	pipelineResourceName := "spinnaker_pipeline.test"
-	stage1 := "spinnaker_pipeline_disable_server_group_stage.1"
-	stage2 := "spinnaker_pipeline_disable_server_group_stage.2"
+	stage1 := "spinnaker_pipeline_disable_server_group_stage.s1"
+	stage2 := "spinnaker_pipeline_disable_server_group_stage.s2"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -73,7 +73,7 @@ func TestAccPipelineDisableServerGroupStageBasic(t *testing.T) {
 				ImportStateVerify: true,
 			},
 			{
-				Config: testAccPipelineDestroyServerGroupStageConfigBasic(pipeName, newTarget, 2),
+				Config: testAccPipelineDisableServerGroupStageConfigBasic(pipeName, newTarget, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "target", newTarget),
@@ -87,7 +87,7 @@ func TestAccPipelineDisableServerGroupStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineDestroyServerGroupStageConfigBasic(pipeName, target, 1),
+				Config: testAccPipelineDisableServerGroupStageConfigBasic(pipeName, target, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
 					resource.TestCheckResourceAttr(stage1, "target", target),
@@ -98,7 +98,7 @@ func TestAccPipelineDisableServerGroupStageBasic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPipelineDestroyServerGroupStageConfigBasic(pipeName, target, 0),
+				Config: testAccPipelineDisableServerGroupStageConfigBasic(pipeName, target, 0),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{}, &stages),
@@ -112,7 +112,7 @@ func testAccPipelineDisableServerGroupStageConfigBasic(pipeName string, target s
 	stages := ""
 	for i := 1; i <= count; i++ {
 		stages += fmt.Sprintf(`
-resource "spinnaker_pipeline_disable_server_group_stage" "%v" {
+resource "spinnaker_pipeline_disable_server_group_stage" "s%v" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %v"
 	cluster  = "test_cluster"
@@ -120,11 +120,7 @@ resource "spinnaker_pipeline_disable_server_group_stage" "%v" {
 }`, i, i, target)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-}`, pipeName) + stages
+	return testAccPipelineConfigBasic("app", pipeName) + stages
 }
 
 func testAccCheckServerGroupOnlyDisabled(s *terraform.State) error {

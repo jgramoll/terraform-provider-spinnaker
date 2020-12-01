@@ -25,12 +25,12 @@ func TestAccApplicationPipeline(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccCheckApplicationExists(resourceName, &applicationRef),
 					resource.TestCheckResourceAttr(resourceName, "name", name),
-					resource.TestCheckResourceAttr(resourceName, "permissions.0.execute.0", "spinnakeradmin"),
-					resource.TestCheckResourceAttr(resourceName, "permissions.0.execute.1", "spinnakerexecute"),
-					resource.TestCheckResourceAttr(resourceName, "permissions.0.read.0", "spinnakeradmin"),
-					resource.TestCheckResourceAttr(resourceName, "permissions.0.read.1", "spinnakerread"),
-					resource.TestCheckResourceAttr(resourceName, "permissions.0.write.0", "spinnakeradmin"),
-					resource.TestCheckResourceAttr(resourceName, "permissions.0.write.1", "spinnakerwrite"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.execute.0", "spinnaker-admin"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.execute.1", "spinnaker-execute"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.read.0", "spinnaker-admin"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.read.1", "spinnaker-read"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.write.0", "spinnaker-admin"),
+					resource.TestCheckResourceAttr(resourceName, "permissions.0.write.1", "spinnaker-write"),
 				),
 			},
 		},
@@ -50,16 +50,16 @@ resource "spinnaker_application" "test" {
 	
 	permissions {
 		execute = [
-			"spinnakeradmin",
-			"spinnakerexecute"
+			"spinnaker-admin",
+			"spinnaker-execute"
 		]
 		read = [
-			"spinnakeradmin",
-			"spinnakerread"
+			"spinnaker-admin",
+			"spinnaker-read"
 		]
 		write = [
-			"spinnakeradmin",
-			"spinnakerwrite"
+			"spinnaker-admin",
+			"spinnaker-write"
 		]
 	}
 }

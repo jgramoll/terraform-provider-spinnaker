@@ -85,28 +85,28 @@ func fromClientPreconditions(clientPreconditions *[]client.Precondition) (*[]pre
 		if err := mapstructure.Decode(clientPrecondition, precondition); err != nil {
 			log.Printf("[ERROR] parsing check precondition stage %s\n", err)
 			return nil, err
-		} else {
-			// TODO is there a better way to data clean up?
-			newContext := map[string]interface{}{}
-			for k, v := range precondition.Context {
-				var val string
-				switch reflect.TypeOf(v).Kind() {
-				default:
-					val = fmt.Sprint(v)
-				case reflect.Slice:
-					vArr, ok := v.([]string)
-					if ok {
-						val = strings.Join(vArr, ",")
-					} else {
-						val = fmt.Sprint(v)
-					}
-				}
-				newContext[strcase.ToSnake(k)] = val
-			}
-			precondition.Context = newContext
-
-			p = append(p, *precondition)
 		}
+
+		// TODO is there a better way to data clean up?
+		newContext := map[string]interface{}{}
+		for k, v := range precondition.Context {
+			var val string
+			switch reflect.TypeOf(v).Kind() {
+			default:
+				val = fmt.Sprint(v)
+			case reflect.Slice:
+				vArr, ok := v.([]string)
+				if ok {
+					val = strings.Join(vArr, ",")
+				} else {
+					val = fmt.Sprint(v)
+				}
+			}
+			newContext[strcase.ToSnake(k)] = val
+		}
+		precondition.Context = newContext
+
+		p = append(p, *precondition)
 	}
 
 	return &p, nil

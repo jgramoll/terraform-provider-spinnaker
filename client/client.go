@@ -40,7 +40,6 @@ type Client struct {
 // NewClient Return a new client with loaded configuration
 func NewClient(config *Config) (*Client, error) {
 
-	var err error
 	httpClient, err := newTLSHTTPClient(config)
 	if err != nil {
 		return nil, err

@@ -17,7 +17,7 @@ func newDestroyServerGroupStage() *destroyServerGroupStage {
 }
 
 func (s *destroyServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
-	cs := client.NewDisableServerGroupStage()
+	cs := client.NewDestroyServerGroupStage()
 	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err

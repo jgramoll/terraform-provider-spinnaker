@@ -9,13 +9,13 @@ func init() {
 	stageFactories[DestroyServerGroupStageType] = parseDestroyServerGroupStage
 }
 
-// DestroyServerGroupStage stage
+// DestroyServerGroupStage for pipeline
 type DestroyServerGroupStage struct {
 	BaseStage              `mapstructure:",squash"`
 	TargetServerGroupStage `mapstructure:",squash"`
 }
 
-// NewDestroyServerGroupStage new disable server group stage
+// NewDestroyServerGroupStage for pipeline
 func NewDestroyServerGroupStage() *DestroyServerGroupStage {
 	return &DestroyServerGroupStage{
 		BaseStage:              *newBaseStage(DestroyServerGroupStageType),

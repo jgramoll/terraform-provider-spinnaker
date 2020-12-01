@@ -6,7 +6,8 @@ import (
 
 // config for provider
 type providerConfig struct {
-	Address     string `mapstructure:"address"`
+	Address string `mapstructure:"address"`
+	// TODO I couldn't get EnvDefaultFunc working if nested with auth
 	CertPath    string `mapstructure:"cert_path"`
 	KeyPath     string `mapstructure:"key_path"`
 	CertContent string `mapstructure:"cert_content"`

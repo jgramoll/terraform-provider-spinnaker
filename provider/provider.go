@@ -94,6 +94,7 @@ func Provider() terraform.ResourceProvider {
 			"spinnaker_pipeline_destroy_server_group_stage":  pipelineDestroyServerGroupStageResource(),
 			"spinnaker_pipeline_disable_manifest_stage":      pipelineDisableManifestStageResource(),
 			"spinnaker_pipeline_disable_server_group_stage":  pipelineDisableServerGroupStageResource(),
+			"spinnaker_pipeline_enable_server_group_stage":   pipelineEnableServerGroupStageResource(),
 			"spinnaker_pipeline_enable_manifest_stage":       pipelineEnableManifestStageResource(),
 			"spinnaker_pipeline_evaluate_variables_stage":    pipelineEvaluateVariablesStageResource(),
 
@@ -136,7 +137,6 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	log.Println("[INFO] Initializing Spinnaker client")
 
 	clientConfig := config.toClientConfig()
-
 	c, err := client.NewClient(clientConfig)
 	if err != nil {
 		return nil, err
