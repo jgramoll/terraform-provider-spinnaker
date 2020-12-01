@@ -10,7 +10,7 @@ var ErrCanaryConfigNotFound = errors.New("Could not find canary config")
 
 // CreateCanaryConfigResponse canary config response
 type CreateCanaryConfigResponse struct {
-	CanaryConfigId string `json:"canaryConfigId"`
+	CanaryConfigID string `json:"canaryConfigId"`
 }
 
 // CanaryConfigService config service
@@ -58,12 +58,12 @@ func (service *CanaryConfigService) CreateCanaryConfig(config *CanaryConfig) (co
 
 	response := &CreateCanaryConfigResponse{}
 	_, err = service.DoWithResponse(req, response)
-	return response.CanaryConfigId, err
+	return response.CanaryConfigID, err
 }
 
 // UpdateCanaryConfig update config
 func (service *CanaryConfigService) UpdateCanaryConfig(config *CanaryConfig) error {
-	path := fmt.Sprintf("/v2/canaryConfig/%s", config.Id)
+	path := fmt.Sprintf("/v2/canaryConfig/%s", config.ID)
 	req, err := service.NewRequestWithBody("PUT", path, config)
 	if err != nil {
 		return err

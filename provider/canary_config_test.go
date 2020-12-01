@@ -37,7 +37,7 @@ func TestAccCanaryConfigBasic(t *testing.T) {
 			},
 			{
 				ResourceName:      resourceName,
-				ImportStateId:     canaryConfigRef.Id,
+				ImportStateId:     canaryConfigRef.ID,
 				ImportState:       true,
 				ImportStateVerify: true,
 			},

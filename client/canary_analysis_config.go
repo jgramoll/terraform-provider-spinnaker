@@ -9,7 +9,7 @@ type CanaryAnalysisConfigScoreThreadholds struct {
 // CanaryAnalysisConfig config
 type CanaryAnalysisConfig struct {
 	CanaryAnalysisIntervalMins string `json:"canaryAnalysisIntervalMins"`
-	CanaryConfigId             string `json:"canaryConfigId"`
+	CanaryConfigID             string `json:"canaryConfigId"`
 	LifetimeDuration           string `json:"lifetimeDuration"`
 	MetricsAccountName         string `json:"metricsAccountName"`
 

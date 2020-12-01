@@ -74,8 +74,8 @@ func canaryConfigDataSourceRead(d *schema.ResourceData, m interface{}) error {
 
 	for _, c := range *canaryConfigs {
 		if c.Name == name {
-			log.Printf("[DEBUG] Imported canary config: %s\n", c.Id)
-			d.SetId(c.Id)
+			log.Printf("[DEBUG] Imported canary config: %s\n", c.ID)
+			d.SetId(c.ID)
 
 			return resourceCanaryConfigRead(d, m)
 		}

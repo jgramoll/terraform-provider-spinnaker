@@ -18,7 +18,7 @@ type canaryConfig struct {
 
 func (c *canaryConfig) toClientCanaryConfig(id string) *client.CanaryConfig {
 	return &client.CanaryConfig{
-		Id:            id,
+		ID:            id,
 		Name:          c.Name,
 		Applications:  c.Applications,
 		Description:   c.Description,
