@@ -2,7 +2,7 @@ package client
 
 // CanaryConfig canary config
 type CanaryConfig struct {
-	Id            string                  `json:"id,omitempty"`
+	ID            string                  `json:"id,omitempty"`
 	Name          string                  `json:"name"`
 	Applications  []string                `json:"applications"`
 	Description   string                  `json:"description"`

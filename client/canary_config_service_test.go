@@ -1,3 +1,5 @@
+// +build integration
+
 package client
 
 import (
@@ -49,9 +51,9 @@ func TestCanaryConfigCleanup(t *testing.T) {
 
 	for _, config := range *configs {
 		if strings.Contains(config.Name, "mytestcanary") {
-			canaryConfigService.DeleteCanaryConfig(config.Id)
+			canaryConfigService.DeleteCanaryConfig(config.ID)
 		} else if strings.Contains(config.Name, "tfacctest") {
-			canaryConfigService.DeleteCanaryConfig(config.Id)
+			canaryConfigService.DeleteCanaryConfig(config.ID)
 		}
 	}
 }

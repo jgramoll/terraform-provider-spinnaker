@@ -68,7 +68,7 @@ func resourcePipelineTriggerCreate(d *schema.ResourceData, m interface{}, create
 		return err
 	}
 
-	log.Println("[DEBUG] Creating pipeline trigger:", id)
+	log.Printf("[DEBUG] Creating pipeline trigger: %s\n", id)
 	d.SetId(id.String())
 	return resourcePipelineTriggerRead(d, m, createTrigger)
 }
@@ -78,21 +78,21 @@ func resourcePipelineTriggerRead(d *schema.ResourceData, m interface{}, createTr
 	pipelineService := m.(*Services).PipelineService
 	pipeline, err := pipelineService.GetPipelineByID(pipelineID)
 	if err != nil {
-		log.Println("[WARN] No Pipeline found:", err)
+		log.Printf("[WARN] No Pipeline found: %s\n", err)
 		d.SetId("")
 		return nil
 	}
 
 	clientTrigger, err := pipeline.GetTrigger(d.Id())
 	if err != nil {
-		log.Println("[WARN] No Pipeline Trigger found:", err)
+		log.Printf("[WARN] No Pipeline Trigger found: %s\n", err)
 		d.SetId("")
 		return nil
 	}
 
 	t, err := createTrigger().fromClientTrigger(clientTrigger)
 	if err != nil {
-		log.Println("[WARN] No Pipeline Trigger found:", err)
+		log.Printf("[WARN] No Pipeline Trigger found: %s\n", err)
 		d.SetId("")
 		return nil
 	}
@@ -130,7 +130,7 @@ func resourcePipelineTriggerUpdate(d *schema.ResourceData, m interface{}, create
 		return err
 	}
 
-	log.Println("[DEBUG] Updated pipeline trigger:", d.Id())
+	log.Printf("[DEBUG] Updated pipeline trigger: %s\n", d.Id())
 	return resourcePipelineTriggerRead(d, m, createTrigger)
 }
 
@@ -159,8 +159,8 @@ func resourcePipelineTriggerDelete(d *schema.ResourceData, m interface{}) error 
 }
 
 func resourceTriggerImporter(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	log.Println("[INFO] Importing d: ", d.Get(""))
-	log.Println("[INFO] Importing id: ", d.Id())
+	log.Printf("[INFO] Importing d: %s\n", d.Get(""))
+	log.Printf("[INFO] Importing id: %s\n", d.Id())
 	id := strings.Split(d.Id(), "_")
 	if len(id) < 2 {
 		return nil, errInvalidTriggerImportKey

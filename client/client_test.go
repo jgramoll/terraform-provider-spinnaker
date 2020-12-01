@@ -1,3 +1,5 @@
+// +build integration
+
 package client
 
 import (
@@ -70,7 +72,7 @@ func TestClientErrorResponse(t *testing.T) {
 func newTestClient() *Client {
 	usr, err := user.Current()
 	if err != nil {
-		log.Println("[ERROR] unable to get current user: ", err)
+		log.Printf("[ERROR] unable to get current user: %s\n", err)
 	}
 
 	address := os.Getenv("SPINNAKER_ADDRESS")
@@ -91,5 +93,9 @@ func newTestClient() *Client {
 	c.Auth.CertPath = certPath
 	c.Auth.KeyPath = keyPath
 	c.Auth.UserEmail = fmt.Sprintf("%s", usr.Username)
-	return NewClient(c)
+	client, err := NewClient(c)
+	if err != nil {
+		log.Printf("[ERROR] Creating client: %s\n", err)
+	}
+	return client
 }

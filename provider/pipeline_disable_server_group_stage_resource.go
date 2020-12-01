@@ -4,9 +4,9 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func pipelineDestroyServerGroupStageResource() *schema.Resource {
+func pipelineDisableServerGroupStageResource() *schema.Resource {
 	stageInterface := func() stage {
-		return newDestroyServerGroupStage()
+		return newDisableServerGroupStage()
 	}
 	return &schema.Resource{
 		Create: func(d *schema.ResourceData, m interface{}) error {

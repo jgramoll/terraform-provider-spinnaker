@@ -15,7 +15,7 @@ type webhookStage struct {
 	CustomHeaders       map[string]string `mapstructure:"custom_headers"`
 	FailFastStatusCodes []string          `mapstructure:"fail_fast_status_codes"`
 	Method              string            `mapstructure:"method"`
-	Payload             string            `mapstructure:"payload_string"`
+	PayloadString       string            `mapstructure:"payload_string"`
 	ProgressJSONPath    string            `mapstructure:"progress_json_path"`
 	StatusJSONPath      string            `mapstructure:"status_json_path"`
 	StatusURLJSONPath   string            `mapstructure:"status_url_json_path"`
@@ -44,8 +44,8 @@ func (s *webhookStage) toClientStage(config *client.Config, refID string) (clien
 	cs.Method = s.Method
 
 	var definedPayload map[string]interface{}
-	if len(s.Payload) > 0 {
-		if err = json.Unmarshal([]byte(s.Payload), &definedPayload); err != nil {
+	if s.PayloadString != "" {
+		if err = json.Unmarshal([]byte(s.PayloadString), &definedPayload); err != nil {
 			return nil, err
 		}
 	}
@@ -85,7 +85,7 @@ func (*webhookStage) fromClientStage(cs client.Stage) (stage, error) {
 		if err != nil {
 			log.Println("[WARN]: Failed to unmarshal payload into string")
 		}
-		newStage.Payload = string(out)
+		newStage.PayloadString = string(out)
 	}
 
 	newStage.ProgressJSONPath = clientStage.ProgressJSONPath
@@ -125,7 +125,7 @@ func (s *webhookStage) SetResourceData(d *schema.ResourceData) error {
 	if err != nil {
 		return err
 	}
-	err = d.Set("payload_string", s.Payload)
+	err = d.Set("payload_string", s.PayloadString)
 	if err != nil {
 		return err
 	}

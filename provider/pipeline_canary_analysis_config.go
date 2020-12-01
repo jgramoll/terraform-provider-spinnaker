@@ -22,7 +22,7 @@ func (configs *canaryAnalysisConfigs) toClientCanaryConfig() *client.CanaryAnaly
 	for _, c := range *configs {
 		return &client.CanaryAnalysisConfig{
 			CanaryAnalysisIntervalMins: c.CanaryAnalysisIntervalMins,
-			CanaryConfigId:             c.CanaryConfigID,
+			CanaryConfigID:             c.CanaryConfigID,
 			LifetimeDuration:           c.LifetimeDuration,
 			MetricsAccountName:         c.MetricsAccountName,
 			Scopes:                     *c.Scopes.toClientCanaryConfigScopes(),
@@ -36,7 +36,7 @@ func (configs *canaryAnalysisConfigs) toClientCanaryConfig() *client.CanaryAnaly
 func (*canaryAnalysisConfigs) fromClientCanaryConfig(c *client.CanaryAnalysisConfig) *canaryAnalysisConfigs {
 	newConfig := canaryAnalysisConfig{
 		CanaryAnalysisIntervalMins: c.CanaryAnalysisIntervalMins,
-		CanaryConfigID:             c.CanaryConfigId,
+		CanaryConfigID:             c.CanaryConfigID,
 		LifetimeDuration:           c.LifetimeDuration,
 		MetricsAccountName:         c.MetricsAccountName,
 		StorageAccountName:         c.StorageAccountName,

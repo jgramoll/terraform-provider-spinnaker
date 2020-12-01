@@ -5,19 +5,19 @@ import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
-type destroyServerGroupStage struct {
+type disableServerGroupStage struct {
 	baseStage              `mapstructure:",squash"`
 	targetServerGroupStage `mapstructure:",squash"`
 }
 
-func newDestroyServerGroupStage() *destroyServerGroupStage {
-	return &destroyServerGroupStage{
+func newDisableServerGroupStage() *disableServerGroupStage {
+	return &disableServerGroupStage{
 		baseStage: *newBaseStage(),
 	}
 }
 
-func (s *destroyServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
-	cs := client.NewDestroyServerGroupStage()
+func (s *disableServerGroupStage) toClientStage(config *client.Config, refID string) (client.Stage, error) {
+	cs := client.NewDisableServerGroupStage()
 	err := s.baseToClientStage(&cs.BaseStage, refID, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
@@ -30,9 +30,9 @@ func (s *destroyServerGroupStage) toClientStage(config *client.Config, refID str
 	return cs, nil
 }
 
-func (*destroyServerGroupStage) fromClientStage(cs client.Stage) (stage, error) {
-	clientStage := cs.(*client.DestroyServerGroupStage)
-	newStage := newDestroyServerGroupStage()
+func (*disableServerGroupStage) fromClientStage(cs client.Stage) (stage, error) {
+	clientStage := cs.(*client.DisableServerGroupStage)
+	newStage := newDisableServerGroupStage()
 	err := newStage.baseFromClientStage(&clientStage.BaseStage, newDefaultNotificationInterface)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (*destroyServerGroupStage) fromClientStage(cs client.Stage) (stage, error) 
 	return newStage, nil
 }
 
-func (s *destroyServerGroupStage) SetResourceData(d *schema.ResourceData) error {
+func (s *disableServerGroupStage) SetResourceData(d *schema.ResourceData) error {
 	err := s.baseSetResourceData(d)
 	if err != nil {
 		return err

@@ -114,7 +114,9 @@ func testAccPipelineWebhookStageConfigBasic(pipeName string, url string, count i
 resource "spinnaker_pipeline_webhook_stage" "s%d" {
 	pipeline = "${spinnaker_pipeline.test.id}"
 	name     = "Stage %d"
-	url  	 = "%s"
+	url  	   = "%s"
+
+	payload_string = "{\"foo\":{\"bar\":\"baz\"}}"
 }`, i, i, url)
 	}
 

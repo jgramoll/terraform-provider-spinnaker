@@ -97,7 +97,7 @@ func (c *deployStageCluster) toClientCluster() *client.DeploymentCluster {
 	clientCluster.Moniker = toClientMoniker(c.Moniker)
 	clientCluster.Provider = c.Provider
 	if c.SecurityGroupsExpression != "" {
-		clientCluster.SecurityGroups = c.SecurityGroupsExpression
+		clientCluster.SecurityGroups = []string{c.SecurityGroupsExpression}
 	} else {
 		clientCluster.SecurityGroups = c.SecurityGroups
 	}
@@ -134,7 +134,7 @@ func fromClientCluster(c *client.DeploymentCluster) *deployStageCluster {
 	var sgExpression string
 	switch v := c.SecurityGroups.(type) {
 	default:
-		log.Println("[WARN] unknown security group type", v)
+		log.Printf("[WARN] unknown security group type: %s\n", v)
 	case string:
 		sgExpression = v
 	case []interface{}:
@@ -144,7 +144,7 @@ func fromClientCluster(c *client.DeploymentCluster) *deployStageCluster {
 			if ok {
 				varray = append(varray, s)
 			} else {
-				log.Println("[WARN] unknown security group type, should be string", i)
+				log.Printf("[WARN] unknown security group type, should be string: %v\n", i)
 			}
 		}
 		sgs = varray

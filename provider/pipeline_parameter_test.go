@@ -117,13 +117,7 @@ resource "spinnaker_pipeline_parameter" "p%v" {
 }`, i, name, i)
 	}
 
-	return fmt.Sprintf(`
-resource "spinnaker_pipeline" "test" {
-	application = "app"
-	name        = "%s"
-	index       = 3
-}
-`, pipeName) + parameters
+	return testAccPipelineConfigBasic("app", pipeName) + parameters
 }
 
 func testAccCheckPipelineParameters(resourceName string, expected []string, parameters *[]*client.PipelineParameter) resource.TestCheckFunc {

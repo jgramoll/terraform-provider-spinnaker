@@ -141,6 +141,9 @@ resource "spinnaker_pipeline_deploy_manifest_stage" "s%v" {
 	cloud_provider            = "provider"
 	source                    = "text"
 
+	moniker {
+		app = "app"
+	}
 	relationships {}
 	traffic_management {
 		options {}

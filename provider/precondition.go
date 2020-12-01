@@ -76,38 +76,38 @@ func toClientPreconditions(p *[]precondition) (*[]client.Precondition, error) {
 	return &clientPreconditions, nil
 }
 
-func fromClientPreconditions(clientPreconditions *[]client.Precondition) *[]precondition {
+func fromClientPreconditions(clientPreconditions *[]client.Precondition) (*[]precondition, error) {
 	p := []precondition{}
 
 	for _, clientPrecondition := range *clientPreconditions {
 		precondition := newPrecondition(clientPrecondition.GetType())
 
 		if err := mapstructure.Decode(clientPrecondition, precondition); err != nil {
-			// TODO fromClientStage can't handle errors
-			log.Println("[ERROR] parsing check precondition stage", err)
-		} else {
-			// TODO is there a better way to data clean up?
-			newContext := map[string]interface{}{}
-			for k, v := range precondition.Context {
-				var val string
-				switch reflect.TypeOf(v).Kind() {
-				default:
-					val = fmt.Sprint(v)
-				case reflect.Slice:
-					vArr, ok := v.([]string)
-					if ok {
-						val = strings.Join(vArr, ",")
-					} else {
-						val = fmt.Sprint(v)
-					}
-				}
-				newContext[strcase.ToSnake(k)] = val
-			}
-			precondition.Context = newContext
-
-			p = append(p, *precondition)
+			log.Printf("[ERROR] parsing check precondition stage %s\n", err)
+			return nil, err
 		}
+
+		// TODO is there a better way to data clean up?
+		newContext := map[string]interface{}{}
+		for k, v := range precondition.Context {
+			var val string
+			switch reflect.TypeOf(v).Kind() {
+			default:
+				val = fmt.Sprint(v)
+			case reflect.Slice:
+				vArr, ok := v.([]string)
+				if ok {
+					val = strings.Join(vArr, ",")
+				} else {
+					val = fmt.Sprint(v)
+				}
+			}
+			newContext[strcase.ToSnake(k)] = val
+		}
+		precondition.Context = newContext
+
+		p = append(p, *precondition)
 	}
 
-	return &p
+	return &p, nil
 }

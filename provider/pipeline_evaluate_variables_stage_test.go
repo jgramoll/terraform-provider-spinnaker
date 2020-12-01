@@ -39,15 +39,11 @@ func TestAccPipelineEvaluateVariablesStageBasic(t *testing.T) {
 				Config: testAccPipelineEvaluateVariablesStageConfigBasic(pipeName, variables, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "variables.0.key", "foo"),
-					resource.TestCheckResourceAttr(stage1, "variables.0.value", "bar"),
-					resource.TestCheckResourceAttr(stage1, "variables.1.key", "baz"),
-					resource.TestCheckResourceAttr(stage1, "variables.1.value", "qux"),
+					resource.TestCheckResourceAttr(stage1, "variables.foo", "bar"),
+					resource.TestCheckResourceAttr(stage1, "variables.baz", "qux"),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "variables.0.key", "foo"),
-					resource.TestCheckResourceAttr(stage2, "variables.0.value", "bar"),
-					resource.TestCheckResourceAttr(stage2, "variables.1.key", "baz"),
-					resource.TestCheckResourceAttr(stage2, "variables.1.value", "qux"),
+					resource.TestCheckResourceAttr(stage2, "variables.foo", "bar"),
+					resource.TestCheckResourceAttr(stage2, "variables.baz", "qux"),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -87,15 +83,11 @@ func TestAccPipelineEvaluateVariablesStageBasic(t *testing.T) {
 				Config: testAccPipelineEvaluateVariablesStageConfigBasic(pipeName, newVariables, 2),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "variables.0.key", "foo"),
-					resource.TestCheckResourceAttr(stage1, "variables.0.value", "bar"),
-					resource.TestCheckResourceAttr(stage1, "variables.1.key", "baz"),
-					resource.TestCheckResourceAttr(stage1, "variables.1.value", "quux"),
+					resource.TestCheckResourceAttr(stage1, "variables.foo", "bar"),
+					resource.TestCheckResourceAttr(stage1, "variables.baz", "quux"),
 					resource.TestCheckResourceAttr(stage2, "name", "Stage 2"),
-					resource.TestCheckResourceAttr(stage2, "variables.0.key", "foo"),
-					resource.TestCheckResourceAttr(stage2, "variables.0.value", "bar"),
-					resource.TestCheckResourceAttr(stage2, "variables.1.key", "baz"),
-					resource.TestCheckResourceAttr(stage2, "variables.1.value", "quux"),
+					resource.TestCheckResourceAttr(stage2, "variables.foo", "bar"),
+					resource.TestCheckResourceAttr(stage2, "variables.baz", "quux"),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -107,10 +99,8 @@ func TestAccPipelineEvaluateVariablesStageBasic(t *testing.T) {
 				Config: testAccPipelineEvaluateVariablesStageConfigBasic(pipeName, variables, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(stage1, "name", "Stage 1"),
-					resource.TestCheckResourceAttr(stage1, "variables.0.key", "foo"),
-					resource.TestCheckResourceAttr(stage1, "variables.0.value", "bar"),
-					resource.TestCheckResourceAttr(stage1, "variables.1.key", "baz"),
-					resource.TestCheckResourceAttr(stage1, "variables.1.value", "qux"),
+					resource.TestCheckResourceAttr(stage1, "variables.foo", "bar"),
+					resource.TestCheckResourceAttr(stage1, "variables.baz", "qux"),
 					testAccCheckPipelineExists(pipelineResourceName, &pipelineRef),
 					testAccCheckPipelineStages(pipelineResourceName, []string{
 						stage1,
@@ -143,7 +133,7 @@ resource "spinnaker_pipeline_evaluate_variables_stage" "s%v" {
 	pipeline 	  = "${spinnaker_pipeline.test.id}"
 	name     	  = "Stage %v"
 
-	variables {%v}
+	variables = {%v}
 }`, i, i, variablesString)
 	}
 

@@ -178,7 +178,7 @@ func resourceApplicationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Creating application", application.Name)
+	log.Printf("[DEBUG] Creating application: %s\n", application.Name)
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.CreateApplication(application.toClientApplication())
 	if err != nil {
@@ -216,7 +216,7 @@ func resourceApplicationRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Got application", a.Name)
+	log.Printf("[DEBUG] Got application: %s\n", a.Name)
 	return fromClientApplication(a).setResourceData(d)
 }
 
@@ -232,7 +232,7 @@ func resourceApplicationUpdate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Updated application", d.Id())
+	log.Printf("[DEBUG] Updated application %s\n", d.Id())
 	return resourceApplicationRead(d, m)
 }
 
@@ -243,7 +243,7 @@ func resourceApplicationDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	log.Println("[DEBUG] Deleting application", d.Id())
+	log.Printf("[DEBUG] Deleting application %s\n", d.Id())
 	applicationService := m.(*Services).ApplicationService
 	err := applicationService.DeleteApplication(a.toClientApplication())
 	if err != nil {
