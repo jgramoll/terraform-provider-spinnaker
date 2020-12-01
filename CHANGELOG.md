@@ -1,5 +1,15 @@
 # terraform-provider-spinnaker
 
+## 4.0.0
+
+Breaking changes:
+- Removed DeployStageCluster
+- Changed id -> ID
+
+- [84dc2f6] Merge pull request #84 from jgramoll/fanatics
+- [6be11ba] Merge pull request #83 from jgramoll/lints
+- [3a60535] Merge pull request #81 from jgramoll/cloudformation
+
 ## 3.1.0
 
 - [527e6bc] Merge pull request #80 from jgramoll/required_artifact_ids
