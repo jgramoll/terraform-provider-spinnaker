@@ -1,6 +1,6 @@
-module github.com/jgramoll/terraform-provider-spinnaker
+module github.com/get-bridge/terraform-provider-spinnaker
 
-go 1.15
+go 1.16
 
 require (
 	github.com/ghodss/yaml v1.0.0

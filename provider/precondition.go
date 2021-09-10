@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/iancoleman/strcase"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
 

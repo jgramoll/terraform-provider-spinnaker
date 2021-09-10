@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -25,7 +25,7 @@ func pipelineParameterResource() *schema.Resource {
 				if len(id) != 2 {
 					return nil, errInvalidParameterImportKey
 				}
-				d.Set(PipelineKey, id[0])
+				_ = d.Set(PipelineKey, id[0])
 				d.SetId(id[1])
 				return []*schema.ResourceData{d}, nil
 			},
@@ -129,7 +129,7 @@ func resourcePipelineParameterRead(d *schema.ResourceData, m interface{}) error 
 		d.SetId("")
 	} else {
 		d.SetId(parameter.ID)
-		fromClientPipelineParameter(parameter).setResourceData(d)
+		_ = fromClientPipelineParameter(parameter).setResourceData(d)
 	}
 
 	return nil

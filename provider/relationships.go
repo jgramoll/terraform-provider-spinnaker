@@ -1,6 +1,6 @@
 package provider
 
-import "github.com/jgramoll/terraform-provider-spinnaker/client"
+import "github.com/get-bridge/terraform-provider-spinnaker/client"
 
 type relationships struct {
 	LoadBalancers  *[]string `mapstructure:"load_balancers"`

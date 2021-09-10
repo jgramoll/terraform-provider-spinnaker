@@ -6,7 +6,7 @@ Terraform Provider to manage spinnaker pipelines
 You will need to install the binary as a [terraform third party plugin](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).  Terraform will then pick up the binary from the local filesystem when you run `terraform init`.
 
 ```sh
-curl -s https://raw.githubusercontent.com/jgramoll/terraform-provider-spinnaker/master/install.sh | bash
+curl -s https://raw.githubusercontent.com/get-bridge/terraform-provider-spinnaker/master/install.sh | bash
 ```
 
 ## Usage ##

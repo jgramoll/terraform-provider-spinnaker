@@ -46,9 +46,9 @@ func TestProviderConfigure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	config := provider.Meta().(*Services).Config
-	if config.Address != raw["address"] {
-		t.Fatalf("address should be %#v, not %#v", raw["address"], config.Address)
+	testConfig := provider.Meta().(*Services).Config
+	if testConfig.Address != raw["address"] {
+		t.Fatalf("address should be %#v, not %#v", raw["address"], testConfig.Address)
 	}
 
 	auth, ok := raw["auth"].(map[string]interface{})
@@ -56,16 +56,16 @@ func TestProviderConfigure(t *testing.T) {
 		t.Fatal("auth is not present")
 	}
 
-	if config.Auth.CertPath != auth["cert_path"] {
-		t.Fatalf("certPath should be %#v, not %#v", auth["cert_path"], config.Auth.CertPath)
+	if testConfig.Auth.CertPath != auth["cert_path"] {
+		t.Fatalf("certPath should be %#v, not %#v", auth["cert_path"], testConfig.Auth.CertPath)
 	}
-	if config.Auth.KeyPath != auth["key_path"] {
-		t.Fatalf("keyPath should be %#v, not %#v", auth["key_path"], config.Auth.KeyPath)
+	if testConfig.Auth.KeyPath != auth["key_path"] {
+		t.Fatalf("keyPath should be %#v, not %#v", auth["key_path"], testConfig.Auth.KeyPath)
 	}
 }
 
 func testAccPreCheck(t *testing.T) {
-	hasAuthCfg := (os.Getenv("SPINNAKER_CERT") != "" && os.Getenv("SPINNAKER_KEY") != "")
+	hasAuthCfg := os.Getenv("SPINNAKER_CERT") != "" && os.Getenv("SPINNAKER_KEY") != ""
 	if !hasAuthCfg {
 		t.Fatal("Spinnaker config (SPINNAKER_CERT and SPINNAKER_KEY) must be set for acceptance tests")
 	}

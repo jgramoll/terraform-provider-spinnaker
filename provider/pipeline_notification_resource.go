@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -28,7 +28,7 @@ func pipelineNotificationResource() *schema.Resource {
 				if len(id) != 2 {
 					return nil, errInvalidNotificationImportKey
 				}
-				d.Set(PipelineKey, id[0])
+				_ = d.Set(PipelineKey, id[0])
 				d.SetId(id[1])
 				return []*schema.ResourceData{d}, nil
 			},
@@ -154,7 +154,7 @@ func resourcePipelineNotificationRead(d *schema.ResourceData, m interface{}) err
 		d.SetId("")
 	} else {
 		d.SetId(notification.ID)
-		newDefaultNotification().fromClientNotification(notification).setNotificationResourceData(d)
+		_ = newDefaultNotification().fromClientNotification(notification).setNotificationResourceData(d)
 	}
 
 	return nil

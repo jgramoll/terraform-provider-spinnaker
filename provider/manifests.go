@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 )
 
 type manifest string

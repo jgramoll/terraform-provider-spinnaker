@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -85,7 +86,6 @@ func newTLSHTTPClient(config *Config) (*http.Client, error) {
 		Certificates:       []tls.Certificate{cert},
 		InsecureSkipVerify: config.Auth.Insecure,
 	}
-	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
 	return &http.Client{Transport: transport}, nil
 }
@@ -134,7 +134,11 @@ func (client *Client) Do(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return resp, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+		}
+	}(resp.Body)
 	return resp, nil
 }
 
@@ -174,7 +178,11 @@ func (client *Client) DoWithResponse(req *http.Request, v interface{}) (*http.Re
 	if err != nil {
 		return resp, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+		}
+	}(resp.Body)
 
 	err = decodeResponse(resp, v)
 	if err != nil {

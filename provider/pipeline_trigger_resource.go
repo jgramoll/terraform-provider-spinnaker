@@ -165,7 +165,7 @@ func resourceTriggerImporter(d *schema.ResourceData, meta interface{}) ([]*schem
 	if len(id) < 2 {
 		return nil, errInvalidTriggerImportKey
 	}
-	d.Set(PipelineKey, id[0])
+	_ = d.Set(PipelineKey, id[0])
 	d.SetId(id[1])
 	return []*schema.ResourceData{d}, nil
 }

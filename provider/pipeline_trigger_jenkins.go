@@ -3,8 +3,8 @@ package provider
 import (
 	"errors"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 // Jenkins trigger for Pipeline

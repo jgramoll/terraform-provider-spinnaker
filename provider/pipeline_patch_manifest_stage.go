@@ -3,8 +3,8 @@ package provider
 import (
 	"bytes"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 	"gopkg.in/yaml.v2"
 	kyaml "k8s.io/apimachinery/pkg/util/yaml"
 )

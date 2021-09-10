@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 )
 
 func TestPreconditionClusterSizeTypeToClientPreconditions(t *testing.T) {

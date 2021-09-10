@@ -1,8 +1,8 @@
 package provider
 
 import (
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/google/uuid"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 type manifestExpectedArtifact struct {

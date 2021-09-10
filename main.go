@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/get-bridge/terraform-provider-spinnaker/provider"
 	"github.com/hashicorp/terraform/plugin"
-	"github.com/jgramoll/terraform-provider-spinnaker/provider"
 )
 
 func main() {

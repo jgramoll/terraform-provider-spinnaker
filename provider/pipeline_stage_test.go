@@ -3,9 +3,9 @@ package provider
 import (
 	"fmt"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 var stageTypes = map[string]client.StageType{}

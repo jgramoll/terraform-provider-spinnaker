@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 func TestAccPipelineBasic(t *testing.T) {

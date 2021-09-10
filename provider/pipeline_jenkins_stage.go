@@ -3,8 +3,8 @@ package provider
 import (
 	"strconv"
 
+	"github.com/get-bridge/terraform-provider-spinnaker/client"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/jgramoll/terraform-provider-spinnaker/client"
 )
 
 type jenkinsStage struct {
