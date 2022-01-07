@@ -34,6 +34,7 @@ func TestProviderConfigure(t *testing.T) {
 			"cert_path": os.Getenv("SPINNAKER_CERT"),
 			"key_path":  os.Getenv("SPINNAKER_KEY"),
 		},
+		"timeout": 300,
 	}
 	rawConfig, configErr := config.NewRawConfig(raw)
 	if configErr != nil {
@@ -61,6 +62,10 @@ func TestProviderConfigure(t *testing.T) {
 	}
 	if config.Auth.KeyPath != auth["key_path"] {
 		t.Fatalf("keyPath should be %#v, not %#v", auth["key_path"], config.Auth.KeyPath)
+	}
+
+	if config.Timeout != raw["timeout"] {
+		t.Fatalf("timeout should be %#v, not %#v", raw["timeout"], config.Timeout)
 	}
 }
 

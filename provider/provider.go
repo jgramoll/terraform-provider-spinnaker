@@ -70,6 +70,13 @@ func Provider() terraform.ResourceProvider {
 				Default:     true,
 				Description: "If http client should skip ssl validation",
 			},
+
+			"timeout": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     300,
+				Description: "Time in seconds to wait for operations of api client, default is 300s",
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
