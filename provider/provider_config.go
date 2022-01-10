@@ -2,6 +2,7 @@ package provider
 
 import (
 	"github.com/jgramoll/terraform-provider-spinnaker/client"
+	"time"
 )
 
 // config for provider
@@ -14,6 +15,7 @@ type providerConfig struct {
 	KeyContent  string `mapstructure:"key_content"`
 	UserEmail   string `mapstructure:"user_email"`
 	Insecure    bool   `mapstructure:"insecure"`
+	Timeout     int    `mapstructure:"timeout"`
 }
 
 func newProviderConfig() *providerConfig {
@@ -31,6 +33,7 @@ func (c *providerConfig) toClientConfig() *client.Config {
 	clientConfig.Auth.KeyContent = c.KeyContent
 	clientConfig.Auth.UserEmail = c.UserEmail
 	clientConfig.Auth.Insecure = c.Insecure
+	clientConfig.Timeout = time.Duration(c.Timeout) * time.Second
 
 	return clientConfig
 }
