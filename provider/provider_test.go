@@ -3,6 +3,7 @@ package provider
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform/config"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -64,8 +65,9 @@ func TestProviderConfigure(t *testing.T) {
 		t.Fatalf("keyPath should be %#v, not %#v", auth["key_path"], config.Auth.KeyPath)
 	}
 
-	if config.Timeout != raw["timeout"] {
-		t.Fatalf("timeout should be %#v, not %#v", raw["timeout"], config.Timeout)
+	configTimeout := int(config.Timeout / time.Second)
+	if configTimeout != raw["timeout"] {
+		t.Fatalf("timeout should be %#v, not %#v", raw["timeout"], configTimeout)
 	}
 }
 
