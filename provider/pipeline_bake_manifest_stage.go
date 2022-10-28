@@ -33,13 +33,13 @@ func (s *bakeManifestStage) toClientStage(config *client.Config, refID string) (
 	}
 
 	cs.EvaluateOverrideExpressions = s.EvaluateOverrideExpressions
-	if len(s.InputArtifacts) == 1 {
-		art, err := s.InputArtifacts[0].toClientInputArtifact()
-		if err != nil {
-			return nil, err
-		}
-		cs.InputArtifact = art
-	} else {
+	//if len(s.InputArtifacts) == 1 {
+	//	art, err := s.InputArtifacts[0].toClientInputArtifact()
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	cs.InputArtifact = art
+	//} else {
 		for _, a := range s.InputArtifacts {
 			art, err := a.toClientInputArtifact()
 			if err != nil {
@@ -47,7 +47,7 @@ func (s *bakeManifestStage) toClientStage(config *client.Config, refID string) (
 			}
 			cs.InputArtifacts = append(cs.InputArtifacts, *art)
 		}
-	}
+	//}
 	cs.Namespace = s.Namespace
 	cs.OutputName = s.OutputName
 	cs.Overrides = s.Overrides
@@ -67,14 +67,14 @@ func (*bakeManifestStage) fromClientStage(cs client.Stage) (stage, error) {
 	}
 
 	newStage.EvaluateOverrideExpressions = clientStage.EvaluateOverrideExpressions
-	if len(clientStage.InputArtifacts) == 0 && clientStage.InputArtifact != nil {
-		a := clientStage.InputArtifact
-		newStage.InputArtifacts = append(newStage.InputArtifacts, *fromClientInputArtifact(a))
-	} else {
+	//if len(clientStage.InputArtifacts) == 0 && clientStage.InputArtifact != nil {
+	//	a := clientStage.InputArtifact
+	//	newStage.InputArtifacts = append(newStage.InputArtifacts, *fromClientInputArtifact(a))
+	//} else {
 		for _, a := range clientStage.InputArtifacts {
 			newStage.InputArtifacts = append(newStage.InputArtifacts, *fromClientInputArtifact(&a))
 		}
-	}
+	//}
 	newStage.Namespace = clientStage.Namespace
 	newStage.OutputName = clientStage.OutputName
 	newStage.Overrides = clientStage.Overrides

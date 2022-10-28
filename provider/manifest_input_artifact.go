@@ -15,10 +15,18 @@ func fromClientInputArtifact(ca *client.ManifestInputArtifact) *manifestInputArt
 		return nil
 	}
 
+   if ca.Artifact != nil {
+           return &manifestInputArtifact{
+                   Account:  ca.Account,
+                   ID:       ca.ID,
+                   Artifact: []manifestArtifact{manifestArtifact(*ca.Artifact)},
+           }
+   }
+
 	return &manifestInputArtifact{
 		Account:  ca.Account,
 		ID:       ca.ID,
-		Artifact: []manifestArtifact{manifestArtifact(*ca.Artifact)},
+		Artifact: []manifestArtifact{},
 	}
 }
 

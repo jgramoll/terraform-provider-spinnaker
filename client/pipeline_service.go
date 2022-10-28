@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -100,8 +101,29 @@ func (service *PipelineService) DeletePipeline(pipeline *Pipeline) error {
 		return err
 	}
 
-	_, err = service.Do(req)
-	return err
+	_, resErr := service.Do(req)
+
+	spinnakerError, ok := resErr.(*SpinnakerError)
+	if !ok {
+		return resErr
+	}
+	if spinnakerError.Status == 500 && spinnakerError.Message == "timeout" {
+		log.Printf("[DEBUG] DeletePipeline received timeout error, checking if pipeline is actually deleted\n")
+		pipelines, err := service.GetApplicationPipelines(pipeline.Application)
+		if err != nil {
+			return err
+		}
+		for _, p := range *pipelines {
+			if p.ID == pipeline.ID {
+				log.Printf("[DEBUG] DeletePipeline received timeout error, pipeline wasn't actually deleted, returning original error\n")
+				return resErr
+			}
+		}
+		log.Printf("[DEBUG] DeletePipeline received timeout error, pipeline deleted, considered succeeded\n")
+		return nil
+	}
+
+	return resErr
 }
 
 func (service *PipelineService) parsePipelinesRequest(req *http.Request) (*[]*Pipeline, error) {
