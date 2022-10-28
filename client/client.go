@@ -22,6 +22,7 @@ var ErrInvalidDecodeResponseParameter = errors.New("nil interface provided to de
 type Config struct {
 	Address string
 	Auth    *Auth
+	Timeout time.Duration
 }
 
 // NewConfig new config
@@ -53,7 +54,7 @@ func NewClient(config *Config) (*Client, error) {
 
 func newTLSHTTPClient(config *Config) (*http.Client, error) {
 	if config.Auth == nil {
-		return http.DefaultClient, nil
+		return &http.Client{Timeout: config.Timeout}, nil
 	}
 
 	var cert tls.Certificate
@@ -75,7 +76,7 @@ func newTLSHTTPClient(config *Config) (*http.Client, error) {
 		}
 		cert, err = tls.LoadX509KeyPair(certPath, keyPath)
 	} else {
-		return http.DefaultClient, nil
+		return &http.Client{Timeout: config.Timeout}, nil
 	}
 	if err != nil {
 		return nil, err
@@ -87,7 +88,7 @@ func newTLSHTTPClient(config *Config) (*http.Client, error) {
 	}
 	tlsConfig.BuildNameToCertificate()
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	return &http.Client{Transport: transport}, nil
+	return &http.Client{Transport: transport, Timeout: config.Timeout}, nil
 }
 
 func decodeBase64KeyPair(cert64, key64 string) (tls.Certificate, error) {
